@@ -14,9 +14,9 @@ import { categories, cities, states } from '@/utils/data';
 
 const SearchForm = () => {
   const [searchParams, setSearchParams] = useState({
-    category: "",
+    category: "all",
     location: "",
-    city: "",
+    city: "all",
   });
 
   const handleChange = (name: string, value: string) => {
@@ -44,7 +44,7 @@ const SearchForm = () => {
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Services</SelectItem>
+              <SelectItem value="all">All Services</SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category.id} value={category.name.toLowerCase()}>
                   {category.name}
@@ -63,7 +63,7 @@ const SearchForm = () => {
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Cities</SelectItem>
+              <SelectItem value="all">All Cities</SelectItem>
               {cities.map((city, index) => (
                 <SelectItem key={index} value={city.toLowerCase()}>
                   {city}
