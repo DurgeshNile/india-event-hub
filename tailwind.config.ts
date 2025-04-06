@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -71,7 +72,10 @@ export default {
 					darkblue: '#1D3557',
 					cream: '#FFF1E6',
 					gold: '#D4AF37',
-					green: '#2A9D8F'
+					green: '#2A9D8F',
+					purple: '#9b87f5',
+					magenta: '#D946EF',
+					brightOrange: '#F97316'
 				}
 			},
 			borderRadius: {
@@ -95,15 +99,48 @@ export default {
 					to: {
 						height: '0'
 					}
-				}
+				},
+				'float': {
+					'0%, 100%': {
+						transform: 'translateY(0)',
+					},
+					'50%': {
+						transform: 'translateY(-10px)',
+					},
+				},
+				'pulse-slow': {
+					'0%, 100%': {
+						opacity: '0.5',
+					},
+					'50%': {
+						opacity: '1',
+					},
+				},
+				'shimmer': {
+					'0%': {
+						backgroundPosition: '-200% 0',
+					},
+					'100%': {
+						backgroundPosition: '200% 0',
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'spin-slow': 'spin 4s linear infinite',
-				'bounce-slow': 'bounce 2s infinite'
+				'bounce-slow': 'bounce 2s infinite',
+				'float': 'float 3s ease-in-out infinite',
+				'pulse-slow': 'pulse-slow 3s infinite',
+				'shimmer': 'shimmer 2s infinite linear',
+			},
+			backgroundImage: {
+				'gradient-shimmer': 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+				'gradient-gold': 'linear-gradient(90deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)',
 			}
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+

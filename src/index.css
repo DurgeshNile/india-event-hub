@@ -104,8 +104,70 @@
   .text-gradient {
     @apply bg-gradient-to-r from-india-orange to-india-red bg-clip-text text-transparent;
   }
+
+  .text-gradient-gold {
+    @apply bg-gradient-gold bg-clip-text text-transparent bg-300% animate-shimmer;
+  }
   
   .bg-gradient {
     @apply bg-gradient-to-r from-india-orange to-india-red;
   }
+
+  .shadow-glow {
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.3);
+  }
+  
+  .glass-effect {
+    @apply bg-white bg-opacity-30 backdrop-blur-sm border border-white border-opacity-20;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .bg-300\% {
+    background-size: 300% 100%;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(247, 127, 0, 0.5);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(230, 57, 70, 0.6);
+}
+
+/* Input glow effect */
+input:focus, button:focus, select:focus {
+  box-shadow: 0 0 0 2px rgba(247, 127, 0, 0.2), 0 0 0 4px rgba(230, 57, 70, 0.1);
+}
+
+/* Button hover animations */
+button {
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 }
