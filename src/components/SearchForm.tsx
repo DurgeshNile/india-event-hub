@@ -37,9 +37,9 @@ const SearchForm = () => {
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
           <Select value={searchParams.category} onValueChange={(value) => handleChange('category', value)}>
-            <SelectTrigger className="w-full bg-white">
+            <SelectTrigger className="w-full bg-white border-pink-200 focus:ring-pink-500">
               <div className="flex items-center">
-                <Search className="w-4 h-4 mr-2 text-muted-foreground" />
+                <Search className="w-4 h-4 mr-2 text-pink-400" />
                 <SelectValue placeholder="Select service" />
               </div>
             </SelectTrigger>
@@ -56,9 +56,9 @@ const SearchForm = () => {
 
         <div className="flex-1">
           <Select value={searchParams.city} onValueChange={(value) => handleChange('city', value)}>
-            <SelectTrigger className="w-full bg-white">
+            <SelectTrigger className="w-full bg-white border-pink-200 focus:ring-pink-500">
               <div className="flex items-center">
-                <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
+                <MapPin className="w-4 h-4 mr-2 text-pink-400" />
                 <SelectValue placeholder="Select city" />
               </div>
             </SelectTrigger>
@@ -73,7 +73,7 @@ const SearchForm = () => {
           </Select>
         </div>
 
-        <Button type="submit" className="bg-india-orange hover:bg-india-red">
+        <Button type="submit" className="bg-pink-500 hover:bg-pink-600">
           Search Services
         </Button>
       </div>
