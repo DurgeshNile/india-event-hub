@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,17 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom colors for India Event Hub
+				india: {
+					red: '#E63946',
+					orange: '#F77F00',
+					yellow: '#FCBF49',
+					blue: '#0077B6',
+					darkblue: '#1D3557',
+					cream: '#FFF1E6',
+					gold: '#D4AF37',
+					green: '#2A9D8F'
 				}
 			},
 			borderRadius: {
