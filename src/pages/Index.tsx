@@ -4,6 +4,9 @@ import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import ServiceCategories from '@/components/ServiceCategory';
 import FeaturedProviders from '@/components/FeaturedProviders';
+import ImageGallery from '@/components/ImageGallery';
+import Testimonials from '@/components/Testimonials';
+import FeatureShowcase from '@/components/FeatureShowcase';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Camera, Utensils, Brush, Music, Users, ArrowRight } from 'lucide-react';
@@ -16,7 +19,11 @@ const Index = () => {
       <main className="flex-grow">
         <Hero />
         
+        <FeatureShowcase />
+        
         <ServiceCategories />
+        
+        <ImageGallery />
         
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
@@ -101,6 +108,8 @@ const Index = () => {
             </div>
           </div>
         </section>
+        
+        <Testimonials />
         
         <FeaturedProviders />
         

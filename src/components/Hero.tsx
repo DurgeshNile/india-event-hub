@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import SearchForm from './SearchForm';
-import { Heart, Star, Sparkles, Confetti, Camera, Music, Utensils } from 'lucide-react';
+import { Heart, Star, Sparkles, Camera, Music, Utensils } from 'lucide-react';
 
 const Hero = () => {
   return (
