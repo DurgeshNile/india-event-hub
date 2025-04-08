@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -18,13 +17,12 @@ const Index = () => {
       <Navbar />
       
       <main className="flex-grow">
-        <Hero />
-        
+        {/* Full page EventCarousel replaces Hero at the top */}
         <EventCarousel />
         
-        <FeatureShowcase />
-        
         <ServiceCategories />
+        
+        <FeatureShowcase />
         
         <ImageGallery />
         
