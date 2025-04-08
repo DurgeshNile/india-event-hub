@@ -7,6 +7,7 @@ import FeaturedProviders from '@/components/FeaturedProviders';
 import ImageGallery from '@/components/ImageGallery';
 import Testimonials from '@/components/Testimonials';
 import FeatureShowcase from '@/components/FeatureShowcase';
+import EventCarousel from '@/components/EventCarousel';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Camera, Utensils, Brush, Music, Users, ArrowRight } from 'lucide-react';
@@ -18,6 +19,8 @@ const Index = () => {
       
       <main className="flex-grow">
         <Hero />
+        
+        <EventCarousel />
         
         <FeatureShowcase />
         
