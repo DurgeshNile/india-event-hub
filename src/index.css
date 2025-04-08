@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -61,7 +61,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-montserrat font-bold;
+    @apply font-syne font-bold;
   }
 
   /* 3D Transform Styles */
@@ -79,8 +79,12 @@
     font-family: 'Poppins', sans-serif;
   }
   
-  .font-montserrat {
-    font-family: 'Montserrat', sans-serif;
+  .font-syne {
+    font-family: 'Syne', sans-serif;
+  }
+  
+  .font-orbitron {
+    font-family: 'Orbitron', sans-serif;
   }
   
   .text-gradient {
@@ -183,4 +187,20 @@ button:hover {
 .card-hover:hover {
   transform: translateY(-5px) scale(1.01);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Heading styles */
+h1 {
+  @apply text-gradient-gold tracking-tight leading-tight;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+h2 {
+  @apply text-gradient tracking-wide;
+}
+
+/* Tech-inspired text effect */
+.tech-text {
+  @apply font-orbitron tracking-widest text-white/90;
+  text-shadow: 0 0 5px rgba(74, 222, 229, 0.5);
 }
