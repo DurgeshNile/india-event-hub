@@ -124,6 +124,15 @@ export default {
 						backgroundPosition: '200% 0',
 					},
 				},
+				'rotate-3d': {
+					'0%': { transform: 'rotateY(0deg)' },
+					'100%': { transform: 'rotateY(360deg)' }
+				},
+				'float-3d': {
+					'0%': { transform: 'translateZ(0px)' },
+					'50%': { transform: 'translateZ(20px)' },
+					'100%': { transform: 'translateZ(0px)' }
+				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -133,14 +142,24 @@ export default {
 				'float': 'float 3s ease-in-out infinite',
 				'pulse-slow': 'pulse-slow 3s infinite',
 				'shimmer': 'shimmer 2s infinite linear',
+				'rotate-3d': 'rotate-3d 8s infinite linear',
+				'float-3d': 'float-3d 4s ease-in-out infinite',
 			},
 			backgroundImage: {
 				'gradient-shimmer': 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
 				'gradient-gold': 'linear-gradient(90deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C)',
+				'gradient-dark': 'linear-gradient(to bottom, #171717, #0f0f0f)',
+				'gradient-card': 'linear-gradient(145deg, rgba(20,20,20,0.8), rgba(10,10,10,0.9))',
+				'gradient-blue': 'linear-gradient(135deg, #1a237e 0%, #000051 100%)',
+			},
+			boxShadow: {
+				'3d': '0 10px 30px -10px rgba(0, 0, 0, 0.5)',
+				'3d-hover': '0 20px 40px -15px rgba(0, 0, 0, 0.6)',
+				'neon': '0 0 10px rgba(74, 222, 229, 0.5), 0 0 20px rgba(74, 222, 229, 0.3)',
+				'neon-hover': '0 0 15px rgba(74, 222, 229, 0.6), 0 0 30px rgba(74, 222, 229, 0.4)',
 			}
 		}
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-
