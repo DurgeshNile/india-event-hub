@@ -149,10 +149,10 @@ const Navbar = () => {
               <Bell size={20} />
             </button>
             <Button variant="outline" className="border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white">
-              Log in
+              <Link to="/login">Log in</Link>
             </Button>
             <Button className="bg-pink-500 hover:bg-pink-600 text-white">
-              Sign up
+              <Link to="/signup">Sign up</Link>
             </Button>
           </div>
 
@@ -204,11 +204,11 @@ const Navbar = () => {
               About
             </Link>
             <div className="flex flex-col space-y-2 mt-4">
-              <Button variant="outline" className="w-full border-pink-500 text-pink-500">
-                Log in
+              <Button variant="outline" className="w-full border-pink-500 text-pink-500" onClick={() => setIsMenuOpen(false)}>
+                <Link to="/login" className="w-full">Log in</Link>
               </Button>
-              <Button className="w-full bg-pink-500 hover:bg-pink-600">
-                Sign up
+              <Button className="w-full bg-pink-500 hover:bg-pink-600" onClick={() => setIsMenuOpen(false)}>
+                <Link to="/signup" className="w-full">Sign up</Link>
               </Button>
             </div>
           </div>
