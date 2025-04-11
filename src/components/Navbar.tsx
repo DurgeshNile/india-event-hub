@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { Menu, X, Search, Bell, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, Search, Bell, User, Calendar, ChevronDown } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,10 +12,33 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { cn } from '@/lib/utils';
+import { 
+  Popover, 
+  PopoverContent, 
+  PopoverTrigger 
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { categories } from '@/utils/data';
+import { useToast } from "@/components/ui/use-toast";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: "New featured service: Premium Photography", isNew: true },
+    { id: 2, title: "Special discount on Wedding Venues", isNew: true },
+    { id: 3, title: "New Caterers in your area", isNew: false }
+  ]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,6 +58,34 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      toast({
+        title: "Searching for services",
+        description: `Finding results for "${searchQuery}"`,
+      });
+      // Redirect to search results page (would be implemented in a real app)
+      console.log(`Searching for: ${searchQuery}`);
+    }
+  };
+
+  const handleNotificationClick = (notificationId: number) => {
+    // Mark notification as read
+    setNotifications(notifications.map(notification => 
+      notification.id === notificationId 
+        ? { ...notification, isNew: false } 
+        : notification
+    ));
+
+    toast({
+      title: "Notification opened",
+      description: "You've opened a notification",
+    });
+  };
+
+  const unreadCount = notifications.filter(n => n.isNew).length;
+  
   return (
     <header className={cn(
       "sticky top-0 z-50 transition-all duration-300",
@@ -86,45 +137,21 @@ const Navbar = () => {
                         </a>
                       </NavigationMenuLink>
                     </li>
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <a
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none hover:bg-pink-50 transition-colors"
-                          href="/categories/photography"
-                        >
-                          <div className="text-sm font-medium leading-none">Photography</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Professional photographers for all occasions
-                          </p>
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <a
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none hover:bg-pink-50 transition-colors"
-                          href="/categories/catering"
-                        >
-                          <div className="text-sm font-medium leading-none">Catering</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Delicious food services for any event
-                          </p>
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
-                    <li>
-                      <NavigationMenuLink asChild>
-                        <a
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none hover:bg-pink-50 transition-colors"
-                          href="/categories/decoration"
-                        >
-                          <div className="text-sm font-medium leading-none">Decoration</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Creative decoration services for all events
-                          </p>
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
+                    {categories.slice(0, 3).map(category => (
+                      <li key={category.id}>
+                        <NavigationMenuLink asChild>
+                          <a
+                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none hover:bg-pink-50 transition-colors"
+                            href={`/category/${category.id}`}
+                          >
+                            <div className="text-sm font-medium leading-none">{category.name}</div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              {category.description}
+                            </p>
+                          </a>
+                        </NavigationMenuLink>
+                      </li>
+                    ))}
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
@@ -141,32 +168,162 @@ const Navbar = () => {
             </NavigationMenuList>
           </NavigationMenu>
 
-          <div className="hidden md:flex items-center space-x-4">
-            <button className="text-foreground hover:text-pink-500 transition-colors">
-              <Search size={20} />
-            </button>
-            <button className="text-foreground hover:text-pink-500 transition-colors">
-              <Bell size={20} />
-            </button>
+          <div className="hidden md:flex items-center space-x-3">
+            {/* Search Button */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-foreground hover:text-pink-500 hover:bg-pink-50 transition-colors">
+                  <Search size={20} />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-0" align="end">
+                <form onSubmit={handleSearch} className="flex">
+                  <Input 
+                    placeholder="Search for services..." 
+                    className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <Button type="submit" variant="ghost" size="icon">
+                    <Search size={20} />
+                  </Button>
+                </form>
+              </PopoverContent>
+            </Popover>
+
+            {/* Date Selection */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-foreground hover:text-pink-500 hover:bg-pink-50 transition-colors">
+                  <Calendar size={20} />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-4" align="end">
+                <div className="space-y-2">
+                  <h3 className="font-medium">Select Event Date</h3>
+                  <p className="text-sm text-muted-foreground">Choose your event date to find available services</p>
+                  <div className="pt-2">
+                    <Input type="date" className="w-full" />
+                  </div>
+                  <Button 
+                    className="w-full mt-2 bg-pink-500 hover:bg-pink-600"
+                    onClick={() => {
+                      toast({
+                        title: "Date selected",
+                        description: "Showing services available on this date",
+                      });
+                    }}
+                  >
+                    Find Services
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            {/* Notifications */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative text-foreground hover:text-pink-500 hover:bg-pink-50 transition-colors">
+                  <Bell size={20} />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-pink-500 text-[10px] text-white">
+                      {unreadCount}
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <div className="flex items-center justify-between p-2">
+                  <span className="font-medium">Notifications</span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-xs"
+                    onClick={() => setNotifications(notifications.map(n => ({ ...n, isNew: false })))}
+                  >
+                    Mark all as read
+                  </Button>
+                </div>
+                <DropdownMenuSeparator />
+                {notifications.length > 0 ? (
+                  notifications.map((notification) => (
+                    <DropdownMenuItem 
+                      key={notification.id}
+                      className={cn(
+                        "p-3 cursor-pointer",
+                        notification.isNew && "bg-pink-50"
+                      )}
+                      onClick={() => handleNotificationClick(notification.id)}
+                    >
+                      <div className="flex items-start gap-2">
+                        {notification.isNew && (
+                          <span className="h-2 w-2 mt-1.5 rounded-full bg-pink-500" />
+                        )}
+                        <div>
+                          <p className={cn(
+                            "text-sm",
+                            notification.isNew && "font-medium"
+                          )}>
+                            {notification.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">Just now</p>
+                        </div>
+                      </div>
+                    </DropdownMenuItem>
+                  ))
+                ) : (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    No notifications yet
+                  </div>
+                )}
+                <DropdownMenuSeparator />
+                <div className="p-2">
+                  <Button variant="outline" size="sm" className="w-full text-xs">
+                    View all notifications
+                  </Button>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Button variant="outline" className="border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white">
-              <Link to="/login">Log in</Link>
+              <Link to="/login" className="w-full">Log in</Link>
             </Button>
             <Button className="bg-pink-500 hover:bg-pink-600 text-white">
-              <Link to="/signup">Sign up</Link>
+              <Link to="/signup" className="w-full">Sign up</Link>
             </Button>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-3">
-            <button className="text-foreground hover:text-pink-500 transition-colors">
-              <Search size={20} />
-            </button>
-            <button
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-foreground hover:text-pink-500 transition-colors">
+                  <Search size={20} />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-screen p-0 left-0 right-0" align="center">
+                <form onSubmit={handleSearch} className="flex">
+                  <Input 
+                    placeholder="Search for services..." 
+                    className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <Button type="submit" variant="ghost" size="icon">
+                    <Search size={20} />
+                  </Button>
+                </form>
+              </PopoverContent>
+            </Popover>
+            
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={toggleMenu}
               className="inline-flex items-center justify-center p-2 rounded-md text-foreground hover:text-pink-500 focus:outline-none"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -182,20 +339,19 @@ const Navbar = () => {
             >
               Home
             </Link>
-            <Link
-              to="/explore"
-              className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-pink-50 hover:text-pink-500"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Explore
-            </Link>
-            <Link
-              to="/categories"
-              className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-pink-50 hover:text-pink-500"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Categories
-            </Link>
+            <div className="relative">
+              <button
+                className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-pink-50 hover:text-pink-500"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/categories');
+                  setIsMenuOpen(false);
+                }}
+              >
+                Categories
+                <ChevronDown className="ml-auto h-4 w-4" />
+              </button>
+            </div>
             <Link
               to="/about"
               className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-pink-50 hover:text-pink-500"
@@ -203,6 +359,51 @@ const Navbar = () => {
             >
               About
             </Link>
+            
+            {/* Mobile Date Selection */}
+            <div className="px-3 py-2">
+              <p className="text-sm font-medium mb-1">Select Event Date</p>
+              <Input 
+                type="date" 
+                className="w-full" 
+                onChange={() => {
+                  toast({
+                    title: "Date selected",
+                    description: "Showing services available on this date",
+                  });
+                }}
+              />
+            </div>
+            
+            {/* Mobile Notifications */}
+            <div className="px-3 py-2">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-sm font-medium">Notifications</p>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-xs h-6 px-2"
+                  onClick={() => setNotifications(notifications.map(n => ({ ...n, isNew: false })))}
+                >
+                  Mark all read
+                </Button>
+              </div>
+              <div className="space-y-2 mt-2 max-h-32 overflow-y-auto">
+                {notifications.map((notification) => (
+                  <div 
+                    key={notification.id}
+                    className={cn(
+                      "p-2 rounded-md text-sm",
+                      notification.isNew ? "bg-pink-50" : "bg-gray-50"
+                    )}
+                    onClick={() => handleNotificationClick(notification.id)}
+                  >
+                    {notification.title}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
             <div className="flex flex-col space-y-2 mt-4">
               <Button variant="outline" className="w-full border-pink-500 text-pink-500" onClick={() => setIsMenuOpen(false)}>
                 <Link to="/login" className="w-full">Log in</Link>
