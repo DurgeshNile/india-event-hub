@@ -7,6 +7,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -23,9 +31,11 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { states, cities } from "@/utils/data";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -38,11 +48,41 @@ const formSchema = z.object({
   path: ["confirmPassword"],
 });
 
+// Service provider form schema
+const providerFormSchema = z.object({
+  businessName: z.string().min(2, "Business name is required"),
+  businessType: z.string().min(1, "Please select a business type"),
+  otherBusinessType: z.string().optional(),
+  phoneNumber: z.string().min(10, "Please enter a valid phone number"),
+  alternatePhone: z.string().optional(),
+  country: z.string().min(1, "Country is required"),
+  state: z.string().min(1, "State is required"),
+  city: z.string().min(1, "City is required"),
+  address: z.string().min(5, "Please provide your business address"),
+  pincode: z.string().min(3, "Please enter a valid PIN code/ZIP"),
+  description: z.string().min(20, "Please provide at least 20 characters about your services"),
+});
+
 type FormValues = z.infer<typeof formSchema>;
+type ProviderFormValues = z.infer<typeof providerFormSchema>;
+
+const businessTypes = [
+  "Photographer",
+  "Videographer",
+  "Event Planner",
+  "Venue Provider",
+  "Caterer",
+  "Decorator",
+  "Entertainment / Artist",
+  "Other"
+];
+
+const countries = ["India", "United States", "United Kingdom", "Canada", "Australia"];
 
 const Signup = () => {
   const navigate = useNavigate();
   const [showProviderDialog, setShowProviderDialog] = useState(false);
+  const [businessType, setBusinessType] = useState("");
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -52,6 +92,23 @@ const Signup = () => {
       password: "",
       confirmPassword: "",
       isServiceProvider: false,
+    },
+  });
+
+  const providerForm = useForm<ProviderFormValues>({
+    resolver: zodResolver(providerFormSchema),
+    defaultValues: {
+      businessName: "",
+      businessType: "",
+      otherBusinessType: "",
+      phoneNumber: "",
+      alternatePhone: "",
+      country: "India",
+      state: "",
+      city: "",
+      address: "",
+      pincode: "",
+      description: "",
     },
   });
 
@@ -66,11 +123,26 @@ const Signup = () => {
     }
   };
 
-  const completeSignup = (values: FormValues) => {
+  const onProviderSubmit = (values: ProviderFormValues) => {
+    console.log("Service provider details:", values);
+    
+    // In a real app, you would combine the basic user data with the provider data
+    const combinedData = {
+      ...form.getValues(),
+      providerDetails: values
+    };
+    
+    console.log("Combined registration data:", combinedData);
+    setShowProviderDialog(false);
+    
+    completeSignup(form.getValues(), values);
+  };
+
+  const completeSignup = (values: FormValues, providerValues?: ProviderFormValues) => {
     toast({
       title: "Account Created!",
       description: values.isServiceProvider 
-        ? "Your service provider account has been created."
+        ? `Your service provider account has been created for ${providerValues?.businessName || "your business"}.`
         : "Your account has been created successfully.",
     });
     
@@ -205,55 +277,244 @@ const Signup = () => {
       </div>
       
       <Dialog open={showProviderDialog} onOpenChange={setShowProviderDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Become a Service Provider</DialogTitle>
+            <DialogTitle className="text-xl">Service Provider Registration</DialogTitle>
             <DialogDescription>
-              As a service provider, you'll be able to list your services and receive booking requests.
+              Please provide details about your business to complete registration as a service provider.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <p>Please tell us about your business:</p>
-            <div className="space-y-2">
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                  <Input placeholder="Your Business Name" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Business Category</label>
-                  <Input placeholder="e.g., Photography, Catering, Venue" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Tell us about your services</label>
-                  <textarea 
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 min-h-[100px]" 
-                    placeholder="Briefly describe the services you offer..."
+          
+          <Form {...providerForm}>
+            <form onSubmit={providerForm.handleSubmit(onProviderSubmit)} className="space-y-6 py-4">
+              {/* Section 1: Personal/Business Information */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold border-b pb-2">Personal / Business Information</h3>
+                
+                <FormField
+                  control={providerForm.control}
+                  name="businessName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Business Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your Business Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={providerForm.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number</FormLabel>
+                      <FormControl>
+                        <Input type="tel" placeholder="+91 98765 43210" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={providerForm.control}
+                  name="alternatePhone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Alternate Phone (Optional)</FormLabel>
+                      <FormControl>
+                        <Input type="tel" placeholder="+91 98765 43210" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={providerForm.control}
+                  name="businessType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Business Type</FormLabel>
+                      <Select 
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          setBusinessType(value);
+                        }}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select your business type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {businessTypes.map((type) => (
+                            <SelectItem key={type} value={type}>{type}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                {businessType === "Other" && (
+                  <FormField
+                    control={providerForm.control}
+                    name="otherBusinessType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Specify Business Type</FormLabel>
+                        <FormControl>
+                          <Input placeholder="E.g., Florist, Wedding Planner, etc." {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
+                )}
               </div>
-            </div>
-            <div className="flex justify-end space-x-3 pt-4">
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setShowProviderDialog(false);
-                  form.setValue("isServiceProvider", false);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button 
-                className="bg-pink-500 hover:bg-pink-600"
-                onClick={() => {
-                  setShowProviderDialog(false);
-                  completeSignup(form.getValues());
-                }}
-              >
-                Complete Registration
-              </Button>
-            </div>
-          </div>
+              
+              {/* Section 2: Location Details */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold border-b pb-2">Location Details</h3>
+                
+                <FormField
+                  control={providerForm.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select country" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {countries.map((country) => (
+                            <SelectItem key={country} value={country}>{country}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={providerForm.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>State/Province</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select state" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="max-h-[200px] overflow-y-auto">
+                          {states.map((state) => (
+                            <SelectItem key={state} value={state}>{state}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={providerForm.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your city" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={providerForm.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Full address of your business" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={providerForm.control}
+                  name="pincode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>PIN Code / ZIP</FormLabel>
+                      <FormControl>
+                        <Input placeholder="E.g., 400001" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              {/* Section 3: Service Description */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold border-b pb-2">Service Information</h3>
+                
+                <FormField
+                  control={providerForm.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tell us about your services</FormLabel>
+                      <FormControl>
+                        <Textarea 
+                          placeholder="Describe the services you offer, your experience, pricing range, etc."
+                          className="min-h-[120px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <div className="flex justify-end space-x-3 pt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowProviderDialog(false);
+                    form.setValue("isServiceProvider", false);
+                  }}
+                  type="button"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  className="bg-pink-500 hover:bg-pink-600"
+                  type="submit"
+                >
+                  Complete Registration
+                </Button>
+              </div>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
       
