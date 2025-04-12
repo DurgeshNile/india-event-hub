@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
@@ -65,13 +64,11 @@ const Navbar = () => {
         title: "Searching for services",
         description: `Finding results for "${searchQuery}"`,
       });
-      // Redirect to search results page (would be implemented in a real app)
       console.log(`Searching for: ${searchQuery}`);
     }
   };
 
   const handleNotificationClick = (notificationId: number) => {
-    // Mark notification as read
     setNotifications(notifications.map(notification => 
       notification.id === notificationId 
         ? { ...notification, isNew: false } 
@@ -88,10 +85,10 @@ const Navbar = () => {
   
   return (
     <header className={cn(
-      "sticky top-0 z-50 transition-all duration-300",
+      "sticky top-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-md shadow-md",
       scrolled 
         ? "bg-white/95 backdrop-blur-md shadow-md" 
-        : "bg-transparent"
+        : "bg-white/90"
     )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -102,22 +99,26 @@ const Navbar = () => {
                 alt="LetsEventify Logo" 
                 className="h-10"
               />
-              <span className="font-syne font-bold text-lg hidden sm:inline-block text-pink-500">
+              <span className="font-syne font-bold text-lg hidden sm:inline-block text-gray-800">
                 LetsEventify
               </span>
             </Link>
           </div>
 
-          {/* Desktop Menu */}
           <NavigationMenu className="hidden md:flex">
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link to="/" className="text-foreground hover:text-pink-500 transition-colors px-4 py-2">
+                <Link 
+                  to="/" 
+                  className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium"
+                >
                   Home
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="bg-transparent hover:bg-pink-50 hover:text-pink-500">
+                <NavigationMenuTrigger 
+                  className="bg-transparent hover:bg-pink-50 hover:text-pink-600 text-gray-700 font-medium"
+                >
                   Explore
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -156,12 +157,18 @@ const Navbar = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link to="/categories" className="text-foreground hover:text-pink-500 transition-colors px-4 py-2">
+                <Link 
+                  to="/categories" 
+                  className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium"
+                >
                   Categories
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Link to="/about" className="text-foreground hover:text-pink-500 transition-colors px-4 py-2">
+                <Link 
+                  to="/about" 
+                  className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium"
+                >
                   About
                 </Link>
               </NavigationMenuItem>
@@ -169,10 +176,13 @@ const Navbar = () => {
           </NavigationMenu>
 
           <div className="hidden md:flex items-center space-x-3">
-            {/* Search Button */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-foreground hover:text-pink-500 hover:bg-pink-50 transition-colors">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+                >
                   <Search size={20} />
                 </Button>
               </PopoverTrigger>
@@ -191,10 +201,13 @@ const Navbar = () => {
               </PopoverContent>
             </Popover>
 
-            {/* Date Selection */}
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-foreground hover:text-pink-500 hover:bg-pink-50 transition-colors">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+                >
                   <Calendar size={20} />
                 </Button>
               </PopoverTrigger>
@@ -220,13 +233,16 @@ const Navbar = () => {
               </PopoverContent>
             </Popover>
 
-            {/* Notifications */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative text-foreground hover:text-pink-500 hover:bg-pink-50 transition-colors">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="relative text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+                >
                   <Bell size={20} />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-pink-500 text-[10px] text-white">
+                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-pink-600 text-[10px] text-white">
                       {unreadCount}
                     </span>
                   )}
@@ -285,19 +301,27 @@ const Navbar = () => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button variant="outline" className="border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white">
+            <Button 
+              variant="outline" 
+              className="border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white"
+            >
               <Link to="/login" className="w-full">Log in</Link>
             </Button>
-            <Button className="bg-pink-500 hover:bg-pink-600 text-white">
+            <Button 
+              className="bg-pink-600 hover:bg-pink-700 text-white"
+            >
               <Link to="/signup" className="w-full">Sign up</Link>
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-3">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-foreground hover:text-pink-500 transition-colors">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-gray-700 hover:text-pink-600 transition-colors"
+                >
                   <Search size={20} />
                 </Button>
               </PopoverTrigger>
@@ -320,7 +344,7 @@ const Navbar = () => {
               variant="ghost"
               size="icon"
               onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-foreground hover:text-pink-500 focus:outline-none"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-pink-600 focus:outline-none"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </Button>
@@ -328,20 +352,19 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-white/95 backdrop-blur-md shadow-lg">
           <div className="px-4 pt-4 pb-6 space-y-3">
             <Link
               to="/"
-              className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-pink-50 hover:text-pink-500"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-pink-50 hover:text-pink-600"
               onClick={() => setIsMenuOpen(false)}
             >
               Home
             </Link>
             <div className="relative">
               <button
-                className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-pink-50 hover:text-pink-500"
+                className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-pink-50 hover:text-pink-600"
                 onClick={(e) => {
                   e.preventDefault();
                   navigate('/categories');
@@ -354,13 +377,12 @@ const Navbar = () => {
             </div>
             <Link
               to="/about"
-              className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-pink-50 hover:text-pink-500"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-pink-50 hover:text-pink-600"
               onClick={() => setIsMenuOpen(false)}
             >
               About
             </Link>
             
-            {/* Mobile Date Selection */}
             <div className="px-3 py-2">
               <p className="text-sm font-medium mb-1">Select Event Date</p>
               <Input 
@@ -375,7 +397,6 @@ const Navbar = () => {
               />
             </div>
             
-            {/* Mobile Notifications */}
             <div className="px-3 py-2">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-sm font-medium">Notifications</p>
@@ -405,10 +426,10 @@ const Navbar = () => {
             </div>
             
             <div className="flex flex-col space-y-2 mt-4">
-              <Button variant="outline" className="w-full border-pink-500 text-pink-500" onClick={() => setIsMenuOpen(false)}>
+              <Button variant="outline" className="w-full border-pink-600 text-pink-600" onClick={() => setIsMenuOpen(false)}>
                 <Link to="/login" className="w-full">Log in</Link>
               </Button>
-              <Button className="w-full bg-pink-500 hover:bg-pink-600" onClick={() => setIsMenuOpen(false)}>
+              <Button className="w-full bg-pink-600 hover:bg-pink-700" onClick={() => setIsMenuOpen(false)}>
                 <Link to="/signup" className="w-full">Sign up</Link>
               </Button>
             </div>
