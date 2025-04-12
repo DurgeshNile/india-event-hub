@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -8,6 +9,7 @@ import Testimonials from '@/components/Testimonials';
 import FeatureShowcase from '@/components/FeatureShowcase';
 import EventCarousel from '@/components/EventCarousel';
 import Footer from '@/components/Footer';
+import ChatbotUI from '@/components/ChatbotUI';
 import { Button } from '@/components/ui/button';
 import { Camera, Utensils, Brush, Music, Users, ArrowRight } from 'lucide-react';
 
@@ -133,6 +135,9 @@ const Index = () => {
       </main>
       
       <Footer />
+      
+      {/* Add the Chatbot UI */}
+      <ChatbotUI />
     </div>
   );
 };
