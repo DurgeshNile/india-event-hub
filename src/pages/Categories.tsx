@@ -110,7 +110,7 @@ const Categories = () => {
                         <h3 className="text-xl font-bold mb-2 text-gray-800">{category.name}</h3>
                         <p className="text-gray-600 mb-4 flex-grow">{category.description}</p>
                         <div className="flex justify-between items-center mt-auto">
-                          <span className="text-sm text-pink-500 font-medium">{category.providers?.length || '20+' } Providers</span>
+                          <span className="text-sm text-pink-500 font-medium">20+ Providers</span>
                           <Button variant="ghost" className="text-pink-500 hover:text-pink-600 p-0 flex items-center gap-1">
                             View Services <ArrowRight size={16} />
                           </Button>
