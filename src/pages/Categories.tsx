@@ -54,35 +54,35 @@ const Categories = () => {
             <div className="flex flex-wrap gap-2 justify-center">
               <Button 
                 variant={activeFilter === 'all' ? 'default' : 'outline'}
-                className={activeFilter === 'all' ? 'bg-pink-500 hover:bg-pink-600' : 'border-pink-200 text-gray-700'}
+                className={activeFilter === 'all' ? 'bg-pink-600 hover:bg-pink-700' : 'border-pink-200 text-gray-700'}
                 onClick={() => setActiveFilter('all')}
               >
                 All Categories
               </Button>
               <Button 
                 variant={activeFilter === 'wedding' ? 'default' : 'outline'}
-                className={activeFilter === 'wedding' ? 'bg-pink-500 hover:bg-pink-600' : 'border-pink-200 text-gray-700'}
+                className={activeFilter === 'wedding' ? 'bg-pink-600 hover:bg-pink-700' : 'border-pink-200 text-gray-700'}
                 onClick={() => setActiveFilter('wedding')}
               >
                 Wedding Services
               </Button>
               <Button 
                 variant={activeFilter === 'corporate' ? 'default' : 'outline'}
-                className={activeFilter === 'corporate' ? 'bg-pink-500 hover:bg-pink-600' : 'border-pink-200 text-gray-700'}
+                className={activeFilter === 'corporate' ? 'bg-pink-600 hover:bg-pink-700' : 'border-pink-200 text-gray-700'}
                 onClick={() => setActiveFilter('corporate')}
               >
                 Corporate Events
               </Button>
               <Button 
                 variant={activeFilter === 'birthday' ? 'default' : 'outline'}
-                className={activeFilter === 'birthday' ? 'bg-pink-500 hover:bg-pink-600' : 'border-pink-200 text-gray-700'}
+                className={activeFilter === 'birthday' ? 'bg-pink-600 hover:bg-pink-700' : 'border-pink-200 text-gray-700'}
                 onClick={() => setActiveFilter('birthday')}
               >
                 Birthday Parties
               </Button>
               <Button 
                 variant={activeFilter === 'social' ? 'default' : 'outline'}
-                className={activeFilter === 'social' ? 'bg-pink-500 hover:bg-pink-600' : 'border-pink-200 text-gray-700'}
+                className={activeFilter === 'social' ? 'bg-pink-600 hover:bg-pink-700' : 'border-pink-200 text-gray-700'}
                 onClick={() => setActiveFilter('social')}
               >
                 Social Gatherings
@@ -110,8 +110,8 @@ const Categories = () => {
                         <h3 className="text-xl font-bold mb-2 text-gray-800">{category.name}</h3>
                         <p className="text-gray-600 mb-4 flex-grow">{category.description}</p>
                         <div className="flex justify-between items-center mt-auto">
-                          <span className="text-sm text-pink-500 font-medium">20+ Providers</span>
-                          <Button variant="ghost" className="text-pink-500 hover:text-pink-600 p-0 flex items-center gap-1">
+                          <span className="text-sm text-pink-600 font-medium">20+ Providers</span>
+                          <Button variant="ghost" className="text-pink-600 hover:text-pink-700 p-0 flex items-center gap-1">
                             View Services <ArrowRight size={16} />
                           </Button>
                         </div>
@@ -135,28 +135,28 @@ const Categories = () => {
             <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
             <div className="max-w-3xl mx-auto space-y-6">
               <div className="bg-pink-50 rounded-lg p-6">
-                <h3 className="text-xl font-bold mb-2">How do I book a service provider?</h3>
+                <h3 className="text-xl font-bold mb-2 text-gray-800">How do I book a service provider?</h3>
                 <p className="text-gray-700">
                   Simply browse through our categories, find a service provider you like, and contact them through our platform. 
                   You can discuss your requirements and finalize the booking directly.
                 </p>
               </div>
               <div className="bg-pink-50 rounded-lg p-6">
-                <h3 className="text-xl font-bold mb-2">Are all service providers verified?</h3>
+                <h3 className="text-xl font-bold mb-2 text-gray-800">Are all service providers verified?</h3>
                 <p className="text-gray-700">
                   Yes, we thoroughly verify all service providers listed on our platform. We check their credentials, 
                   past work, and client reviews to ensure you get quality services.
                 </p>
               </div>
               <div className="bg-pink-50 rounded-lg p-6">
-                <h3 className="text-xl font-bold mb-2">Can I compare prices between different providers?</h3>
+                <h3 className="text-xl font-bold mb-2 text-gray-800">Can I compare prices between different providers?</h3>
                 <p className="text-gray-700">
                   Absolutely! You can view pricing information on each provider's profile and compare services 
                   and rates before making your decision.
                 </p>
               </div>
               <div className="bg-pink-50 rounded-lg p-6">
-                <h3 className="text-xl font-bold mb-2">What if I'm not satisfied with the service?</h3>
+                <h3 className="text-xl font-bold mb-2 text-gray-800">What if I'm not satisfied with the service?</h3>
                 <p className="text-gray-700">
                   We have a customer satisfaction policy. If you face any issues, please contact our support team 
                   within 48 hours of the service delivery, and we'll help resolve the matter.
