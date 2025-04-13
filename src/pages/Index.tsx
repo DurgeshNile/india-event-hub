@@ -19,13 +19,13 @@ const Index = () => {
       <Navbar />
       
       <main className="flex-grow">
-        {/* Chatbot UI positioned at the start */}
-        <div className="relative">
+        {/* Full page EventCarousel at the top */}
+        <EventCarousel />
+        
+        {/* Chatbot UI positioned after navbar */}
+        <div className="relative z-10">
           <ChatbotUI />
         </div>
-        
-        {/* Full page EventCarousel replaces Hero at the top */}
-        <EventCarousel />
         
         <ServiceCategories />
         

@@ -17,10 +17,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isBot, isTyping = fa
       className={`flex mb-4 ${isBot ? 'justify-start' : 'justify-end'}`}
     >
       <div
-        className={`max-w-[80%] p-3 rounded-2xl ${
+        className={`max-w-[80%] p-3 rounded-2xl backdrop-blur-sm ${
           isBot
-            ? 'bg-white border border-gray-200 text-gray-800 rounded-tl-none shadow-sm'
-            : 'bg-indigo-600 text-white rounded-tr-none shadow-sm'
+            ? 'bg-white/70 border border-gray-200/50 text-gray-800 rounded-tl-none shadow-sm'
+            : 'bg-indigo-600/90 text-white rounded-tr-none shadow-sm'
         }`}
       >
         {isTyping ? (

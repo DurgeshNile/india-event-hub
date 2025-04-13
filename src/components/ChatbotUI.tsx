@@ -184,13 +184,13 @@ const ChatbotUI = () => {
 
   return (
     <>
-      {/* Chat button */}
+      {/* Chat button - positioned fixed to bottom right */}
       <motion.button
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 z-50"
+        className="fixed bottom-6 right-6 bg-indigo-600/80 backdrop-blur-sm text-white p-4 rounded-full shadow-lg hover:bg-indigo-700/80 z-50"
       >
         <MessageSquare className="w-6 h-6" />
       </motion.button>
@@ -214,12 +214,12 @@ const ChatbotUI = () => {
                 setPosition({ x: latest.x as number, y: latest.y as number });
               }
             }}
-            className="fixed top-20 right-6 w-[90vw] md:w-[450px] h-[600px] bg-white rounded-xl shadow-xl overflow-hidden z-50 flex flex-col"
+            className="fixed top-20 right-6 w-[90vw] md:w-[450px] h-[600px] bg-white/80 backdrop-blur-md rounded-xl shadow-xl overflow-hidden z-50 flex flex-col border border-white/20"
           >
             {/* Chat header with drag handle */}
             <div 
               onPointerDown={startDrag}
-              className="flex items-center justify-between bg-gradient-to-r from-indigo-600 to-indigo-800 text-white p-4 cursor-move"
+              className="flex items-center justify-between bg-gradient-to-r from-indigo-600/80 to-indigo-800/80 backdrop-blur-sm text-white p-4 cursor-move"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -244,7 +244,7 @@ const ChatbotUI = () => {
             {/* Chat messages */}
             <div 
               ref={chatContainerRef}
-              className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-gray-50 to-white"
+              className="flex-1 overflow-y-auto p-4 bg-transparent"
             >
               {/* Render messages for current and previous steps */}
               {Array.from({ length: step + 1 }).map((_, index) => (
@@ -268,7 +268,7 @@ const ChatbotUI = () => {
             </div>
 
             {/* Input area based on current step */}
-            <div className="border-t p-4 bg-white">
+            <div className="border-t border-gray-200/50 p-4 bg-white/60 backdrop-blur-sm">
               {renderInputForStep()}
             </div>
           </motion.div>
@@ -327,13 +327,13 @@ const ChatbotUI = () => {
             ) : (
               <div className="flex flex-col space-y-3">
                 {formData.eventDate && (
-                  <div className="text-center p-2 bg-gray-100 rounded-md">
+                  <div className="text-center p-2 bg-gray-100/80 rounded-md">
                     Selected: {format(formData.eventDate, 'PPP')}
                   </div>
                 )}
                 <Button 
                   onClick={() => setShowDatePicker(true)}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700"
+                  className="w-full bg-indigo-600/90 hover:bg-indigo-700/90"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {formData.eventDate ? 'Change Date' : 'Select Date'}
@@ -351,7 +351,7 @@ const ChatbotUI = () => {
               placeholder="Enter city or area"
               className="flex-grow"
             />
-            <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">
+            <Button type="submit" className="bg-indigo-600/90 hover:bg-indigo-700/90">
               <ChevronRight size={18} />
             </Button>
           </form>
@@ -393,7 +393,7 @@ const ChatbotUI = () => {
             </div>
             <Button 
               onClick={handleBudgetSubmit}
-              className="w-full bg-indigo-600 hover:bg-indigo-700"
+              className="w-full bg-indigo-600/90 hover:bg-indigo-700/90"
             >
               Continue
             </Button>
@@ -410,7 +410,7 @@ const ChatbotUI = () => {
             />
             <Button 
               type="submit" 
-              className="w-full bg-indigo-600 hover:bg-indigo-700"
+              className="w-full bg-indigo-600/90 hover:bg-indigo-700/90"
             >
               {formData.theme ? 'Continue' : 'Skip this step'}
             </Button>
@@ -451,7 +451,7 @@ const ChatbotUI = () => {
             </div>
             <Button 
               type="submit" 
-              className="w-full bg-indigo-600 hover:bg-indigo-700"
+              className="w-full bg-indigo-600/90 hover:bg-indigo-700/90"
             >
               Continue
             </Button>
