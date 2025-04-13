@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
@@ -54,7 +53,7 @@ const Auth = () => {
       toast({
         title: "Authentication Failed",
         description: "Invalid username or password",
-        variant: "error",
+        variant: "destructive",
       });
     }
   };
@@ -142,4 +141,3 @@ const Auth = () => {
 };
 
 export default Auth;
-

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -21,11 +20,6 @@ const Index = () => {
       <main className="flex-grow">
         {/* Full page EventCarousel at the top */}
         <EventCarousel />
-        
-        {/* Chatbot UI positioned after navbar */}
-        <div className="relative z-10">
-          <ChatbotUI />
-        </div>
         
         <ServiceCategories />
         
@@ -140,6 +134,10 @@ const Index = () => {
       </main>
       
       <Footer />
+      
+      <div className="fixed z-50">
+        <ChatbotUI />
+      </div>
     </div>
   );
 };

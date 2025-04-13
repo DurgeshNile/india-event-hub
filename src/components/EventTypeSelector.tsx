@@ -35,7 +35,7 @@ const EventTypeSelector: React.FC<EventTypeSelectorProps> = ({ onSelect, selecte
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3">
+    <div className="grid grid-cols-2 gap-3 overflow-visible">
       {eventTypes.map((event) => (
         <motion.button
           key={event.type}
