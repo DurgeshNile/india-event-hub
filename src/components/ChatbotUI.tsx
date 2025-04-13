@@ -184,7 +184,7 @@ const ChatbotUI = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         onClick={() => setIsOpen(true)}
-        className="fixed z-40 bottom-6 left-1/2 transform -translate-x-1/2 bg-indigo-600/80 backdrop-blur-sm text-white p-4 rounded-full shadow-lg hover:bg-indigo-700/80"
+        className="fixed z-40 top-20 left-1/2 transform -translate-x-1/2 bg-indigo-600/80 backdrop-blur-sm text-white p-4 rounded-full shadow-lg hover:bg-indigo-700/80"
       >
         <MessageSquare className="w-6 h-6" />
       </motion.button>
@@ -199,7 +199,13 @@ const ChatbotUI = () => {
             onDragStart={() => setIsDragging(true)}
             onDragEnd={() => setIsDragging(false)}
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1, x: position.x, y: position.y }}
+            animate={{ 
+              opacity: 1, 
+              y: 0, 
+              scale: 1, 
+              x: position.x, 
+              y: position.y 
+            }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3 }}
             onUpdate={(latest) => {

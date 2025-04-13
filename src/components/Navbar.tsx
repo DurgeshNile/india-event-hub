@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, Search, Bell, User, Calendar, ChevronDown } from "lucide-react";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+import { Menu, X, Search, Bell, User, Calendar, ChevronDown, LogOut } from "lucide-react";
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { 
   Popover, 
@@ -33,6 +26,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAuthenticated, logout } = useAuth();
   const [notifications, setNotifications] = useState([
     { id: 1, title: "New featured service: Premium Photography", isNew: true },
     { id: 2, title: "Special discount on Wedding Venues", isNew: true },
@@ -83,6 +77,14 @@ const Navbar = () => {
 
   const unreadCount = notifications.filter(n => n.isNew).length;
   
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Logged Out",
+      description: "You have been logged out successfully.",
+    });
+  };
+
   return (
     <header className={cn(
       "sticky top-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-md shadow-md",
@@ -300,6 +302,17 @@ const Navbar = () => {
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {isAuthenticated && (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={handleLogout}
+                className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+              >
+                <LogOut size={20} />
+              </Button>
+            )}
 
             <Button 
               variant="outline" 
