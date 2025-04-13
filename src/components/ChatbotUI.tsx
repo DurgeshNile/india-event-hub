@@ -1,6 +1,5 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,7 @@ import { Slider } from '@/components/ui/slider';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { X, Send, Calendar as CalendarIcon, ChevronRight } from 'lucide-react';
+import { X, Send, Calendar as CalendarIcon, ChevronRight, MessageSquare, Move } from 'lucide-react';
 import ChatMessage from './ChatMessage';
 import EventTypeSelector from './EventTypeSelector';
 import GuestCountSelector from './GuestCountSelector';
@@ -39,6 +38,9 @@ const ChatbotUI = () => {
   const [step, setStep] = useState(0);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [typing, setTyping] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragControls = useDragControls();
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -57,15 +59,15 @@ const ChatbotUI = () => {
 
   // Bot messages for each step
   const botMessages = [
-    "Hi there! 👋 I'm your event planning assistant. What type of event are you planning?",
-    "Great choice! When is your event date?",
-    "Excellent! Where will your event take place? (city or area)",
-    "How many guests are you expecting?",
-    "What services do you need for your event? (select all that apply)",
-    `Let's talk budget. What's your estimated budget? Current: $${formData.budget}`,
-    "Do you have a specific theme or style in mind? (optional)",
-    "We're almost done! Could you share your name and contact information?",
-    "Perfect! Here's a summary of your event details.",
+    "Hello and welcome to LetsEventify! I'm your personal event planning assistant. What type of event are you planning?",
+    "Excellent choice! When would you like to hold your event?",
+    "Thank you. Where will your event take place? (city or area)",
+    "Approximately how many guests are you expecting?",
+    "Which services would you require for your event? (select all that apply)",
+    `Let's discuss your budget. What's your estimated budget for this event? Current: ₹${formData.budget}`,
+    "Do you have a specific theme or style in mind for your event? (optional)",
+    "We're almost done! Please share your contact information so our team can get in touch with you.",
+    "Thank you for providing all the details. Our team will connect with you shortly to discuss your event requirements.",
   ];
 
   useEffect(() => {
@@ -151,24 +153,34 @@ const ChatbotUI = () => {
     // Here you would typically send the data to your backend
     toast({
       title: "Request Submitted!",
-      description: "We'll be in touch with you soon about your event planning.",
+      description: "Our team will connect with you shortly about your event planning requirements.",
       variant: "success",
     });
-    setIsOpen(false);
-    setStep(0);
-    setFormData({
-      eventType: null,
-      eventDate: null,
-      location: '',
-      guestCount: null,
-      services: [],
-      budget: 5000,
-      theme: '',
-      name: '',
-      email: '',
-      phone: '',
-    });
+    
+    // Keep the chatbot open to show the final thank you message
+    // Reset after 5 seconds
+    setTimeout(() => {
+      setIsOpen(false);
+      setStep(0);
+      setFormData({
+        eventType: null,
+        eventDate: null,
+        location: '',
+        guestCount: null,
+        services: [],
+        budget: 5000,
+        theme: '',
+        name: '',
+        email: '',
+        phone: '',
+      });
+    }, 5000);
   };
+
+  function startDrag(event: React.PointerEvent) {
+    setIsDragging(true);
+    dragControls.start(event);
+  }
 
   return (
     <>
@@ -178,39 +190,55 @@ const ChatbotUI = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-pink-500 text-white p-4 rounded-full shadow-lg hover:bg-pink-600 z-50"
+        className="fixed bottom-6 right-6 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 z-50"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-        </svg>
+        <MessageSquare className="w-6 h-6" />
       </motion.button>
 
       {/* Chat window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            drag
+            dragControls={dragControls}
+            dragMomentum={false}
+            dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+            onDragStart={() => setIsDragging(true)}
+            onDragEnd={() => setIsDragging(false)}
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
+            animate={{ opacity: 1, y: 0, scale: 1, x: position.x, y: position.y }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-6 right-6 w-[90vw] md:w-[450px] h-[600px] bg-white rounded-2xl shadow-xl overflow-hidden z-50 flex flex-col"
+            onUpdate={(latest) => {
+              if (latest.x !== undefined && latest.y !== undefined) {
+                setPosition({ x: latest.x as number, y: latest.y as number });
+              }
+            }}
+            className="fixed top-20 right-6 w-[90vw] md:w-[450px] h-[600px] bg-white rounded-xl shadow-xl overflow-hidden z-50 flex flex-col"
           >
-            {/* Chat header */}
-            <div className="flex items-center justify-between bg-gradient-to-r from-pink-500 to-purple-600 text-white p-4">
+            {/* Chat header with drag handle */}
+            <div 
+              onPointerDown={startDrag}
+              className="flex items-center justify-between bg-gradient-to-r from-indigo-600 to-indigo-800 text-white p-4 cursor-move"
+            >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                  </svg>
+                  <MessageSquare className="w-5 h-5" />
                 </div>
                 <div>
                   <h3 className="font-medium">Event Planning Assistant</h3>
                   <p className="text-xs opacity-75">LetsEventify</p>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-2 rounded-full">
-                <X size={18} />
-              </button>
+              <div className="flex items-center gap-2">
+                <Move size={16} className="text-white/70" />
+                <button 
+                  onClick={() => setIsOpen(false)} 
+                  className="hover:bg-white/10 p-2 rounded-full"
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
             {/* Chat messages */}
@@ -262,7 +290,7 @@ const ChatbotUI = () => {
       case 4:
         return `Services needed: ${formData.services.join(', ')}`;
       case 5:
-        return `Budget: $${formData.budget}`;
+        return `Budget: ₹${formData.budget}`;
       case 6:
         return formData.theme ? `Theme: ${formData.theme}` : 'No specific theme';
       case 7:
@@ -305,7 +333,7 @@ const ChatbotUI = () => {
                 )}
                 <Button 
                   onClick={() => setShowDatePicker(true)}
-                  className="w-full bg-pink-500 hover:bg-pink-600"
+                  className="w-full bg-indigo-600 hover:bg-indigo-700"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {formData.eventDate ? 'Change Date' : 'Select Date'}
@@ -323,7 +351,7 @@ const ChatbotUI = () => {
               placeholder="Enter city or area"
               className="flex-grow"
             />
-            <Button type="submit" className="bg-pink-500 hover:bg-pink-600">
+            <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700">
               <ChevronRight size={18} />
             </Button>
           </form>
@@ -348,7 +376,7 @@ const ChatbotUI = () => {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <Label>Estimated Budget</Label>
-                <span className="font-medium text-pink-600">${formData.budget}</span>
+                <span className="font-medium text-indigo-600">₹{formData.budget}</span>
               </div>
               <Slider
                 defaultValue={[formData.budget]}
@@ -359,13 +387,13 @@ const ChatbotUI = () => {
                 className="py-4"
               />
               <div className="flex justify-between text-xs text-gray-500">
-                <span>$1,000</span>
-                <span>$50,000+</span>
+                <span>₹1,000</span>
+                <span>₹50,000+</span>
               </div>
             </div>
             <Button 
               onClick={handleBudgetSubmit}
-              className="w-full bg-pink-500 hover:bg-pink-600"
+              className="w-full bg-indigo-600 hover:bg-indigo-700"
             >
               Continue
             </Button>
@@ -382,7 +410,7 @@ const ChatbotUI = () => {
             />
             <Button 
               type="submit" 
-              className="w-full bg-pink-500 hover:bg-pink-600"
+              className="w-full bg-indigo-600 hover:bg-indigo-700"
             >
               {formData.theme ? 'Continue' : 'Skip this step'}
             </Button>
@@ -423,18 +451,23 @@ const ChatbotUI = () => {
             </div>
             <Button 
               type="submit" 
-              className="w-full bg-pink-500 hover:bg-pink-600"
+              className="w-full bg-indigo-600 hover:bg-indigo-700"
             >
               Continue
             </Button>
           </form>
         );
-      case 8: // Summary
+      case 8: // Summary and final message
         return (
-          <ChatbotSummary 
-            formData={formData} 
-            onSubmit={handleSubmitRequest} 
-          />
+          <div className="space-y-4">
+            <ChatbotSummary 
+              formData={formData} 
+              onSubmit={handleSubmitRequest} 
+            />
+            <p className="text-center text-sm text-gray-500 mt-4">
+              Our team will connect with you shortly to discuss your event requirements.
+            </p>
+          </div>
         );
       default:
         return null;

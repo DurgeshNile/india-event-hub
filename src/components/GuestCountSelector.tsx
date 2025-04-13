@@ -23,11 +23,11 @@ const GuestCountSelector: React.FC<GuestCountSelectorProps> = ({ onSelect, selec
           onClick={() => onSelect(count)}
           className={`flex items-center w-full p-3 rounded-lg border transition-all
             ${selected === count 
-              ? 'bg-pink-50 border-pink-200 text-pink-700' 
+              ? 'bg-indigo-50 border-indigo-200 text-indigo-700' 
               : 'bg-gray-50 border-gray-200 hover:bg-gray-100 text-gray-700'}`}
         >
           <div className={`flex items-center justify-center w-8 h-8 rounded-full mr-3
-            ${selected === count ? 'bg-pink-200 text-pink-700' : 'bg-gray-200 text-gray-600'}`}
+            ${selected === count ? 'bg-indigo-200 text-indigo-700' : 'bg-gray-200 text-gray-600'}`}
           >
             <Users size={16} />
           </div>

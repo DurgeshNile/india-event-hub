@@ -19,8 +19,8 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isBot, isTyping = fa
       <div
         className={`max-w-[80%] p-3 rounded-2xl ${
           isBot
-            ? 'bg-white border border-gray-200 text-gray-800 rounded-tl-none'
-            : 'bg-pink-500 text-white rounded-tr-none'
+            ? 'bg-white border border-gray-200 text-gray-800 rounded-tl-none shadow-sm'
+            : 'bg-indigo-600 text-white rounded-tr-none shadow-sm'
         }`}
       >
         {isTyping ? (
