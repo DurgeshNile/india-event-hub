@@ -17,6 +17,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  NavigationMenuLink
+} from "@/components/ui/navigation-menu";
 import { categories } from '@/utils/data';
 import { useToast } from "@/components/ui/use-toast";
 

@@ -54,7 +54,7 @@ const Auth = () => {
       toast({
         title: "Authentication Failed",
         description: "Invalid username or password",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };
@@ -142,3 +142,4 @@ const Auth = () => {
 };
 
 export default Auth;
+
