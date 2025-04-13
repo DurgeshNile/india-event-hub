@@ -57,7 +57,6 @@ const ChatbotUI = () => {
     phone: '',
   });
 
-  // Bot messages for each step
   const botMessages = [
     "Hello and welcome to LetsEventify! I'm your personal event planning assistant. What type of event are you planning?",
     "Excellent choice! When would you like to hold your event?",
@@ -76,7 +75,6 @@ const ChatbotUI = () => {
     }
   }, [step, isOpen, typing]);
 
-  // Simulate typing effect for bot messages
   useEffect(() => {
     if (isOpen && step < botMessages.length) {
       setTyping(true);
@@ -150,15 +148,12 @@ const ChatbotUI = () => {
   };
 
   const handleSubmitRequest = () => {
-    // Here you would typically send the data to your backend
     toast({
       title: "Request Submitted!",
       description: "Our team will connect with you shortly about your event planning requirements.",
       variant: "success",
     });
     
-    // Keep the chatbot open to show the final thank you message
-    // Reset after 5 seconds
     setTimeout(() => {
       setIsOpen(false);
       setStep(0);
@@ -184,18 +179,16 @@ const ChatbotUI = () => {
 
   return (
     <>
-      {/* Chat button - positioned fixed to bottom right */}
       <motion.button
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-indigo-600/80 backdrop-blur-sm text-white p-4 rounded-full shadow-lg hover:bg-indigo-700/80 z-50"
+        className="fixed z-40 bottom-6 left-1/2 transform -translate-x-1/2 bg-indigo-600/80 backdrop-blur-sm text-white p-4 rounded-full shadow-lg hover:bg-indigo-700/80"
       >
         <MessageSquare className="w-6 h-6" />
       </motion.button>
 
-      {/* Chat window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -216,7 +209,6 @@ const ChatbotUI = () => {
             }}
             className="fixed top-20 right-6 w-[90vw] md:w-[450px] h-[600px] bg-white/80 backdrop-blur-md rounded-xl shadow-xl overflow-hidden z-50 flex flex-col border border-white/20"
           >
-            {/* Chat header with drag handle */}
             <div 
               onPointerDown={startDrag}
               className="flex items-center justify-between bg-gradient-to-r from-indigo-600/80 to-indigo-800/80 backdrop-blur-sm text-white p-4 cursor-move"
@@ -241,22 +233,17 @@ const ChatbotUI = () => {
               </div>
             </div>
 
-            {/* Chat messages */}
             <div 
               ref={chatContainerRef}
               className="flex-1 overflow-y-auto p-4 bg-transparent"
             >
-              {/* Render messages for current and previous steps */}
               {Array.from({ length: step + 1 }).map((_, index) => (
                 <React.Fragment key={index}>
-                  {/* Bot message */}
                   <ChatMessage
                     isBot
                     message={botMessages[index]}
                     isTyping={typing && index === step}
                   />
-
-                  {/* User response for completed steps */}
                   {index < step && (
                     <ChatMessage
                       isBot={false}
@@ -267,7 +254,6 @@ const ChatbotUI = () => {
               ))}
             </div>
 
-            {/* Input area based on current step */}
             <div className="border-t border-gray-200/50 p-4 bg-white/60 backdrop-blur-sm">
               {renderInputForStep()}
             </div>
@@ -302,14 +288,14 @@ const ChatbotUI = () => {
 
   function renderInputForStep() {
     switch (step) {
-      case 0: // Event Type
+      case 0:
         return (
           <EventTypeSelector 
             onSelect={handleEventTypeSelect} 
             selected={formData.eventType}
           />
         );
-      case 1: // Event Date
+      case 1:
         return (
           <div className="space-y-4">
             {showDatePicker ? (
@@ -342,7 +328,7 @@ const ChatbotUI = () => {
             )}
           </div>
         );
-      case 2: // Location
+      case 2:
         return (
           <form onSubmit={handleLocationSubmit} className="flex gap-2">
             <Input
@@ -356,21 +342,21 @@ const ChatbotUI = () => {
             </Button>
           </form>
         );
-      case 3: // Guest Count
+      case 3:
         return (
           <GuestCountSelector
             onSelect={handleGuestCountSelect}
             selected={formData.guestCount}
           />
         );
-      case 4: // Services
+      case 4:
         return (
           <ServiceSelector
             onSelect={handleServicesSelect}
             selected={formData.services}
           />
         );
-      case 5: // Budget
+      case 5:
         return (
           <div className="space-y-4">
             <div className="space-y-2">
@@ -399,7 +385,7 @@ const ChatbotUI = () => {
             </Button>
           </div>
         );
-      case 6: // Theme
+      case 6:
         return (
           <form onSubmit={handleThemeSubmit} className="space-y-3">
             <Textarea
@@ -416,7 +402,7 @@ const ChatbotUI = () => {
             </Button>
           </form>
         );
-      case 7: // Contact Info
+      case 7:
         return (
           <form onSubmit={handleContactSubmit} className="space-y-3">
             <div className="space-y-2">
@@ -457,7 +443,7 @@ const ChatbotUI = () => {
             </Button>
           </form>
         );
-      case 8: // Summary and final message
+      case 8:
         return (
           <div className="space-y-4">
             <ChatbotSummary 
