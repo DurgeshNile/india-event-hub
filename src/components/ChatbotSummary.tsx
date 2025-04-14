@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, MapPinIcon, UsersIcon, PackageIcon, DollarSignIcon, PaletteIcon, UserIcon, MailIcon, PhoneIcon } from 'lucide-react';
+import { CalendarIcon, MapPinIcon, UsersIcon, PackageIcon, DollarSignIcon, PaletteIcon, UserIcon, MailIcon, PhoneIcon, CheckCircle2 } from 'lucide-react';
 
 type EventType = 'Wedding' | 'Birthday' | 'Corporate' | 'Other';
 type GuestCount = '<50' | '50-100' | '100-200' | '200+';
@@ -52,7 +52,7 @@ const ChatbotSummary: React.FC<ChatbotSummaryProps> = ({ formData, onSubmit }) =
     {
       icon: <DollarSignIcon size={16} />,
       label: 'Estimated Budget',
-      value: `$${formData.budget.toLocaleString()}`,
+      value: `₹${formData.budget.toLocaleString()}`,
     },
     {
       icon: <PaletteIcon size={16} />,
@@ -108,6 +108,25 @@ const ChatbotSummary: React.FC<ChatbotSummaryProps> = ({ formData, onSubmit }) =
               </div>
             </motion.div>
           ))}
+        </div>
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7 }}
+        className="bg-indigo-50 p-4 rounded-lg border border-indigo-100 flex items-center"
+      >
+        <div className="bg-indigo-100 p-2 rounded-full mr-3">
+          <CheckCircle2 className="w-5 h-5 text-indigo-600" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-indigo-700">
+            Our team will connect with you shortly!
+          </p>
+          <p className="text-xs text-indigo-600">
+            We'll reach out to discuss your event requirements within 24 hours.
+          </p>
         </div>
       </motion.div>
       
