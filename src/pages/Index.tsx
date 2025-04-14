@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -136,8 +135,8 @@ const Index = () => {
       
       <Footer />
       
-      {/* Chatbot UI positioned at the bottom right of the page */}
-      <div className="fixed z-50 bottom-10 right-10">
+      {/* Chatbot UI positioned without fixed positioning */}
+      <div>
         <ChatbotUI />
       </div>
     </div>
@@ -145,4 +144,3 @@ const Index = () => {
 };
 
 export default Index;
-

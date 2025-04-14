@@ -184,7 +184,7 @@ const ChatbotUI = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         onClick={() => setIsOpen(true)}
-        className="bg-indigo-600/80 backdrop-blur-sm text-white p-4 rounded-full shadow-lg hover:bg-indigo-700/80"
+        className="fixed top-20 right-6 bg-indigo-600/80 backdrop-blur-sm text-white p-4 rounded-full shadow-lg hover:bg-indigo-700/80 z-50"
       >
         <MessageSquare className="w-6 h-6" />
       </motion.button>
