@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { format } from 'date-fns';
@@ -185,7 +184,7 @@ const ChatbotUI = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         onClick={() => setIsOpen(true)}
-        className="fixed z-40 bottom-10 right-10 bg-indigo-600/80 backdrop-blur-sm text-white p-4 rounded-full shadow-lg hover:bg-indigo-700/80"
+        className="bg-indigo-600/80 backdrop-blur-sm text-white p-4 rounded-full shadow-lg hover:bg-indigo-700/80"
       >
         <MessageSquare className="w-6 h-6" />
       </motion.button>
