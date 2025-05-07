@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Facebook, Apple } from 'lucide-react';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -159,7 +162,7 @@ const Auth = () => {
                       className="w-full"
                       onClick={() => handleSocialLogin('Google')}
                     >
-                      <FaGoogle className="mr-2" />
+                      <Mail className="mr-2" />
                       Google
                     </Button>
                     <Button 
@@ -168,7 +171,7 @@ const Auth = () => {
                       className="w-full"
                       onClick={() => handleSocialLogin('Facebook')}
                     >
-                      <FaFacebook className="mr-2" />
+                      <Facebook className="mr-2" />
                       Facebook
                     </Button>
                   </div>
@@ -230,7 +233,7 @@ const Auth = () => {
                       className="w-full"
                       onClick={() => handleSocialLogin('Google')}
                     >
-                      <FaGoogle className="mr-2" />
+                      <Mail className="mr-2" />
                       Google
                     </Button>
                     <Button 
@@ -239,7 +242,7 @@ const Auth = () => {
                       className="w-full"
                       onClick={() => handleSocialLogin('Apple')}
                     >
-                      <FaApple className="mr-2" />
+                      <Apple className="mr-2" />
                       Apple
                     </Button>
                   </div>
