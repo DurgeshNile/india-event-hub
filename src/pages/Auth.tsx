@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,14 +50,14 @@ const Auth = () => {
         toast({
           title: "Login Failed",
           description: result.message || "Invalid email or password. Please try again.",
-          variant: "destructive",
+          variant: "error",
         });
       }
     } catch (error: any) {
       toast({
         title: "Login Failed",
         description: error.message || "An unexpected error occurred. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsLoading(false);
@@ -74,7 +73,7 @@ const Auth = () => {
         toast({
           title: "Signup Failed",
           description: "Password must be at least 8 characters long.",
-          variant: "destructive",
+          variant: "error",
         });
         setIsLoading(false);
         return;
@@ -100,14 +99,14 @@ const Auth = () => {
         toast({
           title: "Signup Failed",
           description: result.message || "There was an error creating your account. Please try again.",
-          variant: "destructive",
+          variant: "error",
         });
       }
     } catch (error: any) {
       toast({
         title: "Signup Failed",
         description: error.message || "An unexpected error occurred. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsLoading(false);

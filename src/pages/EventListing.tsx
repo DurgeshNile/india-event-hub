@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,7 +51,7 @@ const EventListing = () => {
       toast({
         title: "Error Fetching Events",
         description: error.message,
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsLoading(false);
@@ -72,7 +71,7 @@ const EventListing = () => {
       toast({
         title: "Error Fetching Categories",
         description: error.message,
-        variant: "destructive",
+        variant: "error",
       });
     }
   };
@@ -132,7 +131,7 @@ const EventListing = () => {
       toast({
         title: "Registration Failed",
         description: error.message,
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsBooking(prev => ({ ...prev, [eventId]: false }));

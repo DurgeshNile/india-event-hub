@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { format } from 'date-fns';
@@ -207,7 +208,6 @@ const ChatbotUI = () => {
               y: position.y 
             }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ duration: 0.3 }}
             onUpdate={(latest) => {
               if (latest.x !== undefined && latest.y !== undefined) {
                 setPosition({ x: latest.x as number, y: latest.y as number });

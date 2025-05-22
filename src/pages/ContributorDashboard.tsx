@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,7 +50,7 @@ const ContributorDashboard = () => {
       toast({
         title: "Unauthorized Access",
         description: "You need to be a contributor to access this page.",
-        variant: "destructive",
+        variant: "error",
       });
     } else {
       fetchEvents();
@@ -90,7 +89,7 @@ const ContributorDashboard = () => {
       toast({
         title: "Error Fetching Events",
         description: error.message,
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsLoading(false);
@@ -110,7 +109,7 @@ const ContributorDashboard = () => {
       toast({
         title: "Error Fetching Categories",
         description: error.message,
-        variant: "destructive",
+        variant: "error",
       });
     }
   };
@@ -194,7 +193,7 @@ const ContributorDashboard = () => {
       toast({
         title: "Error Creating Event",
         description: error.message,
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsSubmitting(false);

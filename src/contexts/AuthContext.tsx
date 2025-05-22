@@ -86,8 +86,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      if (data) {
-        setUserType(data.user_type as any);
+      if (data && data.user_type) {
+        setUserType(data.user_type as 'user' | 'contributor' | 'admin');
+      } else {
+        // Default to 'user' if user_type is not found
+        setUserType('user');
       }
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
