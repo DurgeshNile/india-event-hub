@@ -83,7 +83,7 @@ const ChatbotUI = () => {
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [step, isOpen]);
+  }, [step, isOpen, botMessages.length]);
 
   const handleEventTypeSelect = (type: EventType) => {
     setFormData({ ...formData, eventType: type });

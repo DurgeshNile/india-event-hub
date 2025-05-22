@@ -1,43 +1,64 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, Facebook, Apple } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [isContributor, setIsContributor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated, login, signUp } = useAuth();
+  
+  // Get the intended destination from location state, or default to '/'
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
+  
+  // If user is authenticated, redirect to the intended destination
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const result = await login(email, password);
       
-      // Success
-      toast({
-        title: "Login Successful",
-        description: "Welcome back to LetsEventify!",
-        variant: "success",
-      });
-      
-      navigate('/');
-    } catch (error) {
+      if (result.success) {
+        toast({
+          title: "Login Successful",
+          description: "Welcome back to LetsEventify!",
+          variant: "success",
+        });
+      } else {
+        toast({
+          title: "Login Failed",
+          description: result.message || "Invalid email or password. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
       toast({
         title: "Login Failed",
-        description: "Invalid email or password. Please try again.",
-        variant: "error",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -49,32 +70,44 @@ const Auth = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
       if (password.length < 8) {
         toast({
           title: "Signup Failed",
           description: "Password must be at least 8 characters long.",
-          variant: "error",
+          variant: "destructive",
         });
         setIsLoading(false);
         return;
       }
       
-      // Success
-      toast({
-        title: "Account Created",
-        description: "Welcome to LetsEventify! Your account has been successfully created.",
-        variant: "success",
-      });
+      const metadata = {
+        first_name: name.split(' ')[0],
+        last_name: name.includes(' ') ? name.split(' ').slice(1).join(' ') : '',
+        user_type: isContributor ? 'contributor' : 'user',
+      };
       
-      navigate('/');
-    } catch (error) {
+      const result = await signUp(email, password, metadata);
+      
+      if (result.success) {
+        toast({
+          title: "Account Created",
+          description: isContributor 
+            ? "Welcome to LetsEventify! Your contributor account has been created."
+            : "Welcome to LetsEventify! Your account has been successfully created.",
+          variant: "success",
+        });
+      } else {
+        toast({
+          title: "Signup Failed",
+          description: result.message || "There was an error creating your account. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
       toast({
         title: "Signup Failed",
-        description: "There was an error creating your account. Please try again.",
-        variant: "error",
+        description: error.message || "An unexpected error occurred. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -85,7 +118,7 @@ const Auth = () => {
     toast({
       title: `${provider} Login`,
       description: `${provider} login is not available yet. Please use email login.`,
-      variant: "info",
+      variant: "warning",
     });
   };
 
@@ -113,9 +146,9 @@ const Auth = () => {
               <form onSubmit={handleLogin}>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="login-email">Email</Label>
                     <Input 
-                      id="email" 
+                      id="login-email" 
                       type="email" 
                       placeholder="Enter your email" 
                       value={email}
@@ -125,7 +158,7 @@ const Auth = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="password">Password</Label>
+                      <Label htmlFor="login-password">Password</Label>
                       <a 
                         href="#" 
                         className="text-sm text-indigo-600 hover:text-indigo-700"
@@ -133,14 +166,23 @@ const Auth = () => {
                         Forgot password?
                       </a>
                     </div>
-                    <Input 
-                      id="password" 
-                      type="password" 
-                      placeholder="Enter your password" 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
+                    <div className="relative">
+                      <Input 
+                        id="login-password" 
+                        type={showPassword ? "text" : "password"} 
+                        placeholder="Enter your password" 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4">
@@ -192,9 +234,9 @@ const Auth = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="signup-email">Email</Label>
                     <Input 
-                      id="email" 
+                      id="signup-email" 
                       type="email" 
                       placeholder="Enter your email" 
                       value={email}
@@ -203,15 +245,34 @@ const Auth = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input 
-                      id="password" 
-                      type="password" 
-                      placeholder="Create a password (min. 8 characters)" 
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
+                    <Label htmlFor="signup-password">Password</Label>
+                    <div className="relative">
+                      <Input 
+                        id="signup-password" 
+                        type={showPassword ? "text" : "password"} 
+                        placeholder="Create a password (min. 8 characters)" 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <button 
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="contributor" 
+                      checked={isContributor} 
+                      onCheckedChange={(checked) => setIsContributor(checked as boolean)}
                     />
+                    <Label htmlFor="contributor" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      Register as a Contributor/Service Provider
+                    </Label>
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4">

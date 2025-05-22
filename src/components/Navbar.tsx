@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, Search, Bell, User, Calendar, ChevronDown, LogOut } from "lucide-react";
+import { Menu, X, Search, Bell, User, Calendar, ChevronDown, LogOut, Plus } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { 
@@ -26,7 +27,7 @@ import {
   NavigationMenuLink
 } from "@/components/ui/navigation-menu";
 import { categories } from '@/utils/data';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -34,7 +35,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user, userType } = useAuth();
   const [notifications, setNotifications] = useState([
     { id: 1, title: "New featured service: Premium Photography", isNew: true },
     { id: 2, title: "Special discount on Wedding Venues", isNew: true },
@@ -137,13 +138,13 @@ const Navbar = () => {
                       <NavigationMenuLink asChild>
                         <a
                           className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-pink-500 to-pink-600 p-6 no-underline outline-none focus:shadow-md"
-                          href="/categories/wedding"
+                          href="/events"
                         >
                           <div className="mt-4 mb-2 text-lg font-medium text-white">
-                            Wedding Services
+                            Browse All Events
                           </div>
                           <p className="text-sm leading-tight text-white/90">
-                            Discover premium wedding services for your special day
+                            Discover events happening in your area
                           </p>
                         </a>
                       </NavigationMenuLink>
@@ -182,6 +183,16 @@ const Navbar = () => {
                   About
                 </Link>
               </NavigationMenuItem>
+              {(userType === 'contributor' || userType === 'admin') && (
+                <NavigationMenuItem>
+                  <Link 
+                    to="/dashboard" 
+                    className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium"
+                  >
+                    Dashboard
+                  </Link>
+                </NavigationMenuItem>
+              )}
             </NavigationMenuList>
           </NavigationMenu>
 
@@ -243,96 +254,131 @@ const Navbar = () => {
               </PopoverContent>
             </Popover>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="relative text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
-                >
-                  <Bell size={20} />
-                  {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-pink-600 text-[10px] text-white">
-                      {unreadCount}
-                    </span>
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <div className="flex items-center justify-between p-2">
-                  <span className="font-medium">Notifications</span>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-xs"
-                    onClick={() => setNotifications(notifications.map(n => ({ ...n, isNew: false })))}
-                  >
-                    Mark all as read
-                  </Button>
-                </div>
-                <DropdownMenuSeparator />
-                {notifications.length > 0 ? (
-                  notifications.map((notification) => (
-                    <DropdownMenuItem 
-                      key={notification.id}
-                      className={cn(
-                        "p-3 cursor-pointer",
-                        notification.isNew && "bg-pink-50"
-                      )}
-                      onClick={() => handleNotificationClick(notification.id)}
-                    >
-                      <div className="flex items-start gap-2">
-                        {notification.isNew && (
-                          <span className="h-2 w-2 mt-1.5 rounded-full bg-pink-500" />
-                        )}
-                        <div>
-                          <p className={cn(
-                            "text-sm",
-                            notification.isNew && "font-medium"
-                          )}>
-                            {notification.title}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">Just now</p>
-                        </div>
-                      </div>
-                    </DropdownMenuItem>
-                  ))
-                ) : (
-                  <div className="p-4 text-center text-sm text-muted-foreground">
-                    No notifications yet
-                  </div>
-                )}
-                <DropdownMenuSeparator />
-                <div className="p-2">
-                  <Button variant="outline" size="sm" className="w-full text-xs">
-                    View all notifications
-                  </Button>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
             {isAuthenticated && (
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={handleLogout}
-                className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
-              >
-                <LogOut size={20} />
-              </Button>
+              <>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="relative text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+                    >
+                      <Bell size={20} />
+                      {unreadCount > 0 && (
+                        <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-pink-600 text-[10px] text-white">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-80">
+                    <div className="flex items-center justify-between p-2">
+                      <span className="font-medium">Notifications</span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-xs"
+                        onClick={() => setNotifications(notifications.map(n => ({ ...n, isNew: false })))}
+                      >
+                        Mark all as read
+                      </Button>
+                    </div>
+                    <DropdownMenuSeparator />
+                    {notifications.length > 0 ? (
+                      notifications.map((notification) => (
+                        <DropdownMenuItem 
+                          key={notification.id}
+                          className={cn(
+                            "p-3 cursor-pointer",
+                            notification.isNew && "bg-pink-50"
+                          )}
+                          onClick={() => handleNotificationClick(notification.id)}
+                        >
+                          <div className="flex items-start gap-2">
+                            {notification.isNew && (
+                              <span className="h-2 w-2 mt-1.5 rounded-full bg-pink-500" />
+                            )}
+                            <div>
+                              <p className={cn(
+                                "text-sm",
+                                notification.isNew && "font-medium"
+                              )}>
+                                {notification.title}
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">Just now</p>
+                            </div>
+                          </div>
+                        </DropdownMenuItem>
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-sm text-muted-foreground">
+                        No notifications yet
+                      </div>
+                    )}
+                    <DropdownMenuSeparator />
+                    <div className="p-2">
+                      <Button variant="outline" size="sm" className="w-full text-xs">
+                        View all notifications
+                      </Button>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      className="flex items-center space-x-2 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+                    >
+                      <User size={20} />
+                      <span>{userType}</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <Link to="/profile" className="w-full">Profile</Link>
+                    </DropdownMenuItem>
+                    {(userType === 'contributor' || userType === 'admin') && (
+                      <DropdownMenuItem>
+                        <Link to="/dashboard" className="w-full">Dashboard</Link>
+                      </DropdownMenuItem>
+                    )}
+                    {(userType === 'contributor') && (
+                      <DropdownMenuItem>
+                        <Link to="/dashboard?tab=create" className="w-full flex items-center">
+                          <Plus size={16} className="mr-2" />
+                          Create Event
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem>
+                      <Link to="/events" className="w-full">All Events</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut size={16} className="mr-2" />
+                      Log out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
             )}
 
-            <Button 
-              variant="outline" 
-              className="border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white"
-            >
-              <Link to="/login" className="w-full">Log in</Link>
-            </Button>
-            <Button 
-              className="bg-pink-600 hover:bg-pink-700 text-white"
-            >
-              <Link to="/signup" className="w-full">Sign up</Link>
-            </Button>
+            {!isAuthenticated && (
+              <>
+                <Button 
+                  variant="outline" 
+                  className="border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white"
+                >
+                  <Link to="/auth" className="w-full">Log in</Link>
+                </Button>
+                <Button 
+                  className="bg-pink-600 hover:bg-pink-700 text-white"
+                >
+                  <Link to="/auth?tab=signup" className="w-full">Sign up</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           <div className="md:hidden flex items-center space-x-3">
@@ -388,6 +434,18 @@ const Navbar = () => {
                 className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-pink-50 hover:text-pink-600"
                 onClick={(e) => {
                   e.preventDefault();
+                  navigate('/events');
+                  setIsMenuOpen(false);
+                }}
+              >
+                Events
+              </button>
+            </div>
+            <div className="relative">
+              <button
+                className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-pink-50 hover:text-pink-600"
+                onClick={(e) => {
+                  e.preventDefault();
                   navigate('/categories');
                   setIsMenuOpen(false);
                 }}
@@ -404,56 +462,72 @@ const Navbar = () => {
               About
             </Link>
             
-            <div className="px-3 py-2">
-              <p className="text-sm font-medium mb-1">Select Event Date</p>
-              <Input 
-                type="date" 
-                className="w-full" 
-                onChange={() => {
-                  toast({
-                    title: "Date selected",
-                    description: "Showing services available on this date",
-                  });
-                }}
-              />
-            </div>
+            {(userType === 'contributor' || userType === 'admin') && (
+              <Link
+                to="/dashboard"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-pink-50 hover:text-pink-600"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+            )}
             
-            <div className="px-3 py-2">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-sm font-medium">Notifications</p>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-xs h-6 px-2"
-                  onClick={() => setNotifications(notifications.map(n => ({ ...n, isNew: false })))}
+            {isAuthenticated && (
+              <>
+                <div className="px-3 py-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-sm font-medium">Notifications</p>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-xs h-6 px-2"
+                      onClick={() => setNotifications(notifications.map(n => ({ ...n, isNew: false })))}
+                    >
+                      Mark all read
+                    </Button>
+                  </div>
+                  <div className="space-y-2 mt-2 max-h-32 overflow-y-auto">
+                    {notifications.map((notification) => (
+                      <div 
+                        key={notification.id}
+                        className={cn(
+                          "p-2 rounded-md text-sm",
+                          notification.isNew ? "bg-pink-50" : "bg-gray-50"
+                        )}
+                        onClick={() => handleNotificationClick(notification.id)}
+                      >
+                        {notification.title}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center w-full px-3 py-2 rounded-md text-base font-medium text-red-600 hover:bg-red-50"
                 >
-                  Mark all read
+                  <LogOut className="mr-2 h-5 w-5" />
+                  Logout
+                </button>
+              </>
+            )}
+            
+            {!isAuthenticated && (
+              <div className="flex flex-col space-y-2 mt-4">
+                <Button variant="outline" className="w-full border-pink-600 text-pink-600" onClick={() => {
+                  navigate('/auth');
+                  setIsMenuOpen(false);
+                }}>
+                  Log in
+                </Button>
+                <Button className="w-full bg-pink-600 hover:bg-pink-700" onClick={() => {
+                  navigate('/auth?tab=signup');
+                  setIsMenuOpen(false);
+                }}>
+                  Sign up
                 </Button>
               </div>
-              <div className="space-y-2 mt-2 max-h-32 overflow-y-auto">
-                {notifications.map((notification) => (
-                  <div 
-                    key={notification.id}
-                    className={cn(
-                      "p-2 rounded-md text-sm",
-                      notification.isNew ? "bg-pink-50" : "bg-gray-50"
-                    )}
-                    onClick={() => handleNotificationClick(notification.id)}
-                  >
-                    {notification.title}
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            <div className="flex flex-col space-y-2 mt-4">
-              <Button variant="outline" className="w-full border-pink-600 text-pink-600" onClick={() => setIsMenuOpen(false)}>
-                <Link to="/login" className="w-full">Log in</Link>
-              </Button>
-              <Button className="w-full bg-pink-600 hover:bg-pink-700" onClick={() => setIsMenuOpen(false)}>
-                <Link to="/signup" className="w-full">Sign up</Link>
-              </Button>
-            </div>
+            )}
           </div>
         </div>
       )}

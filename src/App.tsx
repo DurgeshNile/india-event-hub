@@ -14,8 +14,17 @@ import CategoryPage from "./pages/CategoryPage";
 import About from "./pages/About";
 import Categories from "./pages/Categories";
 import Auth from "./pages/Auth";
+import ContributorDashboard from "./pages/ContributorDashboard";
+import EventListing from "./pages/EventListing";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -37,17 +46,13 @@ const App = () => (
             <Route 
               path="/login" 
               element={
-                <ProtectedRoute>
-                  <Login />
-                </ProtectedRoute>
+                <Login />
               } 
             />
             <Route 
               path="/signup" 
               element={
-                <ProtectedRoute>
-                  <Signup />
-                </ProtectedRoute>
+                <Signup />
               } 
             />
             <Route 
@@ -71,6 +76,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Categories />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <ContributorDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/events" 
+              element={
+                <ProtectedRoute>
+                  <EventListing />
                 </ProtectedRoute>
               } 
             />

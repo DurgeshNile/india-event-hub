@@ -1,11 +1,19 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { Session, User } from '@supabase/supabase-js';
+import { toast } from "@/hooks/use-toast";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (username: string, password: string) => boolean;
-  logout: () => void;
+  user: User | null;
+  session: Session | null;
+  userType: 'user' | 'contributor' | 'admin' | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  signUp: (email: string, password: string, metadata: any) => Promise<{ success: boolean; message: string }>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -20,38 +28,130 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [userType, setUserType] = useState<'user' | 'contributor' | 'admin' | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check if user is already authenticated on mount
+  // Initialize auth state
   useEffect(() => {
-    const auth = localStorage.getItem('auth');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-    }
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsAuthenticated(!!session);
+        
+        // Defer profile fetch to avoid potential Supabase client deadlock
+        if (session?.user) {
+          setTimeout(() => {
+            fetchUserProfile(session.user.id);
+          }, 0);
+        } else {
+          setUserType(null);
+        }
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsAuthenticated(!!session);
+      
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  // Hardcoded credentials - in a real app, use a more secure approach
-  const ADMIN_USER = 'admin';
-  const ADMIN_PASS = 'password123';
+  // Fetch user profile to get the user type
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('user_type')
+        .eq('id', userId)
+        .single();
 
-  const login = (username: string, password: string): boolean => {
-    if (username === ADMIN_USER && password === ADMIN_PASS) {
-      setIsAuthenticated(true);
-      localStorage.setItem('auth', 'true');
-      return true;
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        return;
+      }
+
+      if (data) {
+        setUserType(data.user_type as any);
+      }
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
     }
-    return false;
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('auth');
-    navigate('/');
+  const login = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { success: false, message: error.message };
+      }
+
+      // Navigation will be handled by onAuthStateChange
+      return { success: true, message: 'Login successful' };
+    } catch (error: any) {
+      return { success: false, message: error.message || 'Failed to login' };
+    }
+  };
+
+  const signUp = async (email: string, password: string, metadata: any) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: metadata,
+        },
+      });
+
+      if (error) {
+        return { success: false, message: error.message };
+      }
+
+      // Navigation will be handled by onAuthStateChange
+      return { 
+        success: true, 
+        message: 'Registration successful' 
+      };
+    } catch (error: any) {
+      return { success: false, message: error.message || 'Failed to sign up' };
+    }
+  };
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ 
+      isAuthenticated, 
+      user, 
+      session,
+      userType,
+      loading,
+      login, 
+      signUp,
+      logout 
+    }}>
       {children}
     </AuthContext.Provider>
   );
