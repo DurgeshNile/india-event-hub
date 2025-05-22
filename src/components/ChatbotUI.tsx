@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { format } from 'date-fns';
@@ -203,14 +202,17 @@ const ChatbotUI = () => {
             animate={{ 
               opacity: 1, 
               y: 0, 
-              scale: 1, 
-              x: position.x, 
-              y: position.y 
+              scale: 1,
+              x: position.x,
+              y: position.y
             }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             onUpdate={(latest) => {
               if (latest.x !== undefined && latest.y !== undefined) {
-                setPosition({ x: latest.x as number, y: latest.y as number });
+                setPosition({ 
+                  x: latest.x as number, 
+                  y: latest.y as number 
+                });
               }
             }}
             className="fixed top-20 right-6 w-[90vw] md:w-[450px] h-[600px] bg-white/80 backdrop-blur-md rounded-xl shadow-xl overflow-hidden z-50 flex flex-col border border-white/20"
