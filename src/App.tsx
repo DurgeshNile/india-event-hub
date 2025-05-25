@@ -17,6 +17,7 @@ import Auth from "./pages/Auth";
 import ContributorDashboard from "./pages/ContributorDashboard";
 import EventListing from "./pages/EventListing";
 import ProviderRegistration from "./pages/ProviderRegistration";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -85,6 +86,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ContributorDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedRoute requiredUserType="admin">
+                  <AdminDashboard />
                 </ProtectedRoute>
               } 
             />
