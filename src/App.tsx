@@ -16,6 +16,7 @@ import Categories from "./pages/Categories";
 import Auth from "./pages/Auth";
 import ContributorDashboard from "./pages/ContributorDashboard";
 import EventListing from "./pages/EventListing";
+import ProviderRegistration from "./pages/ProviderRegistration";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -92,6 +93,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <EventListing />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/register-provider" 
+              element={
+                <ProtectedRoute>
+                  <ProviderRegistration />
                 </ProtectedRoute>
               } 
             />

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -11,6 +12,7 @@ import Footer from '@/components/Footer';
 import ChatbotUI from '@/components/ChatbotUI';
 import { Button } from '@/components/ui/button';
 import { Camera, Utensils, Brush, Music, Users, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   return (
@@ -69,10 +71,12 @@ const Index = () => {
                   </div>
                 </div>
                 
-                <Button className="bg-indigo-600 hover:bg-indigo-700">
-                  Register as Service Provider
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                <Link to="/register-provider">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700">
+                    Register as Service Provider
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
               </div>
               
               <div className="lg:w-1/2">
