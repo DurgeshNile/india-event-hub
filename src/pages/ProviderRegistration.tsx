@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -13,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Upload, X, Camera } from 'lucide-react';
+import { Upload, X } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -64,7 +63,7 @@ const ProviderRegistration = () => {
     try {
       const { data, error } = await supabase
         .from('categories')
-        .select('id, name')
+        .select('id, name, description')
         .order('name');
 
       if (error) throw error;
@@ -73,7 +72,7 @@ const ProviderRegistration = () => {
       toast({
         title: "Error",
         description: "Failed to load categories",
-        variant: "error",
+        variant: "destructive",
       });
     }
   };
@@ -84,7 +83,7 @@ const ProviderRegistration = () => {
       toast({
         title: "Too many images",
         description: "You can upload maximum 5 images",
-        variant: "warning",
+        variant: "destructive",
       });
       return;
     }
@@ -144,7 +143,7 @@ const ProviderRegistration = () => {
 
     setIsSubmitting(true);
     try {
-      // Create service provider record
+      // Create service provider record with approval status as pending
       const { data: provider, error: providerError } = await supabase
         .from('service_providers')
         .insert({
@@ -158,6 +157,8 @@ const ProviderRegistration = () => {
           email: data.email,
           website: data.website || null,
           price_range: data.price_range,
+          approved: false, // Requires admin approval
+          verified: false,
         })
         .select()
         .single();
@@ -170,9 +171,9 @@ const ProviderRegistration = () => {
       }
 
       toast({
-        title: "Registration Successful",
-        description: "Your service provider profile has been created successfully!",
-        variant: "success",
+        title: "Registration Submitted",
+        description: "Your service provider profile has been submitted for admin approval. You will be notified once it's reviewed.",
+        variant: "default",
       });
 
       navigate('/dashboard');
@@ -180,7 +181,7 @@ const ProviderRegistration = () => {
       toast({
         title: "Registration Failed",
         description: error.message || "Something went wrong",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -200,7 +201,7 @@ const ProviderRegistration = () => {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-4">Register as Service Provider</h1>
             <p className="text-gray-600">
-              Join our platform and showcase your services to potential clients
+              Join our platform and showcase your services to potential clients. Your profile will be reviewed by our admin team before going live.
             </p>
           </div>
 
@@ -208,7 +209,7 @@ const ProviderRegistration = () => {
             <CardHeader>
               <CardTitle>Provider Information</CardTitle>
               <CardDescription>
-                Fill in your business details to create your provider profile
+                Fill in your business details to create your provider profile. All submissions require admin approval.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -227,15 +228,18 @@ const ProviderRegistration = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="category_id">Category *</Label>
+                    <Label htmlFor="category_id">Service Category *</Label>
                     <Select onValueChange={(value) => setValue('category_id', value)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                        <SelectValue placeholder="Select your service category" />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((category) => (
                           <SelectItem key={category.id} value={category.id}>
-                            {category.name}
+                            <div>
+                              <div className="font-medium">{category.name}</div>
+                              <div className="text-sm text-gray-500">{category.description}</div>
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>

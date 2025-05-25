@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { format } from 'date-fns';
@@ -7,7 +8,7 @@ import { Input } from './ui/input';
 import { Card, CardContent } from './ui/card';
 import ChatMessage from './ChatMessage';
 
-interface ChatMessage {
+interface ChatMessageType {
   id: string;
   text: string;
   timestamp: string;
@@ -21,7 +22,7 @@ interface Position {
 
 const ChatbotUI = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -37,7 +38,7 @@ const ChatbotUI = () => {
   const handleSendMessage = () => {
     if (newMessage.trim() !== '') {
       const timestamp = format(new Date(), 'h:mm a');
-      const userMessage: ChatMessage = {
+      const userMessage: ChatMessageType = {
         id: Date.now().toString(),
         text: newMessage,
         timestamp: timestamp,
@@ -49,7 +50,7 @@ const ChatbotUI = () => {
 
       // Simulate bot response
       setTimeout(() => {
-        const botResponse: ChatMessage = {
+        const botResponse: ChatMessageType = {
           id: Date.now().toString() + '-bot',
           text: `Bot response to: ${newMessage}`,
           timestamp: format(new Date(), 'h:mm a'),
@@ -93,19 +94,9 @@ const ChatbotUI = () => {
             animate={{ 
               opacity: 1, 
               y: 0, 
-              scale: 1,
-              x: position.x,
-              y: position.y
+              scale: 1
             }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            onUpdate={(latest) => {
-              if (latest.x !== undefined && latest.y !== undefined) {
-                setPosition({ 
-                  x: latest.x as number, 
-                  y: latest.y as number 
-                });
-              }
-            }}
             className="fixed top-20 right-6 w-[90vw] md:w-[450px] h-[600px] bg-white/80 backdrop-blur-md rounded-xl shadow-xl overflow-hidden z-50 flex flex-col border border-white/20"
             style={{ x: position.x, y: position.y }}
           >

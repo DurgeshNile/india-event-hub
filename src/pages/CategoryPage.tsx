@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -49,14 +48,15 @@ const CategoryPage = () => {
         return;
       }
 
-      // Fetch providers for this category
+      // Fetch only approved providers for this category
       const { data: dbProviders, error: providersError } = await supabase
         .from('service_providers')
         .select(`
           *,
           service_provider_images!inner(image_url, is_primary)
         `)
-        .eq('category_id', dbCategory.id);
+        .eq('category_id', dbCategory.id)
+        .eq('approved', true); // Only show approved providers
 
       if (providersError) {
         console.error('Error fetching providers:', providersError);
@@ -78,6 +78,7 @@ const CategoryPage = () => {
           website: provider.website,
           description: provider.description,
           price_range: provider.price_range,
+          approved: provider.approved,
           image: provider.service_provider_images?.find(img => img.is_primary)?.image_url || 
                  provider.service_provider_images?.[0]?.image_url ||
                  'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
@@ -90,7 +91,7 @@ const CategoryPage = () => {
       toast({
         title: "Error",
         description: "Failed to load service providers",
-        variant: "error",
+        variant: "destructive",
       });
       setProviders([]);
     } finally {
@@ -144,7 +145,7 @@ const CategoryPage = () => {
           <div className="container mx-auto px-4">
             <div className="flex justify-between items-center mb-8">
               <h2 className="text-2xl font-bold">
-                {loading ? 'Loading...' : `Service Providers (${providers.length})`}
+                {loading ? 'Loading...' : `Approved Service Providers (${providers.length})`}
               </h2>
               <Link to="/register-provider">
                 <Button className="bg-indigo-600 hover:bg-indigo-700">
@@ -159,7 +160,7 @@ const CategoryPage = () => {
               </div>
             ) : providers.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-lg shadow-sm">
-                <h3 className="text-xl font-medium mb-2">No providers found</h3>
+                <h3 className="text-xl font-medium mb-2">No approved providers found</h3>
                 <p className="text-gray-500 mb-4">
                   Be the first to register as a service provider in this category!
                 </p>
