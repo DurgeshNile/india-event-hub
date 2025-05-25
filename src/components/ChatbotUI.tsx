@@ -1,150 +1,116 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Avatar } from "@/components/ui/avatar"
+import { AvatarImage } from "@radix-ui/react-avatar"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Send } from "lucide-react"
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useDragControls } from 'framer-motion';
-import { format } from 'date-fns';
-import { MessageCircle, X, Send, Minimize2 } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Card, CardContent } from './ui/card';
-import ChatMessage from './ChatMessage';
-
-interface ChatMessageType {
+interface ChatMessage {
   id: string;
-  text: string;
-  timestamp: string;
-  isUser: boolean;
+  type: 'user' | 'bot';
+  content: string;
+  timestamp: Date;
 }
 
-interface Position {
-  x: number;
-  y: number;
-}
+const getBotResponse = (message: string): string => {
+  message = message.toLowerCase();
+  if (message.includes("hello") || message.includes("hi") || message.includes("hey")) {
+    return "Hello there! How can I assist you today?";
+  } else if (message.includes("how are you")) {
+    return "I am doing well, thank you for asking! How can I help you?";
+  } else if (message.includes("services") || message.includes("what do you offer")) {
+    return "We offer a variety of services including event planning, catering, photography, and venue selection.";
+  } else if (message.includes("pricing") || message.includes("cost")) {
+    return "Our pricing varies depending on the service and specific requirements. Please provide more details so I can give you an accurate estimate.";
+  } else if (message.includes("contact") || message.includes("reach you")) {
+    return "You can contact us via email at support@example.com or call us at 555-1234.";
+  } else {
+    return "I'm sorry, I didn't understand your question. Please ask something else!";
+  }
+};
 
-const ChatbotUI = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<ChatMessageType[]>([]);
-  const [newMessage, setNewMessage] = useState('');
+const ChatbotUI: React.FC = () => {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [inputMessage, setInputMessage] = useState<string>('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const dragControls = useDragControls();
-  const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
 
   useEffect(() => {
+    // Scroll to bottom on message change
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputMessage(e.target.value);
+  };
+
   const handleSendMessage = () => {
-    if (newMessage.trim() !== '') {
-      const timestamp = format(new Date(), 'h:mm a');
-      const userMessage: ChatMessageType = {
+    if (inputMessage.trim()) {
+      const userMessage: ChatMessage = {
         id: Date.now().toString(),
-        text: newMessage,
-        timestamp: timestamp,
-        isUser: true,
+        type: 'user',
+        content: inputMessage,
+        timestamp: new Date()
       };
-
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
-      setNewMessage('');
-
+      
+      setMessages(prev => [...prev, userMessage]);
+      setInputMessage('');
+      
       // Simulate bot response
       setTimeout(() => {
-        const botResponse: ChatMessageType = {
-          id: Date.now().toString() + '-bot',
-          text: `Bot response to: ${newMessage}`,
-          timestamp: format(new Date(), 'h:mm a'),
-          isUser: false,
+        const botMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          type: 'bot',
+          content: getBotResponse(inputMessage),
+          timestamp: new Date()
         };
-        setMessages((prevMessages) => [...prevMessages, botResponse]);
-      }, 500);
+        setMessages(prev => [...prev, botMessage]);
+      }, 1000);
     }
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      <AnimatePresence>
-        {!isOpen && (
-          <motion.div
-            key="toggle-button"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="relative"
-          >
-            <Button
-              onClick={() => setIsOpen(true)}
-              className="w-14 h-14 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center group"
-            >
-              <MessageCircle className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-            </Button>
-          </motion.div>
-        )}
-
-        {isOpen && (
-          <motion.div
-            key="chat-interface"
-            drag={isDragging}
-            dragControls={dragControls}
-            dragMomentum={false}
-            dragElastic={0}
-            onDragStart={() => setIsDragging(true)}
-            onDragEnd={() => setIsDragging(false)}
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ 
-              opacity: 1, 
-              y: 0, 
-              scale: 1
+    <div className="fixed bottom-0 right-0 z-50 mb-4 mr-4 w-96 rounded-lg shadow-lg overflow-hidden bg-white">
+      <div className="bg-india-blue text-white p-4">
+        <h5 className="font-semibold">Event Planner Chatbot</h5>
+      </div>
+      <div className="h-80 p-4 overflow-y-auto" ref={chatContainerRef}>
+        {messages.map((message) => (
+          <div key={message.id} className={`mb-2 flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+            {message.type === 'bot' && (
+              <Avatar className="w-8 h-8 mr-2">
+                <AvatarImage src="https://github.com/shadcn.png" />
+              </Avatar>
+            )}
+            <div className={`rounded-lg p-2 ${message.type === 'user' ? 'bg-blue-100 text-gray-800' : 'bg-gray-100 text-gray-800'}`}>
+              {message.content}
+            </div>
+            {message.type === 'user' && (
+              <Avatar className="w-8 h-8 ml-2">
+                <AvatarImage src="https://avatars.githubusercontent.com/u/8888607?v=4" />
+              </Avatar>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="p-4 border-t border-gray-200">
+        <div className="flex items-center">
+          <Input
+            type="text"
+            placeholder="Type your message..."
+            value={inputMessage}
+            onChange={handleInputChange}
+            className="flex-grow mr-2"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleSendMessage();
+              }
             }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed top-20 right-6 w-[90vw] md:w-[450px] h-[600px] bg-white/80 backdrop-blur-md rounded-xl shadow-xl overflow-hidden z-50 flex flex-col border border-white/20"
-            style={{ x: position.x, y: position.y }}
-          >
-            <div className="flex items-center justify-between p-4 border-b border-white/20">
-              <h2 className="text-lg font-semibold text-gray-800">
-                Eventify AI Assistant
-              </h2>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" onClick={() => {}}>
-                  <Minimize2 className="w-5 h-5 text-gray-600 hover:text-gray-800" />
-                </Button>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-                  <X className="w-5 h-5 text-gray-600 hover:text-gray-800" />
-                </Button>
-              </div>
-            </div>
-
-            <div ref={chatContainerRef} className="flex-grow overflow-y-auto p-4 space-y-2">
-              {messages.map((message) => (
-                <ChatMessage key={message.id} message={message} />
-              ))}
-            </div>
-
-            <div className="p-4 border-t border-white/20">
-              <div className="flex items-center">
-                <Input
-                  type="text"
-                  placeholder="Type your message..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  className="flex-grow rounded-full py-2 px-4 bg-white/50 border-none shadow-inner focus:ring-0 focus:outline-none"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSendMessage();
-                    }
-                  }}
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  className="ml-3 rounded-full w-10 h-10 p-0 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-lg flex items-center justify-center"
-                >
-                  <Send className="w-5 h-5 text-white" />
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          />
+          <Button onClick={handleSendMessage}><Send className="h-4 w-4 mr-2" />Send</Button>
+        </div>
+      </div>
     </div>
   );
 };
