@@ -21,7 +21,6 @@ interface ServiceProvider {
   review_count: number;
   created_at: string;
   updated_at: string;
-  approved?: boolean;
   service_provider_images: Array<{
     id: string;
     image_url: string;
@@ -40,7 +39,6 @@ export const useAdminProviders = () => {
     try {
       setLoading(true);
       
-      // First, let's try to add the approved column if it doesn't exist
       const { data, error } = await supabase
         .from('service_providers')
         .select(`
@@ -51,13 +49,11 @@ export const useAdminProviders = () => {
 
       if (error) throw error;
 
-      const transformedData = data?.map(provider => ({
-        ...provider,
-        approved: provider.approved ?? false
-      })) || [];
+      const transformedData = data || [];
 
-      const pending = transformedData.filter(p => !p.approved);
-      const approved = transformedData.filter(p => p.approved);
+      // Use verified field to separate pending vs approved
+      const pending = transformedData.filter(p => !p.verified);
+      const approved = transformedData.filter(p => p.verified);
       
       setPendingProviders(pending);
       setApprovedProviders(approved);
@@ -66,7 +62,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to load service providers",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -75,8 +71,6 @@ export const useAdminProviders = () => {
 
   const handleApproval = async (providerId: string, approved: boolean) => {
     try {
-      // For now, we'll use a workaround since the approved column might not exist
-      // We'll use the verified field as a temporary solution
       const { error } = await supabase
         .from('service_providers')
         .update({ verified: approved })
@@ -87,7 +81,6 @@ export const useAdminProviders = () => {
       toast({
         title: "Success",
         description: `Provider ${approved ? 'approved' : 'rejected'} successfully`,
-        variant: "success",
       });
 
       fetchProviders();
@@ -96,7 +89,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to update provider status",
-        variant: "error",
+        variant: "destructive",
       });
     }
   };

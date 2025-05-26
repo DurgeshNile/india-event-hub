@@ -30,7 +30,6 @@ interface ServiceProvider {
   review_count: number;
   created_at: string;
   updated_at: string;
-  approved: boolean;
   service_provider_images: Array<{
     id: string;
     image_url: string;

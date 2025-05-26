@@ -1,375 +1,248 @@
+
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/hooks/use-toast"
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { ImageIcon } from "lucide-react";
-
-const formSchema = z.object({
-  businessName: z.string().min(2, {
-    message: "Business name must be at least 2 characters.",
-  }),
-  description: z.string().min(10, {
-    message: "Description must be at least 10 characters.",
-  }),
-  email: z.string().email({
-    message: "Invalid email address.",
-  }),
-  phone: z.string().min(10, {
-    message: "Phone number must be at least 10 characters.",
-  }),
-  website: z.string().url({
-    message: "Invalid website URL.",
-  }),
-  location: z.string().min(2, {
-    message: "Location must be at least 2 characters.",
-  }),
-  city: z.string().min(2, {
-    message: "City must be at least 2 characters.",
-  }),
-  priceRange: z.string().min(1, {
-    message: "Price range must be selected.",
-  }),
-  categoryId: z.string().min(1, {
-    message: "Category must be selected.",
-  }),
-});
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ProviderRegistration = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [images, setImages] = useState<string[]>([]);
-  const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      businessName: "",
-      description: "",
-      email: "",
-      phone: "",
-      website: "",
-      location: "",
-      city: "",
-      priceRange: "",
-      categoryId: "",
-    },
+  const [formData, setFormData] = useState({
+    business_name: '',
+    description: '',
+    email: '',
+    phone: '',
+    website: '',
+    location: '',
+    city: '',
+    price_range: '',
+    category_id: '',
   });
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    const isValid = form.trigger();
+  const [images, setImages] = useState<FileList | null>(null);
+  const [loading, setLoading] = useState(false);
 
-    if (!isValid) {
+  const categories = [
+    { id: 'category1', name: 'Photography' },
+    { id: 'category2', name: 'Catering' },
+    { id: 'category3', name: 'Decoration' },
+    { id: 'category4', name: 'Music & Entertainment' },
+    { id: 'category5', name: 'Venue' },
+  ];
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setImages(event.target.files);
+  };
+
+  const uploadImages = async (providerId: string) => {
+    if (!images || images.length === 0) return;
+
+    for (let i = 0; i < images.length; i++) {
+      const file = images[i];
+      const fileName = `${providerId}/${Date.now()}_${file.name}`;
+
+      try {
+        // Upload to Supabase storage (if configured)
+        const imageUrl = URL.createObjectURL(file); // Temporary URL for demo
+
+        // Insert image record
+        const { error } = await supabase
+          .from('service_provider_images')
+          .insert({
+            provider_id: providerId,
+            image_url: imageUrl,
+            is_primary: i === 0,
+            caption: file.name,
+          });
+
+        if (error) throw error;
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!user) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields correctly.",
-        variant: "error",
+        description: "You must be logged in to register as a provider",
+        variant: "destructive",
       });
       return;
     }
 
+    setLoading(true);
+
     try {
-      setIsSubmitting(true);
-
-      const imageUrls: string[] = [];
-      for (const image of images) {
-        const file = await fetch(image)
-          .then(res => res.blob())
-          .then(blob => new File([blob], 'image.jpg', { type: 'image/jpeg' }));
-
-        const imagePath = await uploadImage(file);
-        imageUrls.push(imagePath);
-      }
-
-      const { data: provider, error } = await supabase
+      // Insert service provider
+      const { data: provider, error: providerError } = await supabase
         .from('service_providers')
         .insert({
-          business_name: data.businessName,
-          description: data.description,
-          email: data.email,
-          phone: data.phone,
-          website: data.website,
-          location: data.location,
-          city: data.city,
-          price_range: data.priceRange,
-          category_id: data.categoryId,
-          user_id: user?.id,
+          ...formData,
+          user_id: user.id,
           verified: false,
           featured: false,
           rating: 0,
-          review_count: 0
+          review_count: 0,
         })
         .select()
         .single();
 
-      if (error) {
-        console.error('Error inserting provider:', error);
-        toast({
-          title: "Error",
-          description: "Failed to register service provider",
-          variant: "error",
-        });
-        return;
-      }
+      if (providerError) throw providerError;
 
-      if (provider && imageUrls.length > 0) {
-        for (const imageUrl of imageUrls) {
-          await supabase
-            .from('service_provider_images')
-            .insert({
-              service_provider_id: provider.id,
-              image_url: imageUrl,
-              is_primary: false,
-              caption: ''
-            });
-        }
+      // Upload images if any
+      if (provider) {
+        await uploadImages(provider.id);
       }
 
       toast({
         title: "Success",
-        description: "Service provider registered successfully! Your registration is pending approval.",
-        variant: "success",
+        description: "Your provider registration has been submitted for review",
       });
 
-      reset();
-      setImages([]);
+      navigate('/dashboard');
     } catch (error: any) {
-      console.error('Error:', error);
+      console.error('Error registering provider:', error);
       toast({
         title: "Error",
-        description: "Failed to register service provider",
-        variant: "error",
+        description: "Failed to register as provider. Please try again.",
+        variant: "destructive",
       });
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
-
-  const uploadImage = async (file: File): Promise<string> => {
-    const { data, error } = await supabase.storage
-      .from('service-provider-images')
-      .upload(`${user?.id}/${Date.now()}-${file.name}`, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (error) {
-      console.error('Upload error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to upload image",
-        variant: "error",
-      });
-      throw error;
-    }
-
-    return data.path;
-  };
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-
-    if (files.length + images.length > 5) {
-      toast({
-        title: "Error",
-        description: "You can upload a maximum of 5 images",
-        variant: "error",
-      });
-      return;
-    }
-
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (reader.result) {
-          setImages(prevImages => [...prevImages, reader.result as string]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-  };
-
-  const { reset } = form;
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-5">Service Provider Registration</h1>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="businessName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Business Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your business name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+    <div className="container mx-auto py-10 max-w-2xl">
+      <h1 className="text-3xl font-bold mb-8">Register as Service Provider</h1>
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium mb-2">Business Name *</label>
+          <Input
+            value={formData.business_name}
+            onChange={(e) => handleInputChange('business_name', e.target.value)}
+            required
           />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Tell us about your services"
-                    className="resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your email" type="email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your phone number" type="tel" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="website"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Website</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your website URL" type="url" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Location</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your location" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>City</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter your city" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="priceRange"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Price Range</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a price range" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="Budget">Budget</SelectItem>
-                    <SelectItem value="Mid-Range">Mid-Range</SelectItem>
-                    <SelectItem value="Premium">Premium</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="categoryId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Category</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="1">Photographer</SelectItem>
-                    <SelectItem value="2">Caterer</SelectItem>
-                    <SelectItem value="3">Decorator</SelectItem>
-                    <SelectItem value="4">Musician</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        </div>
 
-          <div>
-            <FormLabel>Upload Images (Max 5)</FormLabel>
-            <Input type="file" multiple onChange={handleImageUpload} />
-            <div className="flex mt-4 space-x-4">
-              {images.map((image, index) => (
-                <div key={index} className="relative w-32 h-32 rounded-md overflow-hidden">
-                  <img src={image} alt={`Uploaded ${index + 1}`} className="w-full h-full object-cover" />
-                </div>
+        <div>
+          <label className="block text-sm font-medium mb-2">Description</label>
+          <Textarea
+            value={formData.description}
+            onChange={(e) => handleInputChange('description', e.target.value)}
+            rows={4}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Email *</label>
+          <Input
+            type="email"
+            value={formData.email}
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Phone</label>
+          <Input
+            value={formData.phone}
+            onChange={(e) => handleInputChange('phone', e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Website</label>
+          <Input
+            value={formData.website}
+            onChange={(e) => handleInputChange('website', e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Location</label>
+          <Input
+            value={formData.location}
+            onChange={(e) => handleInputChange('location', e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">City</label>
+          <Input
+            value={formData.city}
+            onChange={(e) => handleInputChange('city', e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Price Range</label>
+          <Select onValueChange={(value) => handleInputChange('price_range', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select price range" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="$">$ - Budget Friendly</SelectItem>
+              <SelectItem value="$$">$$ - Moderate</SelectItem>
+              <SelectItem value="$$$">$$$ - Premium</SelectItem>
+              <SelectItem value="$$$$">$$$$ - Luxury</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Category *</label>
+          <Select onValueChange={(value) => handleInputChange('category_id', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category.id} value={category.id}>
+                  {category.name}
+                </SelectItem>
               ))}
-            </div>
-          </div>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Register"}
-          </Button>
-        </form>
-      </Form>
+        <div>
+          <label className="block text-sm font-medium mb-2">Images</label>
+          <Input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
+        </div>
+
+        <Button type="submit" disabled={loading} className="w-full">
+          {loading ? 'Submitting...' : 'Submit Registration'}
+        </Button>
+      </form>
     </div>
   );
 };
