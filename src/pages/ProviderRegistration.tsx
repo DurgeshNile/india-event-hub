@@ -1,335 +1,375 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { useNavigate } from 'react-router-dom';
+import { ImageIcon } from "lucide-react";
 
-const schema = yup.object({
-  business_name: yup.string().required('Business Name is required'),
-  description: yup.string().required('Description is required'),
-  email: yup.string().email('Invalid email format').required('Email is required'),
-  phone: yup.string().required('Phone is required'),
-  website: yup.string().url('Invalid URL format').notRequired(),
-  location: yup.string().required('Location is required'),
-  city: yup.string().required('City is required'),
-  price_range: yup.string().required('Price Range is required').oneOf(['low', 'medium', 'high']),
-  category_id: yup.string().required('Category is required'),
-}).required();
+const formSchema = z.object({
+  businessName: z.string().min(2, {
+    message: "Business name must be at least 2 characters.",
+  }),
+  description: z.string().min(10, {
+    message: "Description must be at least 10 characters.",
+  }),
+  email: z.string().email({
+    message: "Invalid email address.",
+  }),
+  phone: z.string().min(10, {
+    message: "Phone number must be at least 10 characters.",
+  }),
+  website: z.string().url({
+    message: "Invalid website URL.",
+  }),
+  location: z.string().min(2, {
+    message: "Location must be at least 2 characters.",
+  }),
+  city: z.string().min(2, {
+    message: "City must be at least 2 characters.",
+  }),
+  priceRange: z.string().min(1, {
+    message: "Price range must be selected.",
+  }),
+  categoryId: z.string().min(1, {
+    message: "Category must be selected.",
+  }),
+});
 
 const ProviderRegistration = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [images, setImages] = useState<string[]>([]);
+  const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [categories, setCategories] = useState<any[]>([]);
-  const [submitting, setSubmitting] = useState(false);
-  const [image, setImage] = useState<File | null>(null);
-  const { toast } = useToast();
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      business_name: '',
-      description: '',
-      email: '',
-      phone: '',
-      website: '',
-      location: '',
-      city: '',
-      price_range: 'medium',
-      category_id: '',
+      businessName: "",
+      description: "",
+      email: "",
+      phone: "",
+      website: "",
+      location: "",
+      city: "",
+      priceRange: "",
+      categoryId: "",
     },
   });
 
-  const fetchCategories = async () => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    const isValid = form.trigger();
+
+    if (!isValid) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields correctly.",
+        variant: "error",
+      });
+      return;
+    }
+
     try {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('id, name')
-        .order('name');
+      setIsSubmitting(true);
+
+      const imageUrls: string[] = [];
+      for (const image of images) {
+        const file = await fetch(image)
+          .then(res => res.blob())
+          .then(blob => new File([blob], 'image.jpg', { type: 'image/jpeg' }));
+
+        const imagePath = await uploadImage(file);
+        imageUrls.push(imagePath);
+      }
+
+      const { data: provider, error } = await supabase
+        .from('service_providers')
+        .insert({
+          business_name: data.businessName,
+          description: data.description,
+          email: data.email,
+          phone: data.phone,
+          website: data.website,
+          location: data.location,
+          city: data.city,
+          price_range: data.priceRange,
+          category_id: data.categoryId,
+          user_id: user?.id,
+          verified: false,
+          featured: false,
+          rating: 0,
+          review_count: 0
+        })
+        .select()
+        .single();
 
       if (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error inserting provider:', error);
         toast({
           title: "Error",
-          description: "Failed to load categories",
-          variant: "destructive",
+          description: "Failed to register service provider",
+          variant: "error",
         });
         return;
       }
 
-      setCategories(data || []);
-    } catch (error) {
-      console.error('Error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load categories",
-        variant: "destructive",
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-
-    fetchCategories();
-  }, [user, navigate]);
-
-  const uploadImage = async (file: File): Promise<string> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `provider-images/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('provider-images')
-      .upload(filePath, file);
-
-    if (uploadError) {
-      throw uploadError;
-    }
-
-    const { data } = supabase.storage
-      .from('provider-images')
-      .getPublicUrl(filePath);
-
-    return data.publicUrl;
-  };
-
-  const onSubmit = async (data: any) => {
-    if (!image) {
-      toast({
-        title: "Error",
-        description: "Please upload an image",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setSubmitting(true);
-
-    try {
-      const imageUrl = await uploadImage(image);
-
-      const { error } = await supabase
-        .from('service_providers')
-        .insert({
-          ...data,
-          user_id: user.id,
-          image_url: imageUrl,
-        });
-
-      if (error) {
-        throw error;
+      if (provider && imageUrls.length > 0) {
+        for (const imageUrl of imageUrls) {
+          await supabase
+            .from('service_provider_images')
+            .insert({
+              service_provider_id: provider.id,
+              image_url: imageUrl,
+              is_primary: false,
+              caption: ''
+            });
+        }
       }
 
       toast({
         title: "Success",
-        description: "Registration submitted successfully! Awaiting approval.",
+        description: "Service provider registered successfully! Your registration is pending approval.",
+        variant: "success",
       });
-      navigate('/dashboard');
+
+      reset();
+      setImages([]);
     } catch (error: any) {
-      console.error('Error submitting form:', error);
-      setSubmitting(false);
+      console.error('Error:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to submit registration",
-        variant: "destructive",
+        description: "Failed to register service provider",
+        variant: "error",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  const uploadImage = async (file: File): Promise<string> => {
+    const { data, error } = await supabase.storage
+      .from('service-provider-images')
+      .upload(`${user?.id}/${Date.now()}-${file.name}`, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    if (error) {
+      console.error('Upload error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to upload image",
+        variant: "error",
+      });
+      throw error;
+    }
+
+    return data.path;
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+
+    if (files.length + images.length > 5) {
+      toast({
+        title: "Error",
+        description: "You can upload a maximum of 5 images",
+        variant: "error",
+      });
+      return;
+    }
+
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+          setImages(prevImages => [...prevImages, reader.result as string]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const { reset } = form;
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      
-      <main className="container mx-auto px-4 py-8 flex-grow">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Service Provider Registration</CardTitle>
-            <CardDescription>
-              Fill out the form below to register as a service provider.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div>
-                <Label htmlFor="business_name">Business Name</Label>
-                <Controller
-                  name="business_name"
-                  control={control}
-                  render={({ field }) => (
-                    <Input {...field} id="business_name" placeholder="Your Business Name" />
-                  )}
-                />
-                {errors.business_name && <p className="text-red-500 text-sm">{errors.business_name.message}</p>}
-              </div>
+    <div className="container mx-auto py-10">
+      <h1 className="text-3xl font-bold mb-5">Service Provider Registration</h1>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="businessName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Business Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your business name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Tell us about your services"
+                    className="resize-none"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your email" type="email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your phone number" type="tel" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="website"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Website</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your website URL" type="url" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="location"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Location</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your location" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>City</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter your city" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="priceRange"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Price Range</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a price range" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Budget">Budget</SelectItem>
+                    <SelectItem value="Mid-Range">Mid-Range</SelectItem>
+                    <SelectItem value="Premium">Premium</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="categoryId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Category</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="1">Photographer</SelectItem>
+                    <SelectItem value="2">Caterer</SelectItem>
+                    <SelectItem value="3">Decorator</SelectItem>
+                    <SelectItem value="4">Musician</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Controller
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <Textarea {...field} id="description" placeholder="A brief description of your services" />
-                  )}
-                />
-                {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
-              </div>
+          <div>
+            <FormLabel>Upload Images (Max 5)</FormLabel>
+            <Input type="file" multiple onChange={handleImageUpload} />
+            <div className="flex mt-4 space-x-4">
+              {images.map((image, index) => (
+                <div key={index} className="relative w-32 h-32 rounded-md overflow-hidden">
+                  <img src={image} alt={`Uploaded ${index + 1}`} className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          </div>
 
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Controller
-                  name="email"
-                  control={control}
-                  render={({ field }) => (
-                    <Input {...field} type="email" id="email" placeholder="Your Email" />
-                  )}
-                />
-                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor="phone">Phone</Label>
-                <Controller
-                  name="phone"
-                  control={control}
-                  render={({ field }) => (
-                    <Input {...field} type="tel" id="phone" placeholder="Your Phone Number" />
-                  )}
-                />
-                {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor="website">Website</Label>
-                <Controller
-                  name="website"
-                  control={control}
-                  render={({ field }) => (
-                    <Input {...field} type="url" id="website" placeholder="Your Website (optional)" />
-                  )}
-                />
-                {errors.website && <p className="text-red-500 text-sm">{errors.website.message}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor="location">Location</Label>
-                <Controller
-                  name="location"
-                  control={control}
-                  render={({ field }) => (
-                    <Input {...field} id="location" placeholder="Your Location" />
-                  )}
-                />
-                {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor="city">City</Label>
-                <Controller
-                  name="city"
-                  control={control}
-                  render={({ field }) => (
-                    <Input {...field} id="city" placeholder="Your City" />
-                  )}
-                />
-                {errors.city && <p className="text-red-500 text-sm">{errors.city.message}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor="price_range">Price Range</Label>
-                <Controller
-                  name="price_range"
-                  control={control}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a price range" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.price_range && <p className="text-red-500 text-sm">{errors.price_range.message}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor="category_id">Category</Label>
-                <Controller
-                  name="category_id"
-                  control={control}
-                  render={({ field }) => (
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.id.toString()}>{category.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.category_id && <p className="text-red-500 text-sm">{errors.category_id.message}</p>}
-              </div>
-
-              <div>
-                <Label htmlFor="image">Image</Label>
-                <Input
-                  type="file"
-                  id="image"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files.length > 0) {
-                      setImage(e.target.files[0]);
-                    }
-                  }}
-                />
-                {image ? (
-                  <p className="text-green-500 text-sm">Image selected: {image.name}</p>
-                ) : (
-                  <p className="text-gray-500 text-sm">Please upload an image for your service.</p>
-                )}
-              </div>
-
-              <CardFooter>
-                <Button type="submit" disabled={submitting}>
-                  {submitting ? 'Submitting...' : 'Submit Registration'}
-                </Button>
-              </CardFooter>
-            </form>
-          </CardContent>
-        </Card>
-      </main>
-
-      <Footer />
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Submitting..." : "Register"}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 };
