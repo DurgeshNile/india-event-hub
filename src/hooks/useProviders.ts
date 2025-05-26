@@ -2,32 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
-
-interface ServiceProvider {
-  id: string;
-  business_name: string;
-  description: string;
-  email: string;
-  phone: string;
-  website: string;
-  location: string;
-  city: string;
-  price_range: string;
-  category_id: string;
-  user_id: string;
-  verified: boolean;
-  featured: boolean;
-  rating: number;
-  review_count: number;
-  created_at: string;
-  updated_at: string;
-  service_provider_images: Array<{
-    id: string;
-    image_url: string;
-    is_primary: boolean;
-    caption: string;
-  }>;
-}
+import { ServiceProvider, Provider, transformServiceProviderToProvider } from '@/types/provider';
 
 interface Category {
   id: string;
@@ -39,7 +14,7 @@ interface Category {
 }
 
 export const useProviders = (categoryId?: string) => {
-  const [providers, setProviders] = useState<ServiceProvider[]>([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
   const [category, setCategory] = useState<Category | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -65,7 +40,11 @@ export const useProviders = (categoryId?: string) => {
 
       if (error) throw error;
 
-      setProviders(data || []);
+      const transformedProviders = (data || []).map((serviceProvider: ServiceProvider) => 
+        transformServiceProviderToProvider(serviceProvider)
+      );
+
+      setProviders(transformedProviders);
     } catch (error: any) {
       console.error('Error fetching providers:', error);
       toast({

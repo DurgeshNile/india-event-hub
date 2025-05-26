@@ -59,10 +59,8 @@ const ProviderRegistration = () => {
       const fileName = `${providerId}/${Date.now()}_${file.name}`;
 
       try {
-        // Upload to Supabase storage (if configured)
-        const imageUrl = URL.createObjectURL(file); // Temporary URL for demo
+        const imageUrl = URL.createObjectURL(file);
 
-        // Insert image record
         const { error } = await supabase
           .from('service_provider_images')
           .insert({
@@ -86,7 +84,7 @@ const ProviderRegistration = () => {
       toast({
         title: "Error",
         description: "You must be logged in to register as a provider",
-        variant: "destructive",
+        variant: "error",
       });
       return;
     }
@@ -94,7 +92,6 @@ const ProviderRegistration = () => {
     setLoading(true);
 
     try {
-      // Insert service provider
       const { data: provider, error: providerError } = await supabase
         .from('service_providers')
         .insert({
@@ -110,7 +107,6 @@ const ProviderRegistration = () => {
 
       if (providerError) throw providerError;
 
-      // Upload images if any
       if (provider) {
         await uploadImages(provider.id);
       }
@@ -118,6 +114,7 @@ const ProviderRegistration = () => {
       toast({
         title: "Success",
         description: "Your provider registration has been submitted for review",
+        variant: "success",
       });
 
       navigate('/dashboard');
@@ -126,7 +123,7 @@ const ProviderRegistration = () => {
       toast({
         title: "Error",
         description: "Failed to register as provider. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setLoading(false);
@@ -205,10 +202,10 @@ const ProviderRegistration = () => {
               <SelectValue placeholder="Select price range" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="$">$ - Budget Friendly</SelectItem>
-              <SelectItem value="$$">$$ - Moderate</SelectItem>
-              <SelectItem value="$$$">$$$ - Premium</SelectItem>
-              <SelectItem value="$$$$">$$$$ - Luxury</SelectItem>
+              <SelectItem value="budget">$ - Budget Friendly</SelectItem>
+              <SelectItem value="moderate">$$ - Moderate</SelectItem>
+              <SelectItem value="premium">$$$ - Premium</SelectItem>
+              <SelectItem value="luxury">$$$$ - Luxury</SelectItem>
             </SelectContent>
           </Select>
         </div>

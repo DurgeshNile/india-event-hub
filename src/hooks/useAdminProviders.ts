@@ -51,7 +51,6 @@ export const useAdminProviders = () => {
 
       const transformedData = data || [];
 
-      // Use verified field to separate pending vs approved
       const pending = transformedData.filter(p => !p.verified);
       const approved = transformedData.filter(p => p.verified);
       
@@ -62,7 +61,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to load service providers",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setLoading(false);
@@ -81,6 +80,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Success",
         description: `Provider ${approved ? 'approved' : 'rejected'} successfully`,
+        variant: "success",
       });
 
       fetchProviders();
@@ -89,7 +89,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to update provider status",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };
