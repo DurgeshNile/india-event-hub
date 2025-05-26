@@ -93,7 +93,7 @@ export const useProviders = (categoryName: string) => {
       toast({
         title: "Error",
         description: "Failed to load service providers",
-        variant: "destructive",
+        variant: "destructive" as const,
       });
       setProviders([]);
     } finally {
