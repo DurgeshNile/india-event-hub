@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
@@ -183,10 +182,16 @@ const Navbar = () => {
                   About
                 </Link>
               </NavigationMenuItem>
-              {(userType === 'contributor' || userType === 'admin') && (
+              {(userType === 'admin' || userType === 'user' || userType === 'contributor') && (
                 <NavigationMenuItem>
                   <Link 
-                    to="/dashboard" 
+                    to={
+                      userType === 'admin'
+                        ? '/admin-dashboard'
+                        : userType === 'contributor'
+                          ? '/provider-dashboard'
+                          : '/user-dashboard'
+                    } 
                     className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium"
                   >
                     Dashboard
@@ -338,9 +343,15 @@ const Navbar = () => {
                     <DropdownMenuItem>
                       <Link to="/profile" className="w-full">Profile</Link>
                     </DropdownMenuItem>
-                    {(userType === 'contributor' || userType === 'admin') && (
+                    {(userType === 'admin' || userType === 'user' || userType === 'contributor') && (
                       <DropdownMenuItem>
-                        <Link to="/dashboard" className="w-full">Dashboard</Link>
+                        <Link to={
+                          userType === 'admin'
+                            ? '/admin-dashboard'
+                            : userType === 'contributor'
+                              ? '/provider-dashboard'
+                              : '/user-dashboard'
+                        } className="w-full">Dashboard</Link>
                       </DropdownMenuItem>
                     )}
                     {(userType === 'contributor') && (
@@ -462,9 +473,15 @@ const Navbar = () => {
               About
             </Link>
             
-            {(userType === 'contributor' || userType === 'admin') && (
+            {(userType === 'admin' || userType === 'user' || userType === 'contributor') && (
               <Link
-                to="/dashboard"
+                to={
+                  userType === 'admin'
+                    ? '/admin-dashboard'
+                    : userType === 'contributor'
+                      ? '/provider-dashboard'
+                      : '/user-dashboard'
+                }
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-pink-50 hover:text-pink-600"
                 onClick={() => setIsMenuOpen(false)}
               >
