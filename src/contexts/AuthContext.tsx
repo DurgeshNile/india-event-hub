@@ -131,12 +131,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       console.log('Login successful for:', email);
-      
-      // Check if admin and redirect accordingly
-      if (email === '1234durgeshnile@gmail.com') {
-        setTimeout(() => navigate('/admin'), 100);
-      }
-
       return { success: true, message: 'Login successful' };
     } catch (error: any) {
       console.error('Login exception:', error);

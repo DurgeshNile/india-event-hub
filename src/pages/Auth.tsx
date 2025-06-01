@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,16 +6,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff, Facebook, Apple, Shield } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Facebook, Apple, Shield, User, Store } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+
+type UserRole = 'user' | 'provider' | 'admin';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('user');
   const [isContributor, setIsContributor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -34,10 +39,14 @@ const Auth = () => {
     }
   }, [isAuthenticated, navigate, from]);
 
-  const handleAdminLogin = () => {
-    setEmail('1234durgeshnile@gmail.com');
-    setPassword('Nile@2001');
-    setActiveTab('login');
+  const handleRoleBasedRedirect = (email: string, role: UserRole) => {
+    if (email === '1234durgeshnile@gmail.com') {
+      navigate('/admin');
+    } else if (role === 'provider') {
+      navigate('/dashboard');
+    } else {
+      navigate('/');
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -53,18 +62,23 @@ const Auth = () => {
           description: "Welcome back to LetsEventify!",
           variant: "default",
         });
+        
+        // Role-based redirect after successful login
+        setTimeout(() => {
+          handleRoleBasedRedirect(email, selectedRole);
+        }, 100);
       } else {
         toast({
           title: "Login Failed",
           description: result.message || "Invalid email or password. Please try again.",
-          variant: "destructive",
+          variant: "error",
         });
       }
     } catch (error: any) {
       toast({
         title: "Login Failed",
         description: error.message || "An unexpected error occurred. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsLoading(false);
@@ -80,7 +94,7 @@ const Auth = () => {
         toast({
           title: "Signup Failed",
           description: "Password must be at least 8 characters long.",
-          variant: "destructive",
+          variant: "error",
         });
         setIsLoading(false);
         return;
@@ -89,7 +103,7 @@ const Auth = () => {
       const metadata = {
         first_name: name.split(' ')[0],
         last_name: name.includes(' ') ? name.split(' ').slice(1).join(' ') : '',
-        user_type: isContributor ? 'contributor' : 'user',
+        user_type: selectedRole === 'provider' ? 'contributor' : selectedRole,
       };
       
       const result = await signUp(email, password, metadata);
@@ -97,23 +111,28 @@ const Auth = () => {
       if (result.success) {
         toast({
           title: "Account Created",
-          description: isContributor 
-            ? "Welcome to LetsEventify! Your contributor account has been created."
+          description: selectedRole === 'provider' 
+            ? "Welcome to LetsEventify! Your service provider account has been created."
             : "Welcome to LetsEventify! Your account has been successfully created.",
           variant: "default",
         });
+        
+        // Role-based redirect after successful signup
+        setTimeout(() => {
+          handleRoleBasedRedirect(email, selectedRole);
+        }, 100);
       } else {
         toast({
           title: "Signup Failed",
           description: result.message || "There was an error creating your account. Please try again.",
-          variant: "destructive",
+          variant: "error",
         });
       }
     } catch (error: any) {
       toast({
         title: "Signup Failed",
         description: error.message || "An unexpected error occurred. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsLoading(false);
@@ -126,6 +145,22 @@ const Auth = () => {
       description: `${provider} login is not available yet. Please use email login.`,
       variant: "default",
     });
+  };
+
+  const getRoleIcon = (role: UserRole) => {
+    switch (role) {
+      case 'admin': return <Shield className="w-4 h-4" />;
+      case 'provider': return <Store className="w-4 h-4" />;
+      case 'user': return <User className="w-4 h-4" />;
+    }
+  };
+
+  const getRoleDescription = (role: UserRole) => {
+    switch (role) {
+      case 'admin': return 'Manage the platform';
+      case 'provider': return 'Offer event services';
+      case 'user': return 'Book event services';
+    }
   };
 
   return (
@@ -144,26 +179,48 @@ const Auth = () => {
             </CardDescription>
           </CardHeader>
           
-          {/* Admin Login Button */}
-          <div className="px-6 pb-4">
-            <Button 
-              onClick={handleAdminLogin}
-              variant="outline" 
-              className="w-full mb-4 border-orange-500 text-orange-600 hover:bg-orange-50"
-            >
-              <Shield className="mr-2" size={16} />
-              Login as Admin
-            </Button>
-          </div>
-          
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
+            
             <TabsContent value="login">
               <form onSubmit={handleLogin}>
                 <CardContent className="space-y-4">
+                  {/* Role Selection */}
+                  <div className="space-y-2">
+                    <Label>Login as</Label>
+                    <Select value={selectedRole} onValueChange={(value: UserRole) => setSelectedRole(value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="user">
+                          <div className="flex items-center space-x-2">
+                            <User className="w-4 h-4" />
+                            <span>Customer</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="provider">
+                          <div className="flex items-center space-x-2">
+                            <Store className="w-4 h-4" />
+                            <span>Service Provider</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="admin">
+                          <div className="flex items-center space-x-2">
+                            <Shield className="w-4 h-4" />
+                            <span>Admin</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-gray-500">
+                      {getRoleDescription(selectedRole)}
+                    </p>
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label htmlFor="login-email">Email</Label>
                     <Input 
@@ -210,7 +267,7 @@ const Auth = () => {
                     className="w-full" 
                     disabled={isLoading}
                   >
-                    {isLoading ? "Logging in..." : "Login"}
+                    {isLoading ? "Logging in..." : `Login as ${selectedRole === 'user' ? 'Customer' : selectedRole === 'provider' ? 'Service Provider' : 'Admin'}`}
                   </Button>
                   <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-white px-2 text-gray-500">Or continue with</span>
@@ -239,9 +296,37 @@ const Auth = () => {
                 </CardFooter>
               </form>
             </TabsContent>
+            
             <TabsContent value="signup">
               <form onSubmit={handleSignup}>
                 <CardContent className="space-y-4">
+                  {/* Role Selection */}
+                  <div className="space-y-2">
+                    <Label>Sign up as</Label>
+                    <Select value={selectedRole} onValueChange={(value: UserRole) => setSelectedRole(value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="user">
+                          <div className="flex items-center space-x-2">
+                            <User className="w-4 h-4" />
+                            <span>Customer</span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="provider">
+                          <div className="flex items-center space-x-2">
+                            <Store className="w-4 h-4" />
+                            <span>Service Provider</span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-gray-500">
+                      {getRoleDescription(selectedRole)}
+                    </p>
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
                     <Input 
@@ -283,16 +368,6 @@ const Auth = () => {
                       </button>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="contributor" 
-                      checked={isContributor} 
-                      onCheckedChange={(checked) => setIsContributor(checked as boolean)}
-                    />
-                    <Label htmlFor="contributor" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                      Register as a Contributor/Service Provider
-                    </Label>
-                  </div>
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4">
                   <Button 
@@ -300,7 +375,7 @@ const Auth = () => {
                     className="w-full" 
                     disabled={isLoading}
                   >
-                    {isLoading ? "Creating Account..." : "Create Account"}
+                    {isLoading ? "Creating Account..." : `Create ${selectedRole === 'user' ? 'Customer' : 'Service Provider'} Account`}
                   </Button>
                   <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-white px-2 text-gray-500">Or sign up with</span>

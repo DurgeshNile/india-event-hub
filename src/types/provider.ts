@@ -49,7 +49,7 @@ export const transformServiceProviderToProvider = (serviceProvider: ServiceProvi
     image: serviceProvider.service_provider_images?.[0]?.image_url || '',
     rating: serviceProvider.rating,
     price_range: serviceProvider.price_range,
-    location: serviceProvider.location,
+    location: serviceProvider.location || '',
     description: serviceProvider.description,
     city: serviceProvider.city,
     verified: serviceProvider.verified,
