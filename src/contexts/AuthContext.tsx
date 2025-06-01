@@ -93,9 +93,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('profiles')
         .select('user_type')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error('Error fetching user profile:', error);
         // Default to 'user' if there's an error
         setUserType('user');
@@ -150,6 +150,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         return { success: false, message: error.message };
+      }
+
+      // After successful signup, create a profile with the user_type
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            id: data.user.id,
+            first_name: metadata.first_name,
+            last_name: metadata.last_name,
+            user_type: metadata.user_type,
+          });
+
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+        }
       }
 
       return { 

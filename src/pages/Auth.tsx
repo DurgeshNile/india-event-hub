@@ -26,22 +26,22 @@ const Auth = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated, login, signUp } = useAuth();
+  const { isAuthenticated, login, signUp, userType } = useAuth();
   
   // Get the intended destination from location state, or default to '/'
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
   
   // If user is authenticated, redirect to the intended destination
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate(from, { replace: true });
+    if (isAuthenticated && userType) {
+      handleRoleBasedRedirect(userType);
     }
-  }, [isAuthenticated, navigate, from]);
+  }, [isAuthenticated, userType, navigate, from]);
 
-  const handleRoleBasedRedirect = (email: string, role: UserRole) => {
-    if (email === '1234durgeshnile@gmail.com') {
+  const handleRoleBasedRedirect = (type: 'user' | 'contributor' | 'admin') => {
+    if (type === 'admin') {
       navigate('/admin');
-    } else if (role === 'provider') {
+    } else if (type === 'contributor') {
       navigate('/provider-dashboard');
     } else {
       navigate('/user-dashboard');
@@ -62,10 +62,7 @@ const Auth = () => {
           variant: "default",
         });
         
-        // Role-based redirect after successful login
-        setTimeout(() => {
-          handleRoleBasedRedirect(email, selectedRole);
-        }, 100);
+        // Don't redirect here, let the useEffect handle it based on userType
       } else {
         toast({
           title: "Login Failed",
@@ -116,10 +113,7 @@ const Auth = () => {
           variant: "default",
         });
         
-        // Role-based redirect after successful signup
-        setTimeout(() => {
-          handleRoleBasedRedirect(email, selectedRole);
-        }, 100);
+        // Don't redirect here, let the useEffect handle it based on userType
       } else {
         toast({
           title: "Signup Failed",

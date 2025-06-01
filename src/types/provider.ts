@@ -7,7 +7,7 @@ export interface Provider {
   image: string;
   rating: number;
   price_range?: string;
-  location?: string;
+  location: string; // Made required to fix the build error
   description?: string;
   city?: string;
   verified?: boolean;

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -34,14 +34,30 @@ const ProviderRegistration = () => {
 
   const [images, setImages] = useState<FileList | null>(null);
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
 
-  const categories = [
-    { id: 'category1', name: 'Photography' },
-    { id: 'category2', name: 'Catering' },
-    { id: 'category3', name: 'Decoration' },
-    { id: 'category4', name: 'Music & Entertainment' },
-    { id: 'category5', name: 'Venue' },
-  ];
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('id, name');
+        
+      if (error) throw error;
+      
+      setCategories(data || []);
+    } catch (error: any) {
+      console.error('Error fetching categories:', error);
+      toast({
+        title: "Warning",
+        description: "Could not load categories. You can still submit without selecting a category.",
+        variant: "default",
+      });
+    }
+  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -97,10 +113,10 @@ const ProviderRegistration = () => {
     }
 
     // Validate required fields
-    if (!formData.business_name || !formData.email || !formData.category_id) {
+    if (!formData.business_name || !formData.email) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields (Business Name, Email, Category)",
+        description: "Please fill in all required fields (Business Name and Email)",
         variant: "error",
       });
       return;
@@ -242,21 +258,23 @@ const ProviderRegistration = () => {
           </Select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium mb-2">Category *</label>
-          <Select onValueChange={(value) => handleInputChange('category_id', value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        {categories.length > 0 && (
+          <div>
+            <label className="block text-sm font-medium mb-2">Category</label>
+            <Select onValueChange={(value) => handleInputChange('category_id', value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         <div>
           <label className="block text-sm font-medium mb-2">Images</label>

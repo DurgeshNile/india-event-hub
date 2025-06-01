@@ -34,9 +34,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       // Redirect non-admin users away from admin routes
       return <Navigate to="/" replace />;
     }
-  } else if (requiredUserType && userType !== requiredUserType && !isAdmin()) {
-    // Admin can access all routes, otherwise check for specific role
-    return <Navigate to="/" replace />;
+  } else if (requiredUserType === 'contributor') {
+    if (userType !== 'contributor' && !isAdmin()) {
+      // Only contributors and admins can access contributor routes
+      return <Navigate to="/user-dashboard" replace />;
+    }
+  } else if (requiredUserType === 'user') {
+    if (userType !== 'user' && !isAdmin()) {
+      // Only users and admins can access user routes
+      if (userType === 'contributor') {
+        return <Navigate to="/provider-dashboard" replace />;
+      }
+      return <Navigate to="/" replace />;
+    }
   }
 
   return <>{children}</>;
