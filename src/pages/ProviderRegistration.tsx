@@ -56,8 +56,7 @@ const ProviderRegistration = () => {
 
     for (let i = 0; i < images.length; i++) {
       const file = images[i];
-      const fileName = `${providerId}/${Date.now()}_${file.name}`;
-
+      
       try {
         const imageUrl = URL.createObjectURL(file);
 
@@ -70,9 +69,13 @@ const ProviderRegistration = () => {
             caption: file.name,
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error uploading image:', error);
+          throw error;
+        }
       } catch (error) {
-        console.error('Error uploading image:', error);
+        console.error('Error processing image:', error);
+        throw error;
       }
     }
   };
@@ -80,11 +83,25 @@ const ProviderRegistration = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Starting provider registration...');
+    console.log('User:', user);
+    console.log('Form data:', formData);
+    
     if (!user) {
       toast({
         title: "Error",
         description: "You must be logged in to register as a provider",
-        variant: "error",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate required fields
+    if (!formData.business_name || !formData.email || !formData.category_id) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields (Business Name, Email, Category)",
+        variant: "destructive",
       });
       return;
     }
@@ -92,6 +109,8 @@ const ProviderRegistration = () => {
     setLoading(true);
 
     try {
+      console.log('Inserting provider data...');
+      
       const { data: provider, error: providerError } = await supabase
         .from('service_providers')
         .insert({
@@ -105,16 +124,22 @@ const ProviderRegistration = () => {
         .select()
         .single();
 
-      if (providerError) throw providerError;
+      console.log('Provider insert result:', { provider, providerError });
+
+      if (providerError) {
+        console.error('Provider insert error:', providerError);
+        throw providerError;
+      }
 
       if (provider) {
+        console.log('Uploading images...');
         await uploadImages(provider.id);
       }
 
       toast({
         title: "Success",
         description: "Your provider registration has been submitted for review",
-        variant: "success",
+        variant: "default",
       });
 
       navigate('/dashboard');
@@ -122,8 +147,8 @@ const ProviderRegistration = () => {
       console.error('Error registering provider:', error);
       toast({
         title: "Error",
-        description: "Failed to register as provider. Please try again.",
-        variant: "error",
+        description: `Failed to register as provider: ${error.message || 'Please try again.'}`,
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -141,6 +166,7 @@ const ProviderRegistration = () => {
             value={formData.business_name}
             onChange={(e) => handleInputChange('business_name', e.target.value)}
             required
+            placeholder="Enter your business name"
           />
         </div>
 
@@ -150,6 +176,7 @@ const ProviderRegistration = () => {
             value={formData.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
             rows={4}
+            placeholder="Describe your services"
           />
         </div>
 
@@ -160,6 +187,7 @@ const ProviderRegistration = () => {
             value={formData.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
             required
+            placeholder="Enter your email"
           />
         </div>
 
@@ -168,6 +196,7 @@ const ProviderRegistration = () => {
           <Input
             value={formData.phone}
             onChange={(e) => handleInputChange('phone', e.target.value)}
+            placeholder="Enter your phone number"
           />
         </div>
 
@@ -176,6 +205,7 @@ const ProviderRegistration = () => {
           <Input
             value={formData.website}
             onChange={(e) => handleInputChange('website', e.target.value)}
+            placeholder="Enter your website URL"
           />
         </div>
 
@@ -184,6 +214,7 @@ const ProviderRegistration = () => {
           <Input
             value={formData.location}
             onChange={(e) => handleInputChange('location', e.target.value)}
+            placeholder="Enter your location"
           />
         </div>
 
@@ -192,6 +223,7 @@ const ProviderRegistration = () => {
           <Input
             value={formData.city}
             onChange={(e) => handleInputChange('city', e.target.value)}
+            placeholder="Enter your city"
           />
         </div>
 

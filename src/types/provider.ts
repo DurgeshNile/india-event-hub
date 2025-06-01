@@ -9,6 +9,9 @@ export interface Provider {
   price_range?: string;
   location?: string;
   description?: string;
+  city?: string;
+  verified?: boolean;
+  featured?: boolean;
 }
 
 export interface ServiceProvider {
@@ -48,5 +51,8 @@ export const transformServiceProviderToProvider = (serviceProvider: ServiceProvi
     price_range: serviceProvider.price_range,
     location: serviceProvider.location,
     description: serviceProvider.description,
+    city: serviceProvider.city,
+    verified: serviceProvider.verified,
+    featured: serviceProvider.featured,
   };
 };

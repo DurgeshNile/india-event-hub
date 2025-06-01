@@ -14,6 +14,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
   signUp: (email: string, password: string, metadata: any) => Promise<{ success: boolean; message: string }>;
   logout: () => Promise<void>;
+  isAdmin: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -35,11 +36,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Check if user is admin
+  const isAdmin = () => {
+    return user?.email === '1234durgeshnile@gmail.com' || userType === 'admin';
+  };
+
   // Initialize auth state
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         setIsAuthenticated(!!session);
@@ -47,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Defer profile fetch to avoid potential Supabase client deadlock
         if (session?.user) {
           setTimeout(() => {
-            fetchUserProfile(session.user.id);
+            fetchUserProfile(session.user.id, session.user.email);
           }, 0);
         } else {
           setUserType(null);
@@ -57,12 +64,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       setIsAuthenticated(!!session);
       
       if (session?.user) {
-        fetchUserProfile(session.user.id);
+        fetchUserProfile(session.user.id, session.user.email);
       }
       setLoading(false);
     });
@@ -73,8 +81,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   // Fetch user profile to get the user type
-  const fetchUserProfile = async (userId: string) => {
+  const fetchUserProfile = async (userId: string, email?: string) => {
     try {
+      // Check if user is the designated admin
+      if (email === '1234durgeshnile@gmail.com') {
+        setUserType('admin');
+        return;
+      }
+
       const { data, error } = await supabase
         .from('profiles')
         .select('user_type')
@@ -104,18 +118,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
+      console.log('Attempting login for:', email);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        console.error('Login error:', error);
         return { success: false, message: error.message };
       }
 
-      // Navigation will be handled by onAuthStateChange
+      console.log('Login successful for:', email);
+      
+      // Check if admin and redirect accordingly
+      if (email === '1234durgeshnile@gmail.com') {
+        setTimeout(() => navigate('/admin'), 100);
+      }
+
       return { success: true, message: 'Login successful' };
     } catch (error: any) {
+      console.error('Login exception:', error);
       return { success: false, message: error.message || 'Failed to login' };
     }
   };
@@ -134,7 +158,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: false, message: error.message };
       }
 
-      // Navigation will be handled by onAuthStateChange
       return { 
         success: true, 
         message: 'Registration successful' 
@@ -158,7 +181,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loading,
       login, 
       signUp,
-      logout 
+      logout,
+      isAdmin
     }}>
       {children}
     </AuthContext.Provider>

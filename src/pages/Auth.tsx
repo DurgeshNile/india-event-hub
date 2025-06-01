@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff, Facebook, Apple } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Facebook, Apple, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Auth = () => {
@@ -18,6 +18,7 @@ const Auth = () => {
   const [isContributor, setIsContributor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState('login');
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,6 +34,12 @@ const Auth = () => {
     }
   }, [isAuthenticated, navigate, from]);
 
+  const handleAdminLogin = () => {
+    setEmail('1234durgeshnile@gmail.com');
+    setPassword('Nile@2001');
+    setActiveTab('login');
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -44,20 +51,20 @@ const Auth = () => {
         toast({
           title: "Login Successful",
           description: "Welcome back to LetsEventify!",
-          variant: "success",
+          variant: "default",
         });
       } else {
         toast({
           title: "Login Failed",
           description: result.message || "Invalid email or password. Please try again.",
-          variant: "error",
+          variant: "destructive",
         });
       }
     } catch (error: any) {
       toast({
         title: "Login Failed",
         description: error.message || "An unexpected error occurred. Please try again.",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -73,7 +80,7 @@ const Auth = () => {
         toast({
           title: "Signup Failed",
           description: "Password must be at least 8 characters long.",
-          variant: "error",
+          variant: "destructive",
         });
         setIsLoading(false);
         return;
@@ -93,20 +100,20 @@ const Auth = () => {
           description: isContributor 
             ? "Welcome to LetsEventify! Your contributor account has been created."
             : "Welcome to LetsEventify! Your account has been successfully created.",
-          variant: "success",
+          variant: "default",
         });
       } else {
         toast({
           title: "Signup Failed",
           description: result.message || "There was an error creating your account. Please try again.",
-          variant: "error",
+          variant: "destructive",
         });
       }
     } catch (error: any) {
       toast({
         title: "Signup Failed",
         description: error.message || "An unexpected error occurred. Please try again.",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -117,7 +124,7 @@ const Auth = () => {
     toast({
       title: `${provider} Login`,
       description: `${provider} login is not available yet. Please use email login.`,
-      variant: "warning",
+      variant: "default",
     });
   };
 
@@ -136,7 +143,20 @@ const Auth = () => {
               Your one-stop destination for event services
             </CardDescription>
           </CardHeader>
-          <Tabs defaultValue="login" className="w-full">
+          
+          {/* Admin Login Button */}
+          <div className="px-6 pb-4">
+            <Button 
+              onClick={handleAdminLogin}
+              variant="outline" 
+              className="w-full mb-4 border-orange-500 text-orange-600 hover:bg-orange-50"
+            >
+              <Shield className="mr-2" size={16} />
+              Login as Admin
+            </Button>
+          </div>
+          
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>

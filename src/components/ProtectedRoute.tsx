@@ -12,7 +12,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children, 
   requiredUserType
 }) => {
-  const { isAuthenticated, loading, userType } = useAuth();
+  const { isAuthenticated, loading, userType, isAdmin } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -29,7 +29,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Check if this route requires a specific user type
-  if (requiredUserType && userType !== requiredUserType && userType !== 'admin') {
+  if (requiredUserType === 'admin') {
+    if (!isAdmin()) {
+      // Redirect non-admin users away from admin routes
+      return <Navigate to="/" replace />;
+    }
+  } else if (requiredUserType && userType !== requiredUserType && !isAdmin()) {
     // Admin can access all routes, otherwise check for specific role
     return <Navigate to="/" replace />;
   }
