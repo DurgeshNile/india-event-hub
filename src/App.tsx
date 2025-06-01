@@ -17,6 +17,7 @@ import Categories from "./pages/Categories";
 import Auth from "./pages/Auth";
 import ContributorDashboard from "./pages/ContributorDashboard";
 import UserDashboard from "./pages/UserDashboard";
+import ServiceProviderDashboard from "./pages/ServiceProviderDashboard";
 import EventListing from "./pages/EventListing";
 import ProviderRegistration from "./pages/ProviderRegistration";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -88,6 +89,14 @@ const App = () => (
               element={
                 <ProtectedRoute requiredUserType="user">
                   <UserDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/provider-dashboard" 
+              element={
+                <ProtectedRoute requiredUserType="contributor">
+                  <ServiceProviderDashboard />
                 </ProtectedRoute>
               } 
             />

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,9 +42,9 @@ const Auth = () => {
     if (email === '1234durgeshnile@gmail.com') {
       navigate('/admin');
     } else if (role === 'provider') {
-      navigate('/dashboard');
+      navigate('/provider-dashboard');
     } else {
-      navigate('/');
+      navigate('/user-dashboard');
     }
   };
 
