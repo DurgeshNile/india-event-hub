@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -19,7 +18,6 @@ const Auth = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [selectedRole, setSelectedRole] = useState<UserRole>('user');
-  const [isContributor, setIsContributor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState('login');
@@ -31,7 +29,7 @@ const Auth = () => {
   // Get the intended destination from location state, or default to '/'
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
   
-  // If user is authenticated, redirect to the intended destination
+  // If user is authenticated, redirect to the appropriate dashboard
   useEffect(() => {
     if (isAuthenticated && userType) {
       handleRoleBasedRedirect(userType);
@@ -39,6 +37,7 @@ const Auth = () => {
   }, [isAuthenticated, userType, navigate, from]);
 
   const handleRoleBasedRedirect = (type: 'user' | 'contributor' | 'admin') => {
+    console.log('Redirecting user with type:', type);
     if (type === 'admin') {
       navigate('/admin');
     } else if (type === 'contributor') {
@@ -53,6 +52,7 @@ const Auth = () => {
     setIsLoading(true);
     
     try {
+      console.log('Attempting login with role:', selectedRole);
       const result = await login(email, password);
       
       if (result.success) {
@@ -62,19 +62,20 @@ const Auth = () => {
           variant: "default",
         });
         
-        // Don't redirect here, let the useEffect handle it based on userType
+        // The useEffect will handle redirection based on userType
       } else {
         toast({
           title: "Login Failed",
           description: result.message || "Invalid email or password. Please try again.",
-          variant: "error",
+          variant: "destructive",
         });
       }
     } catch (error: any) {
+      console.error('Login error:', error);
       toast({
         title: "Login Failed",
         description: error.message || "An unexpected error occurred. Please try again.",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -90,17 +91,22 @@ const Auth = () => {
         toast({
           title: "Signup Failed",
           description: "Password must be at least 8 characters long.",
-          variant: "error",
+          variant: "destructive",
         });
         setIsLoading(false);
         return;
       }
       
+      // Set the correct user_type for the database
+      const userTypeForDb = selectedRole === 'provider' ? 'contributor' : selectedRole;
+      
       const metadata = {
         first_name: name.split(' ')[0],
         last_name: name.includes(' ') ? name.split(' ').slice(1).join(' ') : '',
-        user_type: selectedRole === 'provider' ? 'contributor' : selectedRole,
+        user_type: userTypeForDb,
       };
+      
+      console.log('Signing up with metadata:', metadata);
       
       const result = await signUp(email, password, metadata);
       
@@ -113,19 +119,20 @@ const Auth = () => {
           variant: "default",
         });
         
-        // Don't redirect here, let the useEffect handle it based on userType
+        // The useEffect will handle redirection based on userType
       } else {
         toast({
           title: "Signup Failed",
           description: result.message || "There was an error creating your account. Please try again.",
-          variant: "error",
+          variant: "destructive",
         });
       }
     } catch (error: any) {
+      console.error('Signup error:', error);
       toast({
         title: "Signup Failed",
         description: error.message || "An unexpected error occurred. Please try again.",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -181,7 +188,7 @@ const Auth = () => {
             <TabsContent value="login">
               <form onSubmit={handleLogin}>
                 <CardContent className="space-y-4">
-                  {/* Role Selection */}
+                  {/* Role Selection for Login */}
                   <div className="space-y-2">
                     <Label>Login as</Label>
                     <Select value={selectedRole} onValueChange={(value: UserRole) => setSelectedRole(value)}>
@@ -262,6 +269,7 @@ const Auth = () => {
                   >
                     {isLoading ? "Logging in..." : `Login as ${selectedRole === 'user' ? 'Customer' : selectedRole === 'provider' ? 'Service Provider' : 'Admin'}`}
                   </Button>
+                  
                   <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-white px-2 text-gray-500">Or continue with</span>
                     <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gray-300"></div>
@@ -293,7 +301,7 @@ const Auth = () => {
             <TabsContent value="signup">
               <form onSubmit={handleSignup}>
                 <CardContent className="space-y-4">
-                  {/* Role Selection */}
+                  {/* Role Selection for Signup */}
                   <div className="space-y-2">
                     <Label>Sign up as</Label>
                     <Select value={selectedRole} onValueChange={(value: UserRole) => setSelectedRole(value)}>
@@ -370,6 +378,7 @@ const Auth = () => {
                   >
                     {isLoading ? "Creating Account..." : `Create ${selectedRole === 'user' ? 'Customer' : 'Service Provider'} Account`}
                   </Button>
+                  
                   <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-white px-2 text-gray-500">Or sign up with</span>
                     <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-gray-300"></div>

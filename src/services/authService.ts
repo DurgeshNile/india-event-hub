@@ -33,6 +33,7 @@ export const authService = {
         password,
         options: {
           data: metadata,
+          emailRedirectTo: `${window.location.origin}/`,
         },
       });
 
@@ -41,29 +42,14 @@ export const authService = {
         return { success: false, message: error.message };
       }
 
-      // After successful signup, create a profile with the user_type
+      // After successful signup, the trigger function will automatically create the profile
       if (data.user) {
-        console.log('Creating profile for user:', data.user.id, 'with type:', metadata.user_type);
-        
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .upsert({
-            id: data.user.id,
-            first_name: metadata.first_name,
-            last_name: metadata.last_name,
-            user_type: metadata.user_type,
-          });
-
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-        } else {
-          console.log('Profile created successfully with user_type:', metadata.user_type);
-        }
+        console.log('User created successfully:', data.user.id, 'with type:', metadata.user_type);
       }
 
       return { 
         success: true, 
-        message: 'Registration successful' 
+        message: 'Registration successful. Please check your email for verification.' 
       };
     } catch (error: any) {
       console.error('Signup exception:', error);
