@@ -9,7 +9,7 @@ export interface Provider {
   price_range?: string;
   location: string;
   description?: string;
-  city?: string; // Made optional to fix the build error
+  city: string; // Made required to fix the build error
   verified?: boolean;
   featured?: boolean;
 }
@@ -51,7 +51,7 @@ export const transformServiceProviderToProvider = (serviceProvider: ServiceProvi
     price_range: serviceProvider.price_range,
     location: serviceProvider.location || '',
     description: serviceProvider.description,
-    city: serviceProvider.city,
+    city: serviceProvider.city || '',
     verified: serviceProvider.verified,
     featured: serviceProvider.featured,
   };
