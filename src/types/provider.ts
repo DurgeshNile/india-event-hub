@@ -1,4 +1,3 @@
-
 export interface Provider {
   id: string;
   name: string;
@@ -9,7 +8,7 @@ export interface Provider {
   price_range?: string;
   location: string;
   description?: string;
-  city: string; // Made required to fix the build error
+  city: string;
   verified?: boolean;
   featured?: boolean;
 }
