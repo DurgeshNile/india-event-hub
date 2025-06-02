@@ -140,6 +140,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signUp = async (email: string, password: string, metadata: any) => {
     try {
+      console.log('Signup metadata:', metadata);
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -149,11 +151,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
+        console.error('Signup error:', error);
         return { success: false, message: error.message };
       }
 
       // After successful signup, create a profile with the user_type
       if (data.user) {
+        console.log('Creating profile for user:', data.user.id, 'with type:', metadata.user_type);
+        
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
@@ -165,6 +170,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (profileError) {
           console.error('Error creating profile:', profileError);
+          // Still return success as the user was created, just the profile failed
+        } else {
+          console.log('Profile created successfully with user_type:', metadata.user_type);
         }
       }
 
@@ -173,6 +181,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         message: 'Registration successful' 
       };
     } catch (error: any) {
+      console.error('Signup exception:', error);
       return { success: false, message: error.message || 'Failed to sign up' };
     }
   };
