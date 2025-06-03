@@ -64,14 +64,14 @@
     @apply font-syne font-bold text-white;
   }
 
-  /* Ensure text visibility */
+  /* Ensure text visibility with better contrast */
   p, span, div, label {
-    @apply text-white;
+    @apply text-gray-100;
   }
 
-  /* Fix form elements visibility */
+  /* Fix form elements visibility with better contrast */
   input, textarea, select {
-    @apply text-white bg-gray-800 border-gray-600;
+    @apply text-gray-100 bg-gray-800 border-gray-600;
   }
 
   input::placeholder, textarea::placeholder {
@@ -93,7 +93,7 @@
   }
 
   .card-header, .card-content, .card-footer {
-    @apply text-white;
+    @apply text-gray-100;
   }
 
   /* Button text visibility */
@@ -103,19 +103,19 @@
 
   /* Ensure proper contrast for all text elements */
   .text-gray-500 {
-    @apply text-gray-400;
-  }
-
-  .text-gray-600 {
     @apply text-gray-300;
   }
 
-  .text-gray-700 {
+  .text-gray-600 {
     @apply text-gray-200;
   }
 
-  .text-gray-800 {
+  .text-gray-700 {
     @apply text-gray-100;
+  }
+
+  .text-gray-800 {
+    @apply text-white;
   }
 
   .text-gray-900 {

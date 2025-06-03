@@ -1,13 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious
-} from "@/components/ui/carousel";
 import { PartyPopper, CalendarDays, Heart, ChevronRight, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -32,42 +25,42 @@ const eventImages: EventImage[] = [
   {
     id: 2,
     src: "https://images.unsplash.com/photo-1530735038726-a73fd6e6c31c?ixlib=rb-4.0.3",
-    alt: "Colorful Holi Party",
-    category: "Parties",
+    alt: "Colorful Holi Festival",
+    category: "Festivals",
     icon: <PartyPopper className="w-5 h-5" />,
-    description: "Celebrate the festival of colors with our vibrant Holi events"
+    description: "Celebrate the vibrant festival of colors with traditional enthusiasm"
   },
   {
     id: 3,
     src: "https://images.unsplash.com/photo-1533105079780-92b9be482077?ixlib=rb-4.0.3",
     alt: "Corporate Event in Mumbai",
-    category: "Events",
+    category: "Corporate",
     icon: <CalendarDays className="w-5 h-5" />,
-    description: "Professional corporate events with impeccable service and attention to detail"
+    description: "Professional corporate events with Indian hospitality and precision"
   },
   {
     id: 4,
-    src: "https://images.unsplash.com/photo-1610851467855-4ecfc3c975e4?ixlib=rb-4.0.3",
-    alt: "Royal Rajasthani Wedding",
+    src: "https://images.unsplash.com/photo-1472396961693-142e6e269027?ixlib=rb-4.0.3",
+    alt: "Royal Rajasthani Celebration",
     category: "Weddings",
     icon: <Heart className="w-5 h-5" />,
-    description: "Royal Rajasthani weddings with traditional ceremonies and opulent decor"
+    description: "Royal Rajasthani celebrations with traditional ceremonies and opulent decor"
   },
   {
     id: 5,
     src: "https://images.unsplash.com/photo-1567504780246-1a829a7008a3?ixlib=rb-4.0.3",
     alt: "Diwali Celebration",
-    category: "Parties",
+    category: "Festivals",
     icon: <PartyPopper className="w-5 h-5" />,
-    description: "Illuminate your Diwali celebrations with our spectacular arrangements"
+    description: "Illuminate your Diwali celebrations with spectacular traditional arrangements"
   },
   {
     id: 6,
-    src: "https://images.unsplash.com/photo-1625232736929-a1671d4fe8c7?ixlib=rb-4.0.3",
-    alt: "Festival Event",
+    src: "https://images.unsplash.com/photo-1493962853295-0fd70327578a?ixlib=rb-4.0.3",
+    alt: "Cultural Festival Event",
     category: "Events",
     icon: <CalendarDays className="w-5 h-5" />,
-    description: "Cultural festivals that showcase the heritage and traditions of India"
+    description: "Cultural festivals showcasing the rich heritage and traditions of India"
   },
 ];
 
@@ -81,7 +74,7 @@ const EventCarousel = () => {
     if (isAutoPlaying) {
       interval = setInterval(() => {
         setActiveIndex((prev) => (prev + 1) % eventImages.length);
-      }, 5000);
+      }, 4000);
     }
     
     return () => clearInterval(interval);
@@ -91,20 +84,19 @@ const EventCarousel = () => {
     setActiveIndex(index);
     setIsAutoPlaying(false);
     
-    // Resume auto-playing after 10 seconds of inactivity
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    setTimeout(() => setIsAutoPlaying(true), 8000);
   };
 
   const handleNext = () => {
     setActiveIndex((prev) => (prev + 1) % eventImages.length);
     setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    setTimeout(() => setIsAutoPlaying(true), 8000);
   };
 
   const handlePrev = () => {
     setActiveIndex((prev) => (prev - 1 + eventImages.length) % eventImages.length);
     setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+    setTimeout(() => setIsAutoPlaying(true), 8000);
   };
 
   return (
@@ -120,13 +112,14 @@ const EventCarousel = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.8 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-background/80 to-background z-10"></div>
                 <img 
                   src={image.src} 
                   alt={image.alt} 
                   className="absolute inset-0 w-full h-full object-cover"
+                  loading={index === 0 ? "eager" : "lazy"}
                 />
               </motion.div>
             )
@@ -145,7 +138,7 @@ const EventCarousel = () => {
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             Celebrate Your Special Moments
           </h2>
-          <p className="text-xl text-gray-300 mb-8">
+          <p className="text-xl text-gray-200 mb-8">
             From traditional Indian weddings to vibrant cultural festivals, we create memories that last a lifetime
           </p>
           
@@ -161,7 +154,7 @@ const EventCarousel = () => {
               <h3 className="text-2xl md:text-3xl font-bold text-yellow-400 mb-2">
                 {eventImages[activeIndex].category}: {eventImages[activeIndex].alt}
               </h3>
-              <p className="text-gray-300">{eventImages[activeIndex].description}</p>
+              <p className="text-gray-200">{eventImages[activeIndex].description}</p>
             </motion.div>
           </AnimatePresence>
           
