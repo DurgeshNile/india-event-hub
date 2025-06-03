@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -165,14 +166,14 @@ const EventListing = () => {
         </div>
         
         <Select 
-          value={selectedCategory || ''} 
-          onValueChange={(value) => setSelectedCategory(value || null)}
+          value={selectedCategory || 'all'} 
+          onValueChange={(value) => setSelectedCategory(value === 'all' ? null : value)}
         >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Categories</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}

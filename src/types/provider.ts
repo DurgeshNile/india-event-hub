@@ -10,8 +10,8 @@ export interface Provider {
   location: string;
   description?: string;
   city: string;
-  verified: boolean; // Made required to fix build error
-  featured?: boolean;
+  verified: boolean;
+  featured: boolean; // Changed from optional to required
 }
 
 export interface ServiceProvider {
