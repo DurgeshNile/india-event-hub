@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
@@ -85,7 +84,7 @@ const Hero = () => {
           }}
         >
           <img 
-            src="https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?ixlib=rb-4.0.3" 
+            src="/images/hero/event-atmosphere.jpg" 
             alt="Event atmosphere" 
             className="absolute inset-0 w-full h-full object-cover"
           />
