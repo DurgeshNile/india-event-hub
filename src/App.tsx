@@ -8,8 +8,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import CategoryPage from "./pages/CategoryPage";
 import About from "./pages/About";
@@ -46,18 +44,6 @@ const App = () => (
                 <ProtectedRoute>
                   <Index />
                 </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/login" 
-              element={
-                <Login />
-              } 
-            />
-            <Route 
-              path="/signup" 
-              element={
-                <Signup />
               } 
             />
             <Route 
@@ -132,7 +118,6 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route 
               path="*" 
               element={
