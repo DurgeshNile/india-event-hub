@@ -61,21 +61,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-syne font-bold text-white;
-  }
-
-  /* Ensure text visibility with better contrast */
-  p, span, div, label {
-    @apply text-gray-100;
-  }
-
-  /* Fix form elements visibility with better contrast */
-  input, textarea, select {
-    @apply text-gray-100 bg-gray-800 border-gray-600;
-  }
-
-  input::placeholder, textarea::placeholder {
-    @apply text-gray-400;
+    @apply font-syne font-bold;
   }
 
   /* 3D Transform Styles */
@@ -85,41 +71,6 @@
 
   .perspective {
     perspective: 1000px;
-  }
-
-  /* Ensure card content is visible */
-  .card {
-    @apply bg-gray-800 border-gray-700;
-  }
-
-  .card-header, .card-content, .card-footer {
-    @apply text-gray-100;
-  }
-
-  /* Button text visibility */
-  button {
-    @apply text-white;
-  }
-
-  /* Ensure proper contrast for all text elements */
-  .text-gray-500 {
-    @apply text-gray-300;
-  }
-
-  .text-gray-600 {
-    @apply text-gray-200;
-  }
-
-  .text-gray-700 {
-    @apply text-gray-100;
-  }
-
-  .text-gray-800 {
-    @apply text-white;
-  }
-
-  .text-gray-900 {
-    @apply text-white;
   }
 }
 
@@ -207,15 +158,6 @@
   .depth-4 {
     transform: translateZ(20px);
   }
-
-  /* Ensure proper text contrast in all scenarios */
-  .ensure-contrast {
-    @apply text-white bg-gray-800;
-  }
-
-  .ensure-contrast-light {
-    @apply text-gray-900 bg-white;
-  }
 }
 
 /* Custom scrollbar */
@@ -274,15 +216,4 @@ h2 {
 .tech-text {
   @apply font-orbitron tracking-widest text-white/90;
   text-shadow: 0 0 5px rgba(74, 222, 229, 0.5);
-}
-
-/* Force visibility for important elements */
-.force-visible {
-  color: white !important;
-  background-color: rgba(0, 0, 0, 0.7) !important;
-}
-
-.force-visible-light {
-  color: #1a1a1a !important;
-  background-color: rgba(255, 255, 255, 0.9) !important;
 }

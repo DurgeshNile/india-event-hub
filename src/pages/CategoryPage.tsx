@@ -1,55 +1,49 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useProviders } from '@/hooks/useProviders';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import CategoryHeader from '@/components/CategoryHeader';
 import ProvidersSection from '@/components/ProvidersSection';
-import SearchForm from '@/components/SearchForm';
-import { Provider } from '@/types/provider';
+import { categories } from '@/utils/data';
+import { useProviders } from '@/hooks/useProviders';
 
 const CategoryPage = () => {
   const { categoryId } = useParams();
-  const { providers, category, loading } = useProviders(categoryId);
-  const [filteredProviders, setFilteredProviders] = useState<Provider[]>([]);
-  const [searchApplied, setSearchApplied] = useState(false);
+  const [category, setCategory] = useState<any>(null);
+  
+  useEffect(() => {
+    if (categoryId) {
+      // Find the category from static data
+      const categoryData = categories.find(cat => cat.id === parseInt(categoryId));
+      setCategory(categoryData);
+    }
+  }, [categoryId]);
 
-  // Handle search results
-  const handleSearchResults = (results: Provider[]) => {
-    setFilteredProviders(results);
-    setSearchApplied(true);
-  };
+  const { providers, loading } = useProviders(category?.name || '');
 
-  // Clear search results
-  const clearSearch = () => {
-    setFilteredProviders([]);
-    setSearchApplied(false);
-  };
-
-  // Determine which providers to display
-  const displayProviders = searchApplied ? filteredProviders : providers;
+  if (!category) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="container mx-auto px-4 py-16 flex-grow flex items-center justify-center">
+          <p>Category not found</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
-    <div>
-      {/* Category Header */}
-      <CategoryHeader 
-        title={category?.name || 'Category'} 
-        description={category?.description || 'Browse services in this category'} 
-        imageUrl={category?.image_url}
-      />
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
       
-      {/* Search Form */}
-      <div className="bg-white py-6 shadow-md">
-        <div className="container mx-auto px-4">
-          <SearchForm />
-        </div>
-      </div>
+      <main className="flex-grow">
+        <CategoryHeader category={category} />
+        <ProvidersSection providers={providers} loading={loading} />
+      </main>
       
-      {/* Providers Section */}
-      <ProvidersSection 
-        providers={displayProviders} 
-        loading={loading}
-      />
-
+      <Footer />
     </div>
   );
 };

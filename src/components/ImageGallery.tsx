@@ -8,42 +8,42 @@ import { Button } from '@/components/ui/button';
 const galleryImages = [
   {
     id: 1,
-    src: "/images/gallery/luxury-wedding.jpg",
+    src: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3",
     alt: "Luxury wedding celebration",
     category: "Wedding",
     likes: 245
   },
   {
     id: 2,
-    src: "/images/gallery/corporate-event.jpg",
+    src: "https://images.unsplash.com/photo-1519741347686-c1e331c5994e?ixlib=rb-4.0.3",
     alt: "Professional corporate event",
     category: "Corporate",
     likes: 189
   },
   {
     id: 3,
-    src: "/images/gallery/birthday-celebration.jpg",
+    src: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6a3?ixlib=rb-4.0.3",
     alt: "Exclusive birthday celebration",
     category: "Birthday",
     likes: 215
   },
   {
     id: 4,
-    src: "/images/gallery/music-festival.jpg",
+    src: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3",
     alt: "Music festival production",
     category: "Festival",
     likes: 278
   },
   {
     id: 5,
-    src: "/images/gallery/exhibition-setup.jpg",
+    src: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3",
     alt: "Premium exhibition setup",
     category: "Exhibition",
     likes: 156
   },
   {
     id: 6,
-    src: "/images/gallery/traditional-ceremony.jpg",
+    src: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3",
     alt: "Traditional ceremony",
     category: "Cultural",
     likes: 203

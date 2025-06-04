@@ -7,11 +7,11 @@ export interface Provider {
   image: string;
   rating: number;
   price_range?: string;
-  location: string;
+  location: string; // Made required to fix the build error
   description?: string;
-  city: string;
-  verified: boolean;
-  featured: boolean; // Changed from optional to required
+  city?: string;
+  verified?: boolean;
+  featured?: boolean;
 }
 
 export interface ServiceProvider {
@@ -51,7 +51,7 @@ export const transformServiceProviderToProvider = (serviceProvider: ServiceProvi
     price_range: serviceProvider.price_range,
     location: serviceProvider.location || '',
     description: serviceProvider.description,
-    city: serviceProvider.city || '',
+    city: serviceProvider.city,
     verified: serviceProvider.verified,
     featured: serviceProvider.featured,
   };

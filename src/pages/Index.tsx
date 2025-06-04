@@ -29,12 +29,12 @@ const Index = () => {
         
         <ImageGallery />
         
-        <section className="py-16 bg-gray-900">
+        <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
             <div className="flex flex-col lg:flex-row items-center gap-12">
               <div className="lg:w-1/2">
-                <h2 className="text-3xl font-bold mb-4 text-white">Are you a service provider?</h2>
-                <p className="text-gray-200 mb-6">
+                <h2 className="text-3xl font-bold mb-4">Are you a service provider?</h2>
+                <p className="text-gray-600 mb-6">
                   Join thousands of event service providers across India and grow your business.
                   Create your profile, showcase your portfolio, and connect with potential clients.
                 </p>
@@ -45,8 +45,8 @@ const Index = () => {
                       <Users className="w-5 h-5 text-indigo-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white">Expand Your Reach</h3>
-                      <p className="text-gray-200 text-sm">Connect with clients from across the country</p>
+                      <h3 className="font-semibold">Expand Your Reach</h3>
+                      <p className="text-gray-600 text-sm">Connect with clients from across the country</p>
                     </div>
                   </div>
                   
@@ -55,8 +55,8 @@ const Index = () => {
                       <Camera className="w-5 h-5 text-indigo-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white">Showcase Your Work</h3>
-                      <p className="text-gray-200 text-sm">Display your portfolio to potential clients</p>
+                      <h3 className="font-semibold">Showcase Your Work</h3>
+                      <p className="text-gray-600 text-sm">Display your portfolio to potential clients</p>
                     </div>
                   </div>
                   
@@ -65,8 +65,8 @@ const Index = () => {
                       <Brush className="w-5 h-5 text-indigo-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white">Build Your Brand</h3>
-                      <p className="text-gray-200 text-sm">Establish your reputation with verified reviews</p>
+                      <h3 className="font-semibold">Build Your Brand</h3>
+                      <p className="text-gray-600 text-sm">Establish your reputation with verified reviews</p>
                     </div>
                   </div>
                 </div>
@@ -83,28 +83,28 @@ const Index = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="/images/providers/photographer-1.jpg" 
+                      src="https://images.unsplash.com/photo-1604017011826-d3b4c23f8914?ixlib=rb-4.0.3" 
                       alt="Photographer" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="/images/providers/caterer-1.jpg" 
+                      src="https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-4.0.3" 
                       alt="Caterer" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="/images/providers/decorator-1.jpg" 
+                      src="https://images.unsplash.com/photo-1519741347686-c1e331c5994e?ixlib=rb-4.0.3" 
                       alt="Decorator" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="/images/providers/musician-1.jpg" 
+                      src="https://images.unsplash.com/photo-1533105079780-92b9be482077?ixlib=rb-4.0.3" 
                       alt="Musician" 
                       className="w-full h-full object-cover"
                     />
