@@ -83,28 +83,28 @@ const Index = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="/images/providers/photographer-1.jpg" 
+                      src="https://images.unsplash.com/photo-1604017011826-d3b4c23f8914?ixlib=rb-4.0.3" 
                       alt="Photographer" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="/images/providers/caterer-1.jpg" 
+                      src="https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-4.0.3" 
                       alt="Caterer" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="/images/providers/decorator-1.jpg" 
+                      src="https://images.unsplash.com/photo-1519741347686-c1e331c5994e?ixlib=rb-4.0.3" 
                       alt="Decorator" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="/images/providers/musician-1.jpg" 
+                      src="https://images.unsplash.com/photo-1533105079780-92b9be482077?ixlib=rb-4.0.3" 
                       alt="Musician" 
                       className="w-full h-full object-cover"
                     />
