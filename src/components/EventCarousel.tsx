@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PartyPopper, CalendarDays, Heart, ChevronRight, ChevronLeft } from "lucide-react";
@@ -16,7 +15,7 @@ type EventImage = {
 const eventImages: EventImage[] = [
   {
     id: 1,
-    src: "/images/events/indian-wedding-1.jpg",
+    src: "https://cosmopolitanevents.com.au/wp-content/uploads/2021/08/Indian-Wedding.jpg",
     alt: "Traditional Indian Wedding",
     category: "Weddings",
     icon: <Heart className="w-5 h-5" />,
@@ -24,7 +23,7 @@ const eventImages: EventImage[] = [
   },
   {
     id: 2,
-    src: "/images/events/holi-celebration.jpg",
+    src: "https://images.unsplash.com/photo-1530735038726-a73fd6e6c31c?ixlib=rb-4.0.3",
     alt: "Colorful Holi Party",
     category: "Parties",
     icon: <PartyPopper className="w-5 h-5" />,
@@ -32,7 +31,7 @@ const eventImages: EventImage[] = [
   },
   {
     id: 3,
-    src: "/images/events/corporate-mumbai.jpg",
+    src: "https://images.unsplash.com/photo-1561489396-888724a1543d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "Corporate Event in Mumbai",
     category: "Corporate",
     icon: <CalendarDays className="w-5 h-5" />,
@@ -40,7 +39,7 @@ const eventImages: EventImage[] = [
   },
   {
     id: 4,
-    src: "/images/events/rajasthani-wedding.jpg",
+    src: "https://images.unsplash.com/photo-1610851467855-4ecfc3c975e4?ixlib=rb-4.0.3",
     alt: "Royal Rajasthani Wedding",
     category: "Weddings",
     icon: <Heart className="w-5 h-5" />,
@@ -48,7 +47,7 @@ const eventImages: EventImage[] = [
   },
   {
     id: 5,
-    src: "/images/events/diwali-celebration.jpg",
+    src: "https://im.indiatimes.in/content/2022/Sep/bccl2_632962740b592.jpg?w=725&h=483&cc=1",
     alt: "Diwali Celebration",
     category: "Festivals",
     icon: <PartyPopper className="w-5 h-5" />,
@@ -56,7 +55,7 @@ const eventImages: EventImage[] = [
   },
   {
     id: 6,
-    src: "/images/events/festival-event.jpg",
+    src: "https://images.unsplash.com/photo-1625232736929-a1671d4fe8c7?ixlib=rb-4.0.3",
     alt: "Festival Event",
     category: "Events",
     icon: <CalendarDays className="w-5 h-5" />,

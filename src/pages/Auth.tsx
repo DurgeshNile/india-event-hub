@@ -70,7 +70,7 @@ const Auth = () => {
         toast({
           title: "Error",
           description: "Please fill in all fields",
-          variant: "error",
+          variant: "destructive",
         });
         return;
       }
@@ -81,7 +81,7 @@ const Auth = () => {
         toast({
           title: "Login failed",
           description: result.message,
-          variant: "error",
+          variant: "destructive",
         });
         return;
       }
@@ -91,7 +91,7 @@ const Auth = () => {
       toast({
         title: "Login failed",
         description: error.message || "An unknown error occurred",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -109,7 +109,7 @@ const Auth = () => {
         toast({
           title: "Error",
           description: "Please fill in all required fields",
-          variant: "error",
+          variant: "destructive",
         });
         setIsLoading(false);
         return;
@@ -119,7 +119,7 @@ const Auth = () => {
         toast({
           title: "Error",
           description: "Passwords do not match",
-          variant: "error",
+          variant: "destructive",
         });
         setIsLoading(false);
         return;
@@ -144,7 +144,7 @@ const Auth = () => {
         toast({
           title: "Registration failed",
           description: result.message,
-          variant: "error",
+          variant: "destructive",
         });
       }
     } catch (error: any) {
@@ -152,7 +152,7 @@ const Auth = () => {
       toast({
         title: "Registration failed",
         description: error.message || "An unknown error occurred", 
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -160,25 +160,25 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-4">
-      <Card className="w-full max-w-md bg-white shadow-xl">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center px-4">
+      <Card className="w-full max-w-md bg-white/10 backdrop-blur-lg border-white/20 text-white">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl text-gray-900">Welcome to LetsEventify</CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardTitle className="text-2xl text-white">Welcome to LetsEventify</CardTitle>
+          <CardDescription className="text-gray-200">
             Login or create an account to continue
           </CardDescription>
         </CardHeader>
         <Tabs defaultValue="login" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="login" id="login-tab">Login</TabsTrigger>
-            <TabsTrigger value="signup">Sign up</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 mb-4 bg-white/10">
+            <TabsTrigger value="login" id="login-tab" className="text-white data-[state=active]:bg-white/20">Login</TabsTrigger>
+            <TabsTrigger value="signup" className="text-white data-[state=active]:bg-white/20">Sign up</TabsTrigger>
           </TabsList>
           
           <TabsContent value="login">
             <form onSubmit={handleLogin}>
               <CardContent className="space-y-4 pt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-700">Email</Label>
+                  <Label htmlFor="email" className="text-gray-200">Email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input 
@@ -186,7 +186,7 @@ const Auth = () => {
                       name="email"
                       type="email" 
                       placeholder="m@example.com" 
-                      className="pl-10 border-gray-300 focus:border-blue-500"
+                      className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
                       value={loginData.email}
                       onChange={handleLoginChange}
                       required
@@ -194,14 +194,14 @@ const Auth = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-700">Password</Label>
+                  <Label htmlFor="password" className="text-gray-200">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input 
                       id="password"
                       name="password" 
                       type={showPassword ? "text" : "password"} 
-                      className="pl-10 pr-10 border-gray-300 focus:border-blue-500"
+                      className="pl-10 pr-10 bg-white/10 border-white/20 text-white"
                       value={loginData.password}
                       onChange={handleLoginChange}
                       required
@@ -237,14 +237,14 @@ const Auth = () => {
               <CardContent className="space-y-4 pt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="first_name" className="text-gray-700">First Name</Label>
+                    <Label htmlFor="first_name" className="text-gray-200">First Name</Label>
                     <div className="relative">
                       <UserIcon className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                       <Input 
                         id="first_name"
                         name="first_name"
                         placeholder="John"
-                        className="pl-10 border-gray-300 focus:border-blue-500"
+                        className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
                         value={signupData.first_name}
                         onChange={handleSignupChange}
                         required
@@ -252,12 +252,12 @@ const Auth = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="last_name" className="text-gray-700">Last Name</Label>
+                    <Label htmlFor="last_name" className="text-gray-200">Last Name</Label>
                     <Input 
                       id="last_name"
                       name="last_name"
                       placeholder="Doe"
-                      className="border-gray-300 focus:border-blue-500"
+                      className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
                       value={signupData.last_name}
                       onChange={handleSignupChange}
                       required
@@ -266,7 +266,7 @@ const Auth = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-gray-700">Email</Label>
+                  <Label htmlFor="email" className="text-gray-200">Email</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input 
@@ -274,7 +274,7 @@ const Auth = () => {
                       name="email"
                       type="email" 
                       placeholder="m@example.com" 
-                      className="pl-10 border-gray-300 focus:border-blue-500"
+                      className="pl-10 bg-white/10 border-white/20 text-white placeholder:text-gray-400"
                       value={signupData.email}
                       onChange={handleSignupChange}
                       required
@@ -283,32 +283,32 @@ const Auth = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="user_type" className="text-gray-700">Account Type</Label>
+                  <Label htmlFor="user_type" className="text-gray-200">Account Type</Label>
                   <Select 
                     value={signupData.user_type} 
                     onValueChange={(value) => {
                       setSignupData({...signupData, user_type: value})
                     }}
                   >
-                    <SelectTrigger className="border-gray-300 focus:border-blue-500">
+                    <SelectTrigger className="bg-white/10 border-white/20 text-white">
                       <SelectValue placeholder="Select account type" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="user">User (browse services)</SelectItem>
-                      <SelectItem value="contributor">Service Provider (offer services)</SelectItem>
+                    <SelectContent className="bg-gray-800 border-gray-600">
+                      <SelectItem value="user" className="text-white">User (browse services)</SelectItem>
+                      <SelectItem value="contributor" className="text-white">Service Provider (offer services)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-gray-700">Password</Label>
+                  <Label htmlFor="password" className="text-gray-200">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input 
                       id="signup_password"
                       name="password" 
                       type="password" 
-                      className="pl-10 border-gray-300 focus:border-blue-500"
+                      className="pl-10 bg-white/10 border-white/20 text-white"
                       value={signupData.password}
                       onChange={handleSignupChange}
                       required
@@ -317,14 +317,14 @@ const Auth = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-gray-700">Confirm Password</Label>
+                  <Label htmlFor="confirmPassword" className="text-gray-200">Confirm Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input 
                       id="confirmPassword"
                       name="confirmPassword" 
                       type="password" 
-                      className="pl-10 border-gray-300 focus:border-blue-500"
+                      className="pl-10 bg-white/10 border-white/20 text-white"
                       value={signupData.confirmPassword}
                       onChange={handleSignupChange}
                       required
