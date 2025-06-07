@@ -29,108 +29,110 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route 
-              path="/" 
-              element={
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/category/:categoryId" 
-              element={
-                <ProtectedRoute>
-                  <CategoryPage />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/about" 
-              element={
-                <ProtectedRoute>
-                  <About />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/categories" 
-              element={
-                <ProtectedRoute>
-                  <Categories />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/user-dashboard" 
-              element={
-                <ProtectedRoute requiredUserType="user">
-                  <UserDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/provider-dashboard" 
-              element={
-                <ProtectedRoute requiredUserType="contributor">
-                  <ServiceProviderDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute requiredUserType="contributor">
-                  <ContributorDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/admin" 
-              element={
-                <ProtectedRoute requiredUserType="admin">
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/events" 
-              element={
-                <ProtectedRoute>
-                  <EventListing />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/register-provider" 
-              element={
-                <ProtectedRoute>
-                  <ProviderRegistration />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="*" 
-              element={
-                <ProtectedRoute>
-                  <NotFound />
-                </ProtectedRoute>
-              } 
-            />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App: React.FC = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route 
+                path="/" 
+                element={
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/category/:categoryId" 
+                element={
+                  <ProtectedRoute>
+                    <CategoryPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/about" 
+                element={
+                  <ProtectedRoute>
+                    <About />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/categories" 
+                element={
+                  <ProtectedRoute>
+                    <Categories />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/user-dashboard" 
+                element={
+                  <ProtectedRoute requiredUserType="user">
+                    <UserDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/provider-dashboard" 
+                element={
+                  <ProtectedRoute requiredUserType="contributor">
+                    <ServiceProviderDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute requiredUserType="contributor">
+                    <ContributorDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute requiredUserType="admin">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/events" 
+                element={
+                  <ProtectedRoute>
+                    <EventListing />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/register-provider" 
+                element={
+                  <ProtectedRoute>
+                    <ProviderRegistration />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="*" 
+                element={
+                  <ProtectedRoute>
+                    <NotFound />
+                  </ProtectedRoute>
+                } 
+              />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
