@@ -1,30 +1,17 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import LocationSearchForm from '@/components/LocationSearchForm';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
-import { CalendarIcon, MapPin, DollarSign, Clock, Users } from 'lucide-react';
+import { CalendarIcon, MapPin, DollarSign, Users, Clock, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  start_date: string;
-  end_date: string;
-  location: string;
-  venue: string;
-  price: number;
-  image_url: string;
-  is_featured: boolean;
-  categories: { name: string };
-}
+import { useRealtimeEvents } from '@/hooks/useRealtimeEvents';
 
 interface SearchParams {
   category: string;
@@ -34,9 +21,11 @@ interface SearchParams {
 }
 
 const NearbyEvents = () => {
-  const [events, setEvents] = useState<Event[]>([]);
+  const { events: realtimeEvents, loading: realtimeLoading } = useRealtimeEvents();
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [bookingStates, setBookingStates] = useState<{[key: string]: boolean}>({});
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
 
@@ -62,14 +51,14 @@ const NearbyEvents = () => {
 
       if (error) throw error;
 
-      setEvents(data || []);
+      setSearchResults(data || []);
       setHasSearched(true);
     } catch (error: any) {
       console.error('Error searching events:', error);
       toast({
         title: "Error",
         description: "Failed to search events",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -81,10 +70,12 @@ const NearbyEvents = () => {
       toast({
         title: "Authentication Required",
         description: "Please log in to book an event",
-        variant: "warning",
+        variant: "destructive",
       });
       return;
     }
+
+    setBookingStates(prev => ({ ...prev, [eventId]: true }));
 
     try {
       // Check if user has already registered
@@ -100,7 +91,7 @@ const NearbyEvents = () => {
         toast({
           title: "Already Registered",
           description: "You have already registered for this event",
-          variant: "warning",
+          variant: "destructive",
         });
         return;
       }
@@ -119,44 +110,23 @@ const NearbyEvents = () => {
       if (error) throw error;
       
       toast({
-        title: "Registration Successful",
+        title: "Registration Successful!",
         description: "You have successfully registered for this event",
-        variant: "success",
       });
       
     } catch (error: any) {
       toast({
         title: "Registration Failed",
         description: error.message,
-        variant: "error",
+        variant: "destructive",
       });
+    } finally {
+      setBookingStates(prev => ({ ...prev, [eventId]: false }));
     }
   };
 
-  // Load featured events on component mount
-  useEffect(() => {
-    const loadFeaturedEvents = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .from('events')
-          .select('*, categories(name)')
-          .eq('is_featured', true)
-          .gte('start_date', new Date().toISOString())
-          .order('start_date', { ascending: true })
-          .limit(10);
-
-        if (error) throw error;
-        setEvents(data || []);
-      } catch (error: any) {
-        console.error('Error loading featured events:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadFeaturedEvents();
-  }, []);
+  const displayEvents = hasSearched ? searchResults : realtimeEvents;
+  const displayLoading = hasSearched ? loading : realtimeLoading;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -171,6 +141,10 @@ const NearbyEvents = () => {
               <p className="text-xl text-purple-100">
                 Find exciting events happening in your area - workshops, conferences, festivals, and more
               </p>
+              <div className="flex items-center justify-center gap-2 mt-4">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm text-purple-100">Live updates enabled</span>
+              </div>
             </div>
             
             <div className="max-w-4xl mx-auto">
@@ -182,11 +156,11 @@ const NearbyEvents = () => {
         {/* Events Section */}
         <section className="py-12 bg-gray-50">
           <div className="container mx-auto px-4">
-            {loading ? (
+            {displayLoading ? (
               <div className="text-center py-12">
                 <div className="inline-flex items-center gap-2">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
-                  <span className="text-lg">Searching for events...</span>
+                  <span className="text-lg">Loading events...</span>
                 </div>
               </div>
             ) : (
@@ -194,11 +168,16 @@ const NearbyEvents = () => {
                 <div className="flex items-center gap-2 mb-6">
                   <CalendarIcon className="h-5 w-5 text-purple-600" />
                   <h2 className="text-2xl font-bold">
-                    {hasSearched ? `Search Results (${events.length} events found)` : `Featured Events (${events.length})`}
+                    {hasSearched ? `Search Results (${displayEvents.length} events found)` : `Live Events (${displayEvents.length})`}
                   </h2>
+                  {!hasSearched && (
+                    <Badge variant="outline" className="ml-2 border-green-500 text-green-600">
+                      Real-time
+                    </Badge>
+                  )}
                 </div>
                 
-                {events.length === 0 ? (
+                {displayEvents.length === 0 ? (
                   <div className="text-center py-12 bg-white rounded-lg shadow-sm">
                     <div className="max-w-md mx-auto">
                       <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -208,21 +187,21 @@ const NearbyEvents = () => {
                       <p className="text-gray-500 mb-4">
                         {hasSearched 
                           ? "Try adjusting your search criteria or location"
-                          : "Check back later for new events"
+                          : "New events will appear here automatically"
                         }
                       </p>
                     </div>
                   </div>
                 ) : (
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {events.map((event) => (
-                      <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    {displayEvents.map((event) => (
+                      <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105">
                         {event.image_url ? (
                           <div className="h-48 overflow-hidden">
                             <img 
                               src={event.image_url} 
                               alt={event.title} 
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                             />
                           </div>
                         ) : (
@@ -234,17 +213,19 @@ const NearbyEvents = () => {
                         <CardHeader>
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
-                              <CardTitle className="line-clamp-2">{event.title}</CardTitle>
-                              {event.categories && (
-                                <Badge variant="outline" className="mt-1">
-                                  {event.categories.name}
-                                </Badge>
-                              )}
-                              {event.is_featured && (
-                                <Badge className="mt-1 ml-2 bg-yellow-500">
-                                  Featured
-                                </Badge>
-                              )}
+                              <CardTitle className="line-clamp-2 mb-2">{event.title}</CardTitle>
+                              <div className="flex gap-2 flex-wrap">
+                                {event.categories && (
+                                  <Badge variant="outline">
+                                    {event.categories.name}
+                                  </Badge>
+                                )}
+                                {event.is_featured && (
+                                  <Badge className="bg-yellow-500 hover:bg-yellow-600">
+                                    Featured
+                                  </Badge>
+                                )}
+                              </div>
                             </div>
                             {event.price && (
                               <div className="text-right">
@@ -292,10 +273,20 @@ const NearbyEvents = () => {
                         <CardFooter>
                           <Button 
                             onClick={() => handleBookEvent(event.id)} 
-                            className="w-full"
+                            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 transition-all duration-300"
+                            disabled={bookingStates[event.id]}
                           >
-                            <Users className="mr-2 h-4 w-4" />
-                            Register for Event
+                            {bookingStates[event.id] ? (
+                              <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                Booking...
+                              </>
+                            ) : (
+                              <>
+                                <Users className="mr-2 h-4 w-4" />
+                                Register for Event
+                              </>
+                            )}
                           </Button>
                         </CardFooter>
                       </Card>

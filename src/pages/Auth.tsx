@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -23,7 +22,7 @@ const Auth = () => {
     userType: 'user'
   });
 
-  const { signIn, signUp } = useAuth();
+  const { login, register } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -44,25 +43,24 @@ const Auth = () => {
       toast({
         title: "Error",
         description: "Please fill in all fields",
-        variant: "error",
+        variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
     try {
-      await signIn(formData.email, formData.password);
+      await login(formData.email, formData.password);
       toast({
         title: "Success",
         description: "Successfully signed in!",
-        variant: "success",
       });
       navigate(from, { replace: true });
     } catch (error: any) {
       toast({
         title: "Sign In Failed",
         description: error.message || "Invalid email or password",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -75,7 +73,7 @@ const Auth = () => {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
-        variant: "error",
+        variant: "destructive",
       });
       return;
     }
@@ -84,7 +82,7 @@ const Auth = () => {
       toast({
         title: "Error",
         description: "Passwords do not match",
-        variant: "error",
+        variant: "destructive",
       });
       return;
     }
@@ -93,14 +91,14 @@ const Auth = () => {
       toast({
         title: "Error",
         description: "Password must be at least 6 characters long",
-        variant: "error",
+        variant: "destructive",
       });
       return;
     }
 
     setIsLoading(true);
     try {
-      await signUp(formData.email, formData.password, {
+      await register(formData.email, formData.password, {
         firstName: formData.firstName,
         lastName: formData.lastName,
         userType: formData.userType
@@ -108,14 +106,13 @@ const Auth = () => {
       toast({
         title: "Success",
         description: "Account created successfully! Please check your email to verify your account.",
-        variant: "success",
       });
       navigate(from, { replace: true });
     } catch (error: any) {
       toast({
         title: "Sign Up Failed",
         description: error.message || "Failed to create account",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
