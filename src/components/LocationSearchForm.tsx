@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Search, MapPin, Calendar, Filter, ArrowRight } from 'lucide-react';
+import { Search, MapPin, Filter, ArrowRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { 
   Select,
   SelectContent,
@@ -9,16 +10,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { categories, cities, states } from '@/utils/data';
-import { useNavigate } from 'react-router-dom';
+import { categories, cities } from '@/utils/data';
 
-const SearchForm = () => {
-  const [searchParams, setSearchParams] = useState({
+interface LocationSearchFormProps {
+  onSearch?: (params: SearchParams) => void;
+}
+
+interface SearchParams {
+  category: string;
+  location: string;
+  city: string;
+  radius: string;
+}
+
+const LocationSearchForm = ({ onSearch }: LocationSearchFormProps) => {
+  const [searchParams, setSearchParams] = useState<SearchParams>({
     category: "all",
     location: "",
     city: "all",
+    radius: "10"
   });
-  const navigate = useNavigate();
 
   const handleChange = (name: string, value: string) => {
     setSearchParams(prev => ({
@@ -29,18 +40,12 @@ const SearchForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Navigate to search page with parameters
-    const params = new URLSearchParams();
-    if (searchParams.category !== 'all') params.set('category', searchParams.category);
-    if (searchParams.city !== 'all') params.set('city', searchParams.city);
-    if (searchParams.location) params.set('location', searchParams.location);
-    
-    navigate(`/search?${params.toString()}`);
+    onSearch?.(searchParams);
   };
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="relative group">
           <Select 
             value={searchParams.category} 
@@ -55,16 +60,11 @@ const SearchForm = () => {
               </div>
             </SelectTrigger>
             <SelectContent className="border-pink-200 bg-white shadow-xl">
-              <div className="p-2">
-                <h3 className="font-semibold text-pink-600 mb-1">Services</h3>
-                <p className="text-xs text-gray-500 mb-2">Find the perfect service for your event</p>
-              </div>
-              <SelectItem value="all" className="hover:bg-pink-50">All Services</SelectItem>
+              <SelectItem value="all">All Services</SelectItem>
               {categories.map((category) => (
                 <SelectItem 
                   key={category.id} 
                   value={category.name.toLowerCase()}
-                  className="hover:bg-pink-50"
                 >
                   {category.name}
                 </SelectItem>
@@ -87,13 +87,9 @@ const SearchForm = () => {
               </div>
             </SelectTrigger>
             <SelectContent className="border-pink-200 bg-white shadow-xl">
-              <div className="p-2">
-                <h3 className="font-semibold text-pink-600 mb-1">Cities</h3>
-                <p className="text-xs text-gray-500 mb-2">Choose your event location</p>
-              </div>
-              <SelectItem value="all" className="hover:bg-pink-50">All Cities</SelectItem>
+              <SelectItem value="all">All Cities</SelectItem>
               {cities.map((city, index) => (
-                <SelectItem key={index} value={city.toLowerCase()} className="hover:bg-pink-50">
+                <SelectItem key={index} value={city.toLowerCase()}>
                   {city}
                 </SelectItem>
               ))}
@@ -101,16 +97,46 @@ const SearchForm = () => {
           </Select>
         </div>
 
+        <div className="relative group">
+          <Input
+            placeholder="Enter location or pincode"
+            value={searchParams.location}
+            onChange={(e) => handleChange('location', e.target.value)}
+            className="w-full bg-white border-pink-200 focus:ring-2 focus:ring-pink-500 transition-all duration-300 hover:border-pink-400 shadow-sm hover:shadow-md"
+          />
+        </div>
+
         <Button 
           type="submit" 
           className="bg-gradient-to-r from-pink-500 to-india-red text-white transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-md flex items-center justify-center gap-2"
         >
-          Search Services
+          Search Nearby
           <ArrowRight className="w-4 h-4" />
         </Button>
+      </div>
+      
+      <div className="mt-4">
+        <div className="flex items-center gap-4">
+          <label className="text-sm font-medium">Search Radius:</label>
+          <Select 
+            value={searchParams.radius} 
+            onValueChange={(value) => handleChange('radius', value)}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="5">5 km</SelectItem>
+              <SelectItem value="10">10 km</SelectItem>
+              <SelectItem value="25">25 km</SelectItem>
+              <SelectItem value="50">50 km</SelectItem>
+              <SelectItem value="100">100 km</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </form>
   );
 };
 
-export default SearchForm;
+export default LocationSearchForm;

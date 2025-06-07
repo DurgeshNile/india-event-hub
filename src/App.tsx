@@ -19,6 +19,8 @@ import ServiceProviderDashboard from "./pages/ServiceProviderDashboard";
 import EventListing from "./pages/EventListing";
 import ProviderRegistration from "./pages/ProviderRegistration";
 import AdminDashboard from "./pages/AdminDashboard";
+import LocationSearch from "./pages/LocationSearch";
+import NearbyEvents from "./pages/NearbyEvents";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -68,6 +70,22 @@ const App: React.FC = () => {
                 element={
                   <ProtectedRoute>
                     <Categories />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/search" 
+                element={
+                  <ProtectedRoute>
+                    <LocationSearch />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/nearby-events" 
+                element={
+                  <ProtectedRoute>
+                    <NearbyEvents />
                   </ProtectedRoute>
                 } 
               />
