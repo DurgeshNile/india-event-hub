@@ -1,108 +1,122 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from '@/hooks/use-toast';
 
-interface ServiceProvider {
+interface Provider {
   id: string;
   business_name: string;
-  description: string;
   email: string;
   phone: string;
-  website: string;
   location: string;
-  city: string;
-  price_range: string;
-  category_id: string;
-  user_id: string;
+  description: string;
   verified: boolean;
-  featured: boolean;
-  rating: number;
-  review_count: number;
   created_at: string;
-  updated_at: string;
-  service_provider_images: Array<{
-    id: string;
-    image_url: string;
-    is_primary: boolean;
-    caption: string;
-  }>;
 }
 
 export const useAdminProviders = () => {
-  const [pendingProviders, setPendingProviders] = useState<ServiceProvider[]>([]);
-  const [approvedProviders, setApprovedProviders] = useState<ServiceProvider[]>([]);
+  const [pendingProviders, setPendingProviders] = useState<Provider[]>([]);
+  const [approvedProviders, setApprovedProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const fetchProviders = async () => {
+  const loadProviders = async () => {
     try {
-      setLoading(true);
-      
-      const { data, error } = await supabase
+      const { data: pending, error: pendingError } = await supabase
         .from('service_providers')
-        .select(`
-          *,
-          service_provider_images(*)
-        `)
+        .select('*')
+        .eq('verified', false)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      const { data: approved, error: approvedError } = await supabase
+        .from('service_providers')
+        .select('*')
+        .eq('verified', true)
+        .order('created_at', { ascending: false });
 
-      const transformedData = data || [];
+      if (pendingError) throw pendingError;
+      if (approvedError) throw approvedError;
 
-      const pending = transformedData.filter(p => !p.verified);
-      const approved = transformedData.filter(p => p.verified);
-      
-      setPendingProviders(pending);
-      setApprovedProviders(approved);
+      setPendingProviders(pending || []);
+      setApprovedProviders(approved || []);
     } catch (error: any) {
-      console.error('Error fetching providers:', error);
+      console.error('Error loading providers:', error);
       toast({
         title: "Error",
-        description: "Failed to load service providers",
-        variant: "error",
+        description: "Failed to load providers",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleApproval = async (providerId: string, approved: boolean) => {
+  const approveProvider = async (id: string) => {
     try {
       const { error } = await supabase
         .from('service_providers')
-        .update({ verified: approved })
-        .eq('id', providerId);
+        .update({ verified: true })
+        .eq('id', id);
 
       if (error) throw error;
 
+      setPendingProviders(prev => prev.filter(p => p.id !== id));
+      const approvedProvider = pendingProviders.find(p => p.id === id);
+      if (approvedProvider) {
+        setApprovedProviders(prev => [{ ...approvedProvider, verified: true }, ...prev]);
+      }
+
       toast({
         title: "Success",
-        description: `Provider ${approved ? 'approved' : 'rejected'} successfully`,
-        variant: "success",
+        description: "Provider approved successfully",
       });
-
-      fetchProviders();
     } catch (error: any) {
-      console.error('Error updating provider:', error);
+      toast({
+        title: "Error",
+        description: "Failed to approve provider",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const rejectProvider = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('service_providers')
+        .update({ verified: false })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setApprovedProviders(prev => prev.filter(p => p.id !== id));
+      const rejectedProvider = approvedProviders.find(p => p.id === id);
+      if (rejectedProvider) {
+        setPendingProviders(prev => [{ ...rejectedProvider, verified: false }, ...prev]);
+      }
+
+      toast({
+        title: "Success",
+        description: "Provider status updated",
+      });
+    } catch (error: any) {
       toast({
         title: "Error",
         description: "Failed to update provider status",
-        variant: "error",
+        variant: "destructive",
       });
     }
   };
 
   useEffect(() => {
-    fetchProviders();
+    loadProviders();
   }, []);
 
   return {
     pendingProviders,
     approvedProviders,
     loading,
-    handleApproval,
-    refetch: fetchProviders
+    approveProvider,
+    rejectProvider,
+    refetch: loadProviders
   };
 };

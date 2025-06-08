@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,8 +8,17 @@ import PendingProvidersTable from '@/components/admin/PendingProvidersTable';
 import ApprovedProvidersTable from '@/components/admin/ApprovedProvidersTable';
 import EventRequirementsTable from '@/components/admin/EventRequirementsTable';
 import { Shield, Users, Calendar, CheckCircle } from 'lucide-react';
+import { useAdminProviders } from '@/hooks/useAdminProviders';
 
 const AdminDashboard = () => {
+  const { 
+    pendingProviders, 
+    approvedProviders, 
+    loading, 
+    approveProvider, 
+    rejectProvider 
+  } = useAdminProviders();
+
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
@@ -59,7 +68,11 @@ const AdminDashboard = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <PendingProvidersTable />
+                  <PendingProvidersTable 
+                    providers={pendingProviders} 
+                    onApproval={approveProvider}
+                    loading={loading}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -73,7 +86,11 @@ const AdminDashboard = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ApprovedProvidersTable />
+                  <ApprovedProvidersTable 
+                    providers={approvedProviders} 
+                    onReject={rejectProvider}
+                    loading={loading}
+                  />
                 </CardContent>
               </Card>
             </TabsContent>

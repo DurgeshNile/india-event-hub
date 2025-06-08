@@ -4,23 +4,7 @@ import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { CalendarIcon, MapPinIcon, UsersIcon, PackageIcon, DollarSignIcon, PaletteIcon, UserIcon, MailIcon, PhoneIcon, CheckCircle2 } from 'lucide-react';
-
-type EventType = 'Wedding' | 'Birthday' | 'Corporate' | 'Other';
-type GuestCount = '<50' | '50-100' | '100-200' | '200+';
-type Service = 'Organizer' | 'Photographer' | 'Venue' | 'Caterer' | 'Decorator' | 'Entertainment';
-
-interface FormData {
-  eventType: EventType | null;
-  eventDate: Date | null;
-  location: string;
-  guestCount: GuestCount | null;
-  services: Service[];
-  budget: number;
-  theme: string;
-  name: string;
-  email: string;
-  phone: string;
-}
+import { FormData } from '@/types/chatbot';
 
 interface ChatbotSummaryProps {
   formData: FormData;
