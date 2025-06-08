@@ -20,7 +20,7 @@ const ChatOptions: React.FC<ChatOptionsProps> = ({
   onResponse 
 }) => {
   return (
-    <div className="mt-2 ml-10 space-y-1">
+    <div className="space-y-2">
       {options.map((option, index) => {
         const isSelected = isMultiSelect && formData.services?.includes(option as Service);
         return (

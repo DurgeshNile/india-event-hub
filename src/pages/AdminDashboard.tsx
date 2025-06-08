@@ -1,104 +1,107 @@
 
 import React from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Users, Calendar, CheckCircle, Clock } from 'lucide-react';
+import EventRequirementsTable from '@/components/admin/EventRequirementsTable';
 import PendingProvidersTable from '@/components/admin/PendingProvidersTable';
 import ApprovedProvidersTable from '@/components/admin/ApprovedProvidersTable';
-import EventRequirementsTable from '@/components/admin/EventRequirementsTable';
-import { Shield, Users, Calendar, CheckCircle } from 'lucide-react';
 import { useAdminProviders } from '@/hooks/useAdminProviders';
+import { useEventRequirements } from '@/hooks/useEventRequirements';
 
-const AdminDashboard = () => {
-  const { 
-    pendingProviders, 
-    approvedProviders, 
-    loading, 
-    approveProvider, 
-    rejectProvider 
-  } = useAdminProviders();
+const AdminDashboard: React.FC = () => {
+  const { pendingProviders, approvedProviders, loading: providersLoading } = useAdminProviders();
+  const { requirements, loading: requirementsLoading } = useEventRequirements();
+
+  const stats = [
+    {
+      title: "Total Requirements",
+      value: requirements.length,
+      icon: Calendar,
+      color: "text-blue-600"
+    },
+    {
+      title: "Pending Providers",
+      value: pendingProviders.length,
+      icon: Clock,
+      color: "text-yellow-600"
+    },
+    {
+      title: "Approved Providers", 
+      value: approvedProviders.length,
+      icon: CheckCircle,
+      color: "text-green-600"
+    },
+    {
+      title: "Total Users",
+      value: requirements.length + pendingProviders.length + approvedProviders.length,
+      icon: Users,
+      color: "text-purple-600"
+    }
+  ];
+
+  if (providersLoading || requirementsLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading admin dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <Navbar />
-      
-      <main className="flex-grow">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-8">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center gap-3">
-              <Shield className="h-8 w-8" />
-              <div>
-                <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
-                <p className="text-purple-100">Manage service providers and event requirements</p>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
+        
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {stats.map((stat, index) => (
+            <Card key={index}>
+              <CardContent className="p-6">
+                <div className="flex items-center">
+                  <div className={`flex-shrink-0 ${stat.color}`}>
+                    <stat.icon className="h-6 w-6" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-500">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        {/* Dashboard Content */}
-        <div className="container mx-auto px-4 py-8">
-          <Tabs defaultValue="event-requirements" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="event-requirements" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Event Requirements
-              </TabsTrigger>
-              <TabsTrigger value="pending" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                Pending Providers
-              </TabsTrigger>
-              <TabsTrigger value="approved" className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4" />
-                Approved Providers
-              </TabsTrigger>
-            </TabsList>
+        {/* Main Content Tabs */}
+        <Tabs defaultValue="requirements" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="requirements">Event Requirements</TabsTrigger>
+            <TabsTrigger value="pending">Pending Providers</TabsTrigger>
+            <TabsTrigger value="approved">Approved Providers</TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="event-requirements">
-              <EventRequirementsTable />
-            </TabsContent>
+          <TabsContent value="requirements">
+            <EventRequirementsTable />
+          </TabsContent>
 
-            <TabsContent value="pending">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-gray-900">Pending Service Providers</CardTitle>
-                  <CardDescription className="text-gray-600">
-                    Review and approve new service provider applications
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <PendingProvidersTable 
-                    providers={pendingProviders} 
-                    onApproval={approveProvider}
-                    loading={loading}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
+          <TabsContent value="pending">
+            <PendingProvidersTable 
+              providers={pendingProviders}
+              loading={providersLoading}
+            />
+          </TabsContent>
 
-            <TabsContent value="approved">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-gray-900">Approved Service Providers</CardTitle>
-                  <CardDescription className="text-gray-600">
-                    Manage active service providers on the platform
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ApprovedProvidersTable 
-                    providers={approvedProviders} 
-                    onReject={rejectProvider}
-                    loading={loading}
-                  />
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
-      </main>
-      
-      <Footer />
+          <TabsContent value="approved">
+            <ApprovedProvidersTable 
+              providers={approvedProviders}
+              loading={providersLoading}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };

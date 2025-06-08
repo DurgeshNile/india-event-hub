@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X } from 'lucide-react';
+import { MessageCircle, X, Move } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +18,11 @@ const EnhancedChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const chatbotRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<FormData>({
     eventType: null,
     eventDate: null,
@@ -70,30 +76,48 @@ const EnhancedChatbot: React.FC = () => {
     nextStep();
   };
 
-  const handleTextInput = (text: string) => {
-    addUserMessage(text);
+  const handleResponse = (response: string, field?: keyof FormData) => {
+    if (response === 'continue') {
+      nextStep();
+      return;
+    }
+
+    addUserMessage(response);
     
-    const step = chatSteps[currentStep];
-    if (step.field) {
-      if (step.field === 'budget') {
-        updateFormData(step.field, parseFloat(text) || 0);
+    if (field) {
+      if (field === 'budget') {
+        updateFormData(field, parseFloat(response) || 0);
       } else {
-        updateFormData(step.field, text);
+        updateFormData(field, response);
       }
     }
     
     nextStep();
   };
 
-  const handleDateInput = (date: Date) => {
-    const dateString = date.toLocaleDateString();
-    addUserMessage(dateString);
-    
+  const handleInputSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputMessage.trim()) return;
+
     const step = chatSteps[currentStep];
-    if (step.field) {
+    if (step.isDateInput) {
+      const date = new Date(inputMessage);
+      addUserMessage(date.toLocaleDateString());
       updateFormData(step.field, date);
+    } else if (step.isBudgetInput) {
+      addUserMessage(inputMessage);
+      updateFormData(step.field, parseFloat(inputMessage) || 0);
+    } else {
+      addUserMessage(inputMessage);
+      updateFormData(step.field, inputMessage);
     }
     
+    setInputMessage('');
+    nextStep();
+  };
+
+  const handleSkip = () => {
+    addUserMessage('Skipped');
     nextStep();
   };
 
@@ -115,7 +139,7 @@ const EnhancedChatbot: React.FC = () => {
       
       setTimeout(() => {
         addBotMessage(chatSteps[nextStepIndex].message, chatSteps[nextStepIndex].options);
-      }, 1000);
+      }, 500);
     } else {
       submitForm();
     }
@@ -127,7 +151,7 @@ const EnhancedChatbot: React.FC = () => {
         .from('event_requirements')
         .insert({
           event_type: formData.eventType,
-          event_date: formData.eventDate,
+          event_date: formData.eventDate?.toISOString().split('T')[0] || null,
           location: formData.location,
           guest_count: formData.guestCount,
           services: formData.services,
@@ -146,10 +170,8 @@ const EnhancedChatbot: React.FC = () => {
       toast({
         title: "Requirements Submitted!",
         description: "We'll get back to you within 24 hours with personalized recommendations.",
-        variant: "default",
       });
 
-      // Reset form after successful submission
       setTimeout(() => {
         setIsOpen(false);
         setCurrentStep(0);
@@ -173,10 +195,46 @@ const EnhancedChatbot: React.FC = () => {
       toast({
         title: "Submission Error",
         description: "There was an error submitting your requirements. Please try again.",
-        variant: "error",
+        variant: "destructive",
       });
     }
   };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!chatbotRef.current) return;
+    
+    setIsDragging(true);
+    const rect = chatbotRef.current.getBoundingClientRect();
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return;
+    
+    setPosition({
+      x: e.clientX - dragOffset.x,
+      y: e.clientY - dragOffset.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragOffset]);
 
   return (
     <>
@@ -201,44 +259,74 @@ const EnhancedChatbot: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            ref={chatbotRef}
             initial={{ scale: 0, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0, opacity: 0, y: 20 }}
-            className="fixed bottom-6 right-6 z-50 w-80 h-96"
+            className="fixed z-50 w-80 h-96"
+            style={{
+              left: position.x || 'auto',
+              top: position.y || 'auto',
+              right: position.x ? 'auto' : '1.5rem',
+              bottom: position.y ? 'auto' : '1.5rem',
+              cursor: isDragging ? 'grabbing' : 'default'
+            }}
           >
             <Card className="h-full flex flex-col shadow-2xl border-0">
-              <ChatbotHeader onClose={() => setIsOpen(false)} />
+              <div 
+                className="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-4 flex justify-between items-center cursor-grab"
+                onMouseDown={handleMouseDown}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                    <span className="text-pink-500 font-bold text-sm">AI</span>
+                  </div>
+                  <div>
+                    <h5 className="font-semibold">Event Assistant</h5>
+                    <p className="text-xs text-pink-100">Planning your perfect event</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Move className="h-4 w-4 text-white/70" />
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setIsOpen(false)}
+                    className="text-white hover:bg-white/20 h-8 w-8 p-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
               
               <ChatbotProgressBar 
                 currentStep={currentStep} 
                 totalSteps={chatSteps.length} 
               />
               
-              <CardContent className="flex-1 overflow-y-auto p-4 space-y-3">
+              <CardContent className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
                 {messages.map((message) => (
                   <ChatMessage key={message.id} message={message} />
                 ))}
               </CardContent>
 
               {currentStep < chatSteps.length && (
-                <div className="p-4 border-t bg-gray-50">
+                <div className="p-4 border-t bg-white">
                   {chatSteps[currentStep].options ? (
                     <ChatOptions 
                       options={chatSteps[currentStep].options!}
-                      onSelect={handleOptionSelect}
-                      multiSelect={chatSteps[currentStep].multiSelect}
-                      selectedServices={formData.services}
+                      formField={chatSteps[currentStep].field}
+                      formData={formData}
+                      isMultiSelect={chatSteps[currentStep].multiSelect}
+                      onResponse={handleResponse}
                     />
                   ) : (
                     <ChatInput
-                      onSubmit={chatSteps[currentStep].isDateInput ? handleDateInput : handleTextInput}
-                      isDateInput={chatSteps[currentStep].isDateInput}
-                      isBudgetInput={chatSteps[currentStep].isBudgetInput}
-                      placeholder={
-                        chatSteps[currentStep].isDateInput ? "Select date..." :
-                        chatSteps[currentStep].isBudgetInput ? "Enter your budget..." :
-                        "Type your message..."
-                      }
+                      inputMessage={inputMessage}
+                      onInputChange={setInputMessage}
+                      onSubmit={handleInputSubmit}
+                      onSkip={handleSkip}
+                      currentStep={chatSteps[currentStep]}
                     />
                   )}
                 </div>

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-interface Provider {
+export interface Provider {
   id: string;
   business_name: string;
   email: string;
@@ -44,7 +44,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to load providers",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -74,7 +74,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to approve provider",
-        variant: "error",
+        variant: "destructive",
       });
     }
   };
@@ -102,7 +102,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to update provider status",
-        variant: "error",
+        variant: "destructive",
       });
     }
   };
