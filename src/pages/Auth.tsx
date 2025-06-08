@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,7 +23,7 @@ const Auth = () => {
     userType: 'user'
   });
 
-  const { login, register } = useAuth();
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -43,14 +44,14 @@ const Auth = () => {
       toast({
         title: "Error",
         description: "Please fill in all fields",
-        variant: "destructive",
+        variant: "default",
       });
       return;
     }
 
     setIsLoading(true);
     try {
-      await login(formData.email, formData.password);
+      await signIn(formData.email, formData.password);
       toast({
         title: "Success",
         description: "Successfully signed in!",
@@ -60,7 +61,7 @@ const Auth = () => {
       toast({
         title: "Sign In Failed",
         description: error.message || "Invalid email or password",
-        variant: "destructive",
+        variant: "default",
       });
     } finally {
       setIsLoading(false);
@@ -73,7 +74,7 @@ const Auth = () => {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
-        variant: "destructive",
+        variant: "default",
       });
       return;
     }
@@ -82,7 +83,7 @@ const Auth = () => {
       toast({
         title: "Error",
         description: "Passwords do not match",
-        variant: "destructive",
+        variant: "default",
       });
       return;
     }
@@ -91,14 +92,14 @@ const Auth = () => {
       toast({
         title: "Error",
         description: "Password must be at least 6 characters long",
-        variant: "destructive",
+        variant: "default",
       });
       return;
     }
 
     setIsLoading(true);
     try {
-      await register(formData.email, formData.password, {
+      await signUp(formData.email, formData.password, {
         firstName: formData.firstName,
         lastName: formData.lastName,
         userType: formData.userType
@@ -112,7 +113,7 @@ const Auth = () => {
       toast({
         title: "Sign Up Failed",
         description: error.message || "Failed to create account",
-        variant: "destructive",
+        variant: "default",
       });
     } finally {
       setIsLoading(false);
@@ -140,15 +141,15 @@ const Auth = () => {
 
             <TabsContent value="signin">
               <CardHeader>
-                <CardTitle>Sign In</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-gray-900">Sign In</CardTitle>
+                <CardDescription className="text-gray-600">
                   Enter your credentials to access your account
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
+                    <Label htmlFor="signin-email" className="text-gray-700">Email</Label>
                     <Input
                       id="signin-email"
                       name="email"
@@ -158,11 +159,12 @@ const Auth = () => {
                       placeholder="Enter your email"
                       value={formData.email}
                       onChange={handleInputChange}
+                      className="text-gray-900"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
+                    <Label htmlFor="signin-password" className="text-gray-700">Password</Label>
                     <div className="relative">
                       <Input
                         id="signin-password"
@@ -173,6 +175,7 @@ const Auth = () => {
                         placeholder="Enter your password"
                         value={formData.password}
                         onChange={handleInputChange}
+                        className="text-gray-900"
                       />
                       <button
                         type="button"
@@ -201,8 +204,8 @@ const Auth = () => {
 
             <TabsContent value="signup">
               <CardHeader>
-                <CardTitle>Create Account</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-gray-900">Create Account</CardTitle>
+                <CardDescription className="text-gray-600">
                   Join our platform and start discovering amazing events
                 </CardDescription>
               </CardHeader>
@@ -210,7 +213,7 @@ const Auth = () => {
                 <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">First Name</Label>
+                      <Label htmlFor="firstName" className="text-gray-700">First Name</Label>
                       <Input
                         id="firstName"
                         name="firstName"
@@ -219,10 +222,11 @@ const Auth = () => {
                         placeholder="First name"
                         value={formData.firstName}
                         onChange={handleInputChange}
+                        className="text-gray-900"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Last Name</Label>
+                      <Label htmlFor="lastName" className="text-gray-700">Last Name</Label>
                       <Input
                         id="lastName"
                         name="lastName"
@@ -231,12 +235,13 @@ const Auth = () => {
                         placeholder="Last name"
                         value={formData.lastName}
                         onChange={handleInputChange}
+                        className="text-gray-900"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
+                    <Label htmlFor="signup-email" className="text-gray-700">Email</Label>
                     <Input
                       id="signup-email"
                       name="email"
@@ -246,15 +251,16 @@ const Auth = () => {
                       placeholder="Enter your email"
                       value={formData.email}
                       onChange={handleInputChange}
+                      className="text-gray-900"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="userType">Account Type</Label>
+                    <Label htmlFor="userType" className="text-gray-700">Account Type</Label>
                     <select
                       id="userType"
                       name="userType"
-                      className="w-full p-2 border border-gray-300 rounded-md"
+                      className="w-full p-2 border border-gray-300 rounded-md text-gray-900"
                       value={formData.userType}
                       onChange={handleInputChange}
                     >
@@ -264,7 +270,7 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
+                    <Label htmlFor="signup-password" className="text-gray-700">Password</Label>
                     <div className="relative">
                       <Input
                         id="signup-password"
@@ -275,6 +281,7 @@ const Auth = () => {
                         placeholder="Create a password"
                         value={formData.password}
                         onChange={handleInputChange}
+                        className="text-gray-900"
                       />
                       <button
                         type="button"
@@ -291,7 +298,7 @@ const Auth = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Label htmlFor="confirmPassword" className="text-gray-700">Confirm Password</Label>
                     <div className="relative">
                       <Input
                         id="confirmPassword"
@@ -301,6 +308,7 @@ const Auth = () => {
                         placeholder="Confirm your password"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
+                        className="text-gray-900"
                       />
                       <button
                         type="button"

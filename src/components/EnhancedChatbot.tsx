@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -252,7 +251,7 @@ const EnhancedChatbot: React.FC = () => {
       toast({
         title: "Error",
         description: "Failed to submit requirement. Please try again.",
-        variant: "destructive",
+        variant: "default",
       });
     }
   };

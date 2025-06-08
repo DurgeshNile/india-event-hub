@@ -36,6 +36,60 @@ export type Database = {
         }
         Relationships: []
       }
+      event_requirements: {
+        Row: {
+          budget: number | null
+          contact_email: string
+          contact_name: string
+          contact_phone: string | null
+          created_at: string
+          event_date: string | null
+          event_type: string | null
+          guest_count: string | null
+          id: string
+          location: string | null
+          services: string[] | null
+          status: string | null
+          theme: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          budget?: number | null
+          contact_email: string
+          contact_name: string
+          contact_phone?: string | null
+          created_at?: string
+          event_date?: string | null
+          event_type?: string | null
+          guest_count?: string | null
+          id?: string
+          location?: string | null
+          services?: string[] | null
+          status?: string | null
+          theme?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          budget?: number | null
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string | null
+          created_at?: string
+          event_date?: string | null
+          event_type?: string | null
+          guest_count?: string | null
+          id?: string
+          location?: string | null
+          services?: string[] | null
+          status?: string | null
+          theme?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           category_id: string | null

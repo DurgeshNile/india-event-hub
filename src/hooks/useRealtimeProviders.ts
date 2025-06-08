@@ -34,7 +34,7 @@ export const useRealtimeProviders = () => {
         toast({
           title: "Error",
           description: "Failed to load service providers",
-          variant: "destructive",
+          variant: "default",
         });
       } finally {
         setLoading(false);

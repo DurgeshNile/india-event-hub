@@ -58,7 +58,7 @@ const NearbyEvents = () => {
       toast({
         title: "Error",
         description: "Failed to search events",
-        variant: "destructive",
+        variant: "default",
       });
     } finally {
       setLoading(false);
@@ -70,7 +70,7 @@ const NearbyEvents = () => {
       toast({
         title: "Authentication Required",
         description: "Please log in to book an event",
-        variant: "destructive",
+        variant: "default",
       });
       return;
     }
@@ -91,7 +91,7 @@ const NearbyEvents = () => {
         toast({
           title: "Already Registered",
           description: "You have already registered for this event",
-          variant: "destructive",
+          variant: "default",
         });
         return;
       }
@@ -118,7 +118,7 @@ const NearbyEvents = () => {
       toast({
         title: "Registration Failed",
         description: error.message,
-        variant: "destructive",
+        variant: "default",
       });
     } finally {
       setBookingStates(prev => ({ ...prev, [eventId]: false }));
@@ -129,7 +129,7 @@ const NearbyEvents = () => {
   const displayLoading = hasSearched ? loading : realtimeLoading;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       
       <main className="flex-grow">
@@ -137,7 +137,7 @@ const NearbyEvents = () => {
         <section className="bg-gradient-to-r from-purple-600 to-purple-700 text-white py-16">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-8">
-              <h1 className="text-4xl font-bold mb-4">Discover Events Near You</h1>
+              <h1 className="text-4xl font-bold mb-4 text-white">Discover Events Near You</h1>
               <p className="text-xl text-purple-100">
                 Find exciting events happening in your area - workshops, conferences, festivals, and more
               </p>
@@ -160,14 +160,14 @@ const NearbyEvents = () => {
               <div className="text-center py-12">
                 <div className="inline-flex items-center gap-2">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
-                  <span className="text-lg">Loading events...</span>
+                  <span className="text-lg text-gray-900">Loading events...</span>
                 </div>
               </div>
             ) : (
               <>
                 <div className="flex items-center gap-2 mb-6">
                   <CalendarIcon className="h-5 w-5 text-purple-600" />
-                  <h2 className="text-2xl font-bold">
+                  <h2 className="text-2xl font-bold text-gray-900">
                     {hasSearched ? `Search Results (${displayEvents.length} events found)` : `Live Events (${displayEvents.length})`}
                   </h2>
                   {!hasSearched && (
@@ -181,7 +181,7 @@ const NearbyEvents = () => {
                   <div className="text-center py-12 bg-white rounded-lg shadow-sm">
                     <div className="max-w-md mx-auto">
                       <CalendarIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-xl font-medium mb-2">
+                      <h3 className="text-xl font-medium mb-2 text-gray-900">
                         {hasSearched ? "No events found" : "No events available"}
                       </h3>
                       <p className="text-gray-500 mb-4">
@@ -195,7 +195,7 @@ const NearbyEvents = () => {
                 ) : (
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {displayEvents.map((event) => (
-                      <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105">
+                      <Card key={event.id} className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105 bg-white">
                         {event.image_url ? (
                           <div className="h-48 overflow-hidden">
                             <img 
@@ -213,10 +213,10 @@ const NearbyEvents = () => {
                         <CardHeader>
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
-                              <CardTitle className="line-clamp-2 mb-2">{event.title}</CardTitle>
+                              <CardTitle className="line-clamp-2 mb-2 text-gray-900">{event.title}</CardTitle>
                               <div className="flex gap-2 flex-wrap">
                                 {event.categories && (
-                                  <Badge variant="outline">
+                                  <Badge variant="outline" className="text-gray-700">
                                     {event.categories.name}
                                   </Badge>
                                 )}

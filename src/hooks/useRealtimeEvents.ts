@@ -39,7 +39,7 @@ export const useRealtimeEvents = () => {
         toast({
           title: "Error",
           description: "Failed to load events",
-          variant: "destructive",
+          variant: "default",
         });
       } finally {
         setLoading(false);
