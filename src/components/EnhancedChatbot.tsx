@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import ChatbotHeader from './chatbot/ChatbotHeader';
 import ChatbotProgressBar from './chatbot/ChatbotProgressBar';
 import ChatMessage from './chatbot/ChatMessage';
 import ChatOptions from './chatbot/ChatOptions';
@@ -195,7 +194,7 @@ const EnhancedChatbot: React.FC = () => {
       toast({
         title: "Submission Error",
         description: "There was an error submitting your requirements. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };
@@ -248,7 +247,7 @@ const EnhancedChatbot: React.FC = () => {
           >
             <Button
               onClick={() => setIsOpen(true)}
-              className="rounded-full w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg"
+              className="rounded-full w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-xl hover:shadow-2xl transition-all duration-300"
             >
               <MessageCircle className="h-6 w-6 text-white" />
             </Button>
@@ -263,7 +262,7 @@ const EnhancedChatbot: React.FC = () => {
             initial={{ scale: 0, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0, opacity: 0, y: 20 }}
-            className="fixed z-50 w-80 h-96"
+            className="fixed z-50 w-96 h-[500px] shadow-2xl"
             style={{
               left: position.x || 'auto',
               top: position.y || 'auto',
@@ -272,29 +271,29 @@ const EnhancedChatbot: React.FC = () => {
               cursor: isDragging ? 'grabbing' : 'default'
             }}
           >
-            <Card className="h-full flex flex-col shadow-2xl border-0">
+            <Card className="h-full flex flex-col border-2 border-purple-200 bg-white">
               <div 
-                className="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-4 flex justify-between items-center cursor-grab"
+                className="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-4 flex justify-between items-center cursor-grab rounded-t-lg"
                 onMouseDown={handleMouseDown}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                    <span className="text-pink-500 font-bold text-sm">AI</span>
+                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
+                    <span className="text-pink-500 font-bold text-lg">AI</span>
                   </div>
                   <div>
-                    <h5 className="font-semibold">Event Assistant</h5>
-                    <p className="text-xs text-pink-100">Planning your perfect event</p>
+                    <h5 className="font-bold text-lg">Event Assistant</h5>
+                    <p className="text-sm text-pink-100">Planning your perfect event</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Move className="h-4 w-4 text-white/70" />
+                  <Move className="h-5 w-5 text-white/70" />
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={() => setIsOpen(false)}
-                    className="text-white hover:bg-white/20 h-8 w-8 p-0"
+                    className="text-white hover:bg-white/20 h-8 w-8 p-0 rounded-full"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-5 w-5" />
                   </Button>
                 </div>
               </div>
@@ -304,14 +303,14 @@ const EnhancedChatbot: React.FC = () => {
                 totalSteps={chatSteps.length} 
               />
               
-              <CardContent className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+              <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-gray-50 to-white">
                 {messages.map((message) => (
                   <ChatMessage key={message.id} message={message} />
                 ))}
               </CardContent>
 
               {currentStep < chatSteps.length && (
-                <div className="p-4 border-t bg-white">
+                <div className="p-4 border-t bg-white rounded-b-lg">
                   {chatSteps[currentStep].options ? (
                     <ChatOptions 
                       options={chatSteps[currentStep].options!}

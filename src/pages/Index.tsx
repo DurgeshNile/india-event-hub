@@ -10,6 +10,7 @@ import FeatureShowcase from '@/components/FeatureShowcase';
 import EventCarousel from '@/components/EventCarousel';
 import Footer from '@/components/Footer';
 import ChatbotUI from '@/components/ChatbotUI';
+import ImageDownloader from '@/components/ImageDownloader';
 import { Button } from '@/components/ui/button';
 import { Camera, Utensils, Brush, Music, Users, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -18,6 +19,11 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
+      
+      {/* Image Downloader positioned near navbar */}
+      <div className="fixed top-20 left-4 z-40">
+        <ImageDownloader />
+      </div>
       
       <main className="flex-grow relative">
         {/* Full page EventCarousel at the top */}
@@ -83,28 +89,28 @@ const Index = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="https://images.unsplash.com/photo-1604017011826-d3b4c23f8914?ixlib=rb-4.0.3" 
+                      src="/images/photographer.jpg" 
                       alt="Photographer" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="https://images.unsplash.com/photo-1555244162-803834f70033?ixlib=rb-4.0.3" 
+                      src="/images/caterer.jpg" 
                       alt="Caterer" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="https://images.unsplash.com/photo-1519741347686-c1e331c5994e?ixlib=rb-4.0.3" 
+                      src="/images/decorator.jpg" 
                       alt="Decorator" 
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="aspect-square rounded-lg overflow-hidden">
                     <img 
-                      src="https://images.unsplash.com/photo-1533105079780-92b9be482077?ixlib=rb-4.0.3" 
+                      src="/images/musician.jpg" 
                       alt="Musician" 
                       className="w-full h-full object-cover"
                     />
@@ -139,10 +145,8 @@ const Index = () => {
       
       <Footer />
       
-      {/* Chatbot UI positioned without fixed positioning */}
-      <div>
-        <ChatbotUI />
-      </div>
+      {/* Chatbot UI positioned in a better location */}
+      <ChatbotUI />
     </div>
   );
 };
