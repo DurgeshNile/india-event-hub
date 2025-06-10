@@ -12,14 +12,6 @@ export interface Provider {
   description: string;
   verified: boolean;
   created_at: string;
-  website?: string;
-  city?: string;
-  price_range?: string;
-  category_id?: string;
-  rating?: number;
-  services?: string[];
-  availability?: boolean;
-  images?: string[];
 }
 
 export const useAdminProviders = () => {
@@ -52,7 +44,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to load providers",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -82,7 +74,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to approve provider",
-        variant: "error",
+        variant: "destructive",
       });
     }
   };
@@ -110,7 +102,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to update provider status",
-        variant: "error",
+        variant: "destructive",
       });
     }
   };
