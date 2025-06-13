@@ -114,7 +114,7 @@ const App: React.FC = () => {
                 } 
               />
               <Route 
-                path="/admin" 
+                path="/admin-dashboard" 
                 element={
                   <ProtectedRoute requiredUserType="admin">
                     <AdminDashboard />

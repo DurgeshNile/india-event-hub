@@ -44,7 +44,8 @@ const AdminDashboard: React.FC = () => {
     review_count: 0,
     featured: false,
     updated_at: provider.created_at,
-    user_id: ''
+    user_id: '',
+    service_provider_images: []
   }));
 
   const convertedApprovedProviders = approvedProviders.map(provider => ({
@@ -57,7 +58,8 @@ const AdminDashboard: React.FC = () => {
     review_count: 0,
     featured: false,
     updated_at: provider.created_at,
-    user_id: ''
+    user_id: '',
+    service_provider_images: []
   }));
 
   return (

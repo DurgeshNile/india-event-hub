@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, X, Search, Bell, User, Calendar, ChevronDown, LogOut, Plus } from "lucide-react";
+import { Menu, X, Search, Bell, User, Calendar, ChevronDown, LogOut, Plus, LayoutDashboard } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { 
@@ -62,11 +63,11 @@ const Navbar = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
       toast({
         title: "Searching for services",
         description: `Finding results for "${searchQuery}"`,
       });
-      console.log(`Searching for: ${searchQuery}`);
     }
   };
 
@@ -91,6 +92,12 @@ const Navbar = () => {
       title: "Logged Out",
       description: "You have been logged out successfully.",
     });
+  };
+
+  const getDashboardRoute = () => {
+    if (userType === 'admin') return '/admin-dashboard';
+    if (userType === 'contributor') return '/provider-dashboard';
+    return '/user-dashboard';
   };
 
   return (
@@ -182,50 +189,18 @@ const Navbar = () => {
                   About
                 </Link>
               </NavigationMenuItem>
-              {(userType === 'admin' || userType === 'user' || userType === 'contributor') && (
-                <NavigationMenuItem>
-                  <Link 
-                    to={
-                      userType === 'admin'
-                        ? '/admin-dashboard'
-                        : userType === 'contributor'
-                          ? '/provider-dashboard'
-                          : '/user-dashboard'
-                    } 
-                    className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium"
-                  >
-                    Dashboard
-                  </Link>
-                </NavigationMenuItem>
-              )}
             </NavigationMenuList>
           </NavigationMenu>
 
           <div className="hidden md:flex items-center space-x-3">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
-                >
-                  <Search size={20} />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-0" align="end">
-                <form onSubmit={handleSearch} className="flex">
-                  <Input 
-                    placeholder="Search for services..." 
-                    className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  <Button type="submit" variant="ghost" size="icon">
-                    <Search size={20} />
-                  </Button>
-                </form>
-              </PopoverContent>
-            </Popover>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+              onClick={() => navigate('/search')}
+            >
+              <Search size={20} />
+            </Button>
 
             <Popover>
               <PopoverTrigger asChild>
@@ -261,6 +236,15 @@ const Navbar = () => {
 
             {isAuthenticated && (
               <>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+                  onClick={() => navigate(getDashboardRoute())}
+                >
+                  <LayoutDashboard size={20} />
+                </Button>
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button 
@@ -270,7 +254,7 @@ const Navbar = () => {
                     >
                       <Bell size={20} />
                       {unreadCount > 0 && (
-                        <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-pink-600 text-[10px] text-white">
+                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-pink-600 text-[10px] text-white font-bold">
                           {unreadCount}
                         </span>
                       )}
@@ -278,11 +262,11 @@ const Navbar = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-80">
                     <div className="flex items-center justify-between p-2">
-                      <span className="font-medium">Notifications</span>
+                      <span className="font-medium text-gray-900">Notifications</span>
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className="text-xs"
+                        className="text-xs text-pink-600 hover:text-pink-700"
                         onClick={() => setNotifications(notifications.map(n => ({ ...n, isNew: false })))}
                       >
                         Mark all as read
@@ -301,22 +285,22 @@ const Navbar = () => {
                         >
                           <div className="flex items-start gap-2">
                             {notification.isNew && (
-                              <span className="h-2 w-2 mt-1.5 rounded-full bg-pink-500" />
+                              <span className="h-2 w-2 mt-1.5 rounded-full bg-pink-500 flex-shrink-0" />
                             )}
                             <div>
                               <p className={cn(
-                                "text-sm",
+                                "text-sm text-gray-900",
                                 notification.isNew && "font-medium"
                               )}>
                                 {notification.title}
                               </p>
-                              <p className="text-xs text-muted-foreground mt-1">Just now</p>
+                              <p className="text-xs text-gray-500 mt-1">Just now</p>
                             </div>
                           </div>
                         </DropdownMenuItem>
                       ))
                     ) : (
-                      <div className="p-4 text-center text-sm text-muted-foreground">
+                      <div className="p-4 text-center text-sm text-gray-500">
                         No notifications yet
                       </div>
                     )}
@@ -333,28 +317,21 @@ const Navbar = () => {
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="ghost" 
-                      className="flex items-center space-x-2 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors px-3 py-2"
                     >
                       <User size={20} />
-                      <span>{userType}</span>
+                      <span className="font-medium capitalize">{userType}</span>
+                      <ChevronDown size={16} />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem>
                       <Link to="/profile" className="w-full">Profile</Link>
                     </DropdownMenuItem>
-                    {(userType === 'admin' || userType === 'user' || userType === 'contributor') && (
-                      <DropdownMenuItem>
-                        <Link to={
-                          userType === 'admin'
-                            ? '/admin-dashboard'
-                            : userType === 'contributor'
-                              ? '/provider-dashboard'
-                              : '/user-dashboard'
-                        } className="w-full">Dashboard</Link>
-                      </DropdownMenuItem>
-                    )}
-                    {(userType === 'contributor') && (
+                    <DropdownMenuItem>
+                      <Link to={getDashboardRoute()} className="w-full">Dashboard</Link>
+                    </DropdownMenuItem>
+                    {userType === 'contributor' && (
                       <DropdownMenuItem>
                         <Link to="/dashboard?tab=create" className="w-full flex items-center">
                           <Plus size={16} className="mr-2" />
@@ -393,30 +370,14 @@ const Navbar = () => {
           </div>
 
           <div className="md:hidden flex items-center space-x-3">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="text-gray-700 hover:text-pink-600 transition-colors"
-                >
-                  <Search size={20} />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-screen p-0 left-0 right-0" align="center">
-                <form onSubmit={handleSearch} className="flex">
-                  <Input 
-                    placeholder="Search for services..." 
-                    className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  <Button type="submit" variant="ghost" size="icon">
-                    <Search size={20} />
-                  </Button>
-                </form>
-              </PopoverContent>
-            </Popover>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-gray-700 hover:text-pink-600 transition-colors"
+              onClick={() => navigate('/search')}
+            >
+              <Search size={20} />
+            </Button>
             
             <Button
               variant="ghost"
@@ -473,31 +434,23 @@ const Navbar = () => {
               About
             </Link>
             
-            {(userType === 'admin' || userType === 'user' || userType === 'contributor') && (
-              <Link
-                to={
-                  userType === 'admin'
-                    ? '/admin-dashboard'
-                    : userType === 'contributor'
-                      ? '/provider-dashboard'
-                      : '/user-dashboard'
-                }
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-pink-50 hover:text-pink-600"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
-            )}
-            
             {isAuthenticated && (
               <>
+                <Link
+                  to={getDashboardRoute()}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-800 hover:bg-pink-50 hover:text-pink-600"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                
                 <div className="px-3 py-2">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-sm font-medium">Notifications</p>
+                    <p className="text-sm font-medium text-gray-900">Notifications</p>
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-xs h-6 px-2"
+                      className="text-xs h-6 px-2 text-pink-600"
                       onClick={() => setNotifications(notifications.map(n => ({ ...n, isNew: false })))}
                     >
                       Mark all read
@@ -508,8 +461,8 @@ const Navbar = () => {
                       <div 
                         key={notification.id}
                         className={cn(
-                          "p-2 rounded-md text-sm",
-                          notification.isNew ? "bg-pink-50" : "bg-gray-50"
+                          "p-2 rounded-md text-sm cursor-pointer",
+                          notification.isNew ? "bg-pink-50 text-gray-900 font-medium" : "bg-gray-50 text-gray-700"
                         )}
                         onClick={() => handleNotificationClick(notification.id)}
                       >
