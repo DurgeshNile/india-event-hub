@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import GlobalChatbot from "./components/GlobalChatbot";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CategoryPage from "./pages/CategoryPage";
@@ -146,6 +147,9 @@ const App: React.FC = () => {
                 } 
               />
             </Routes>
+            
+            {/* Global Floating Chatbot - appears on all authenticated pages */}
+            <GlobalChatbot />
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

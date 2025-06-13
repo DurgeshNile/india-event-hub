@@ -1,11 +1,9 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Users, CheckCircle, Clock, Mail } from 'lucide-react';
-import PendingProvidersTable from '@/components/admin/PendingProvidersTable';
-import ApprovedProvidersTable from '@/components/admin/ApprovedProvidersTable';
-import EventRequirementsTable from '@/components/admin/EventRequirementsTable';
 import { useAdminProviders } from '@/hooks/useAdminProviders';
 import { useEventRequirements } from '@/hooks/useEventRequirements';
 
@@ -124,11 +122,31 @@ const AdminDashboard: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <PendingProvidersTable 
-                    providers={pendingProviders}
-                    onApproval={approveProvider}
-                    onRejection={rejectProvider}
-                  />
+                  <div className="space-y-4">
+                    {pendingProviders.map((provider) => (
+                      <div key={provider.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <h3 className="font-medium">{provider.business_name || provider.name}</h3>
+                          <p className="text-sm text-gray-500">{provider.email}</p>
+                          <p className="text-sm text-gray-500">{provider.service_type}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => approveProvider(provider.id)}
+                            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => rejectProvider(provider.id)}
+                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
 
@@ -140,9 +158,20 @@ const AdminDashboard: React.FC = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ApprovedProvidersTable 
-                    providers={approvedProviders}
-                  />
+                  <div className="space-y-4">
+                    {approvedProviders.map((provider) => (
+                      <div key={provider.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <h3 className="font-medium">{provider.business_name || provider.name}</h3>
+                          <p className="text-sm text-gray-500">{provider.email}</p>
+                          <p className="text-sm text-gray-500">{provider.service_type}</p>
+                        </div>
+                        <Badge variant="default" className="bg-green-100 text-green-800">
+                          Approved
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -157,10 +186,33 @@ const AdminDashboard: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <EventRequirementsTable 
-                  requirements={requirements}
-                  onUpdateStatus={updateStatus}
-                />
+                <div className="space-y-4">
+                  {requirements.map((requirement) => (
+                    <div key={requirement.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div>
+                        <h3 className="font-medium">{requirement.event_type}</h3>
+                        <p className="text-sm text-gray-500">{requirement.contact_name} - {requirement.contact_email}</p>
+                        <p className="text-sm text-gray-500">Budget: ₹{requirement.budget}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge 
+                          variant={requirement.status === 'pending' ? 'secondary' : 'default'}
+                          className={requirement.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}
+                        >
+                          {requirement.status}
+                        </Badge>
+                        {requirement.status === 'pending' && (
+                          <button
+                            onClick={() => updateStatus(requirement.id, 'processed')}
+                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                          >
+                            Mark Processed
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
