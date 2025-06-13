@@ -44,7 +44,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to load providers",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setLoading(false);
@@ -74,7 +74,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to approve provider",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };
@@ -102,7 +102,7 @@ export const useAdminProviders = () => {
       toast({
         title: "Error",
         description: "Failed to update provider status",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };

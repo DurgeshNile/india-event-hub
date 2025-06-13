@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
 const Auth: React.FC = () => {
-  const { user, login, signup } = useAuth();
+  const { user, login, signUp } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -47,7 +47,7 @@ const Auth: React.FC = () => {
       toast({
         title: "Login failed",
         description: error.message || "Please check your credentials and try again.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setLoading(false);
@@ -61,7 +61,7 @@ const Auth: React.FC = () => {
       toast({
         title: "Password mismatch",
         description: "Passwords do not match. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
       return;
     }
@@ -69,7 +69,7 @@ const Auth: React.FC = () => {
     setLoading(true);
 
     try {
-      await signup(formData.email, formData.password, {
+      await signUp(formData.email, formData.password, {
         full_name: formData.fullName,
         user_type: 'user'
       });
@@ -81,7 +81,7 @@ const Auth: React.FC = () => {
       toast({
         title: "Signup failed",
         description: error.message || "Failed to create account. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setLoading(false);

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Move } from 'lucide-react';
@@ -195,7 +194,7 @@ const EnhancedChatbot: React.FC = () => {
       toast({
         title: "Submission Error",
         description: "There was an error submitting your requirements. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };
@@ -240,29 +239,21 @@ const EnhancedChatbot: React.FC = () => {
     <>
       <AnimatePresence>
         {!isOpen && (
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            className="fixed bottom-6 right-6 z-50"
-          >
+          <div className="fixed bottom-6 right-6 z-50">
             <Button
               onClick={() => setIsOpen(true)}
               className="rounded-full w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg"
             >
               <MessageCircle className="h-6 w-6 text-white" />
             </Button>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <div
             ref={chatbotRef}
-            initial={{ scale: 0, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0, opacity: 0, y: 20 }}
             className="fixed z-50 w-80 h-96"
             style={{
               left: position.x || 'auto',
@@ -332,7 +323,7 @@ const EnhancedChatbot: React.FC = () => {
                 </div>
               )}
             </Card>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </>

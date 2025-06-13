@@ -1,55 +1,64 @@
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Calendar, CheckCircle, Clock } from 'lucide-react';
-import EventRequirementsTable from '@/components/admin/EventRequirementsTable';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Loader2, Users, CheckCircle, Clock, Mail } from 'lucide-react';
 import PendingProvidersTable from '@/components/admin/PendingProvidersTable';
 import ApprovedProvidersTable from '@/components/admin/ApprovedProvidersTable';
+import EventRequirementsTable from '@/components/admin/EventRequirementsTable';
 import { useAdminProviders } from '@/hooks/useAdminProviders';
 import { useEventRequirements } from '@/hooks/useEventRequirements';
 
 const AdminDashboard: React.FC = () => {
-  const { pendingProviders, approvedProviders, loading: providersLoading } = useAdminProviders();
-  const { requirements, loading: requirementsLoading } = useEventRequirements();
+  const { 
+    pendingProviders, 
+    approvedProviders, 
+    loading: providersLoading,
+    approveProvider,
+    rejectProvider 
+  } = useAdminProviders();
 
-  const stats = [
-    {
-      title: "Total Requirements",
-      value: requirements.length,
-      icon: Calendar,
-      color: "text-blue-600"
-    },
-    {
-      title: "Pending Providers",
-      value: pendingProviders.length,
-      icon: Clock,
-      color: "text-yellow-600"
-    },
-    {
-      title: "Approved Providers", 
-      value: approvedProviders.length,
-      icon: CheckCircle,
-      color: "text-green-600"
-    },
-    {
-      title: "Total Users",
-      value: requirements.length + pendingProviders.length + approvedProviders.length,
-      icon: Users,
-      color: "text-purple-600"
-    }
-  ];
+  const { 
+    requirements, 
+    loading: requirementsLoading,
+    updateStatus 
+  } = useEventRequirements();
 
   if (providersLoading || requirementsLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading admin dashboard...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
       </div>
     );
   }
+
+  // Convert Provider interface to ServiceProvider interface for table components
+  const convertedPendingProviders = pendingProviders.map(provider => ({
+    ...provider,
+    website: '',
+    city: provider.location || '',
+    price_range: '',
+    category_id: '',
+    rating: 0,
+    review_count: 0,
+    featured: false,
+    updated_at: provider.created_at,
+    user_id: ''
+  }));
+
+  const convertedApprovedProviders = approvedProviders.map(provider => ({
+    ...provider,
+    website: '',
+    city: provider.location || '',
+    price_range: '',
+    category_id: '',
+    rating: 0,
+    review_count: 0,
+    featured: false,
+    updated_at: provider.created_at,
+    user_id: ''
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -57,48 +66,132 @@ const AdminDashboard: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
         
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <Card key={index}>
-              <CardContent className="p-6">
-                <div className="flex items-center">
-                  <div className={`flex-shrink-0 ${stat.color}`}>
-                    <stat.icon className="h-6 w-6" />
-                  </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-500">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Pending Providers</CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{pendingProviders.length}</div>
+              <p className="text-xs text-muted-foreground">
+                Awaiting approval
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Approved Providers</CardTitle>
+              <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{approvedProviders.length}</div>
+              <p className="text-xs text-muted-foreground">
+                Active providers
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Event Requirements</CardTitle>
+              <Mail className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{requirements.length}</div>
+              <p className="text-xs text-muted-foreground">
+                Total submissions
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{pendingProviders.length + approvedProviders.length}</div>
+              <p className="text-xs text-muted-foreground">
+                Platform users
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Main Content Tabs */}
-        <Tabs defaultValue="requirements" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="requirements">Event Requirements</TabsTrigger>
-            <TabsTrigger value="pending">Pending Providers</TabsTrigger>
-            <TabsTrigger value="approved">Approved Providers</TabsTrigger>
+        <Tabs defaultValue="providers" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="providers" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Service Providers
+              {pendingProviders.length > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {pendingProviders.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="requirements" className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Event Requirements
+              {requirements.filter(r => r.status === 'pending').length > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {requirements.filter(r => r.status === 'pending').length}
+                </Badge>
+              )}
+            </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="providers" className="space-y-6">
+            <div className="grid gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-orange-500" />
+                    Pending Providers ({pendingProviders.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <PendingProvidersTable 
+                    providers={convertedPendingProviders}
+                    onApprove={approveProvider}
+                    onReject={rejectProvider}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    Approved Providers ({approvedProviders.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ApprovedProvidersTable 
+                    providers={convertedApprovedProviders}
+                    onStatusChange={rejectProvider}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           <TabsContent value="requirements">
-            <EventRequirementsTable />
-          </TabsContent>
-
-          <TabsContent value="pending">
-            <PendingProvidersTable 
-              providers={pendingProviders}
-              loading={providersLoading}
-            />
-          </TabsContent>
-
-          <TabsContent value="approved">
-            <ApprovedProvidersTable 
-              providers={approvedProviders}
-              loading={providersLoading}
-            />
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Mail className="h-5 w-5 text-blue-500" />
+                  Event Requirements ({requirements.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <EventRequirementsTable 
+                  requirements={requirements}
+                  onUpdateStatus={updateStatus}
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
