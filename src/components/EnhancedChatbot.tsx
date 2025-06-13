@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Move } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -193,7 +192,7 @@ const EnhancedChatbot: React.FC = () => {
       toast({
         title: "Submission Error",
         description: "There was an error submitting your requirements. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };
@@ -237,7 +236,7 @@ const EnhancedChatbot: React.FC = () => {
   return (
     <>
       {!isOpen && (
-        <div className="fixed bottom-8 left-8 z-50">
+        <div className="fixed bottom-8 right-8 z-50">
           <Button
             onClick={() => setIsOpen(true)}
             className="rounded-full w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-2xl border-4 border-white animate-pulse hover:animate-none transition-all duration-300 transform hover:scale-110"
@@ -256,9 +255,8 @@ const EnhancedChatbot: React.FC = () => {
           ref={chatbotRef}
           className="fixed z-50 w-96 h-[500px]"
           style={{
-            left: position.x || '2rem',
-            top: position.y || '50%',
-            transform: position.y ? 'none' : 'translateY(-50%)',
+            right: position.x || '2rem',
+            bottom: position.y || '2rem',
             cursor: isDragging ? 'grabbing' : 'default'
           }}
         >

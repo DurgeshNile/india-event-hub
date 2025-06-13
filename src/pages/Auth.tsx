@@ -5,10 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Users, Shield, Crown } from 'lucide-react';
 
 const Auth: React.FC = () => {
   const { user, login, signUp } = useAuth();
@@ -22,7 +23,8 @@ const Auth: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    fullName: ''
+    fullName: '',
+    userType: 'user' as 'user' | 'contributor' | 'admin'
   });
 
   // Redirect if already authenticated
@@ -34,6 +36,13 @@ const Auth: React.FC = () => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleUserTypeChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      userType: value as 'user' | 'contributor' | 'admin'
     }));
   };
 
@@ -51,7 +60,7 @@ const Auth: React.FC = () => {
       toast({
         title: "Login failed",
         description: error.message || "Please check your credentials and try again.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setLoading(false);
@@ -65,7 +74,7 @@ const Auth: React.FC = () => {
       toast({
         title: "Password mismatch",
         description: "Passwords do not match. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
       return;
     }
@@ -74,7 +83,7 @@ const Auth: React.FC = () => {
       toast({
         title: "Password too short",
         description: "Password must be at least 6 characters long.",
-        variant: "destructive",
+        variant: "error",
       });
       return;
     }
@@ -84,7 +93,7 @@ const Auth: React.FC = () => {
     try {
       await signUp(formData.email, formData.password, {
         full_name: formData.fullName,
-        user_type: 'user'
+        user_type: formData.userType
       });
       toast({
         title: "Account created!",
@@ -94,10 +103,32 @@ const Auth: React.FC = () => {
       toast({
         title: "Signup failed",
         description: error.message || "Failed to create account. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getUserTypeIcon = (type: string) => {
+    switch (type) {
+      case 'admin':
+        return <Crown className="w-4 h-4" />;
+      case 'contributor':
+        return <Shield className="w-4 h-4" />;
+      default:
+        return <Users className="w-4 h-4" />;
+    }
+  };
+
+  const getUserTypeDescription = (type: string) => {
+    switch (type) {
+      case 'admin':
+        return 'Full platform management access';
+      case 'contributor':
+        return 'Service provider with business features';
+      default:
+        return 'Event planning and booking services';
     }
   };
 
@@ -212,6 +243,43 @@ const Auth: React.FC = () => {
                       required
                       className="border-gray-300 focus:border-pink-500 focus:ring-pink-500 h-12"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="userType" className="text-gray-700 font-medium">Account Type</Label>
+                    <Select value={formData.userType} onValueChange={handleUserTypeChange}>
+                      <SelectTrigger className="h-12 border-gray-300 focus:border-pink-500">
+                        <SelectValue placeholder="Select account type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="user">
+                          <div className="flex items-center gap-2">
+                            {getUserTypeIcon('user')}
+                            <div>
+                              <div className="font-medium">User</div>
+                              <div className="text-sm text-gray-500">{getUserTypeDescription('user')}</div>
+                            </div>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="contributor">
+                          <div className="flex items-center gap-2">
+                            {getUserTypeIcon('contributor')}
+                            <div>
+                              <div className="font-medium">Service Provider</div>
+                              <div className="text-sm text-gray-500">{getUserTypeDescription('contributor')}</div>
+                            </div>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="admin">
+                          <div className="flex items-center gap-2">
+                            {getUserTypeIcon('admin')}
+                            <div>
+                              <div className="font-medium">Admin</div>
+                              <div className="text-sm text-gray-500">{getUserTypeDescription('admin')}</div>
+                            </div>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>

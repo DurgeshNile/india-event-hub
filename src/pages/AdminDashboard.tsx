@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,35 +31,6 @@ const AdminDashboard: React.FC = () => {
       </div>
     );
   }
-
-  // Convert Provider interface to ServiceProvider interface for table components
-  const convertedPendingProviders = pendingProviders.map(provider => ({
-    ...provider,
-    website: '',
-    city: provider.location || '',
-    price_range: '',
-    category_id: '',
-    rating: 0,
-    review_count: 0,
-    featured: false,
-    updated_at: provider.created_at,
-    user_id: '',
-    service_provider_images: []
-  }));
-
-  const convertedApprovedProviders = approvedProviders.map(provider => ({
-    ...provider,
-    website: '',
-    city: provider.location || '',
-    price_range: '',
-    category_id: '',
-    rating: 0,
-    review_count: 0,
-    featured: false,
-    updated_at: provider.created_at,
-    user_id: '',
-    service_provider_images: []
-  }));
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -155,9 +125,9 @@ const AdminDashboard: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <PendingProvidersTable 
-                    providers={convertedPendingProviders}
-                    onApprove={approveProvider}
-                    onReject={rejectProvider}
+                    providers={pendingProviders}
+                    onApproval={approveProvider}
+                    onRejection={rejectProvider}
                   />
                 </CardContent>
               </Card>
@@ -171,8 +141,7 @@ const AdminDashboard: React.FC = () => {
                 </CardHeader>
                 <CardContent>
                   <ApprovedProvidersTable 
-                    providers={convertedApprovedProviders}
-                    onStatusChange={rejectProvider}
+                    providers={approvedProviders}
                   />
                 </CardContent>
               </Card>
