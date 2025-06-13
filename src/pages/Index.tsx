@@ -9,7 +9,6 @@ import Testimonials from '@/components/Testimonials';
 import FeatureShowcase from '@/components/FeatureShowcase';
 import EventCarousel from '@/components/EventCarousel';
 import Footer from '@/components/Footer';
-import ChatbotUI from '@/components/ChatbotUI';
 import { Button } from '@/components/ui/button';
 import { Camera, Utensils, Brush, Music, Users, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -138,11 +137,6 @@ const Index = () => {
       </main>
       
       <Footer />
-      
-      {/* Chatbot UI positioned without fixed positioning */}
-      <div>
-        <ChatbotUI />
-      </div>
     </div>
   );
 };

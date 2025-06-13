@@ -126,9 +126,9 @@ const AdminDashboard: React.FC = () => {
                     {pendingProviders.map((provider) => (
                       <div key={provider.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div>
-                          <h3 className="font-medium">{provider.business_name || provider.name}</h3>
+                          <h3 className="font-medium">{provider.business_name || provider.name || 'Unknown'}</h3>
                           <p className="text-sm text-gray-500">{provider.email}</p>
-                          <p className="text-sm text-gray-500">{provider.service_type}</p>
+                          <p className="text-sm text-gray-500">{provider.service_type || 'Service Provider'}</p>
                         </div>
                         <div className="flex gap-2">
                           <button
@@ -146,6 +146,9 @@ const AdminDashboard: React.FC = () => {
                         </div>
                       </div>
                     ))}
+                    {pendingProviders.length === 0 && (
+                      <p className="text-center text-gray-500 py-8">No pending providers</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -162,15 +165,18 @@ const AdminDashboard: React.FC = () => {
                     {approvedProviders.map((provider) => (
                       <div key={provider.id} className="flex items-center justify-between p-4 border rounded-lg">
                         <div>
-                          <h3 className="font-medium">{provider.business_name || provider.name}</h3>
+                          <h3 className="font-medium">{provider.business_name || provider.name || 'Unknown'}</h3>
                           <p className="text-sm text-gray-500">{provider.email}</p>
-                          <p className="text-sm text-gray-500">{provider.service_type}</p>
+                          <p className="text-sm text-gray-500">{provider.service_type || 'Service Provider'}</p>
                         </div>
                         <Badge variant="default" className="bg-green-100 text-green-800">
                           Approved
                         </Badge>
                       </div>
                     ))}
+                    {approvedProviders.length === 0 && (
+                      <p className="text-center text-gray-500 py-8">No approved providers</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -212,6 +218,9 @@ const AdminDashboard: React.FC = () => {
                       </div>
                     </div>
                   ))}
+                  {requirements.length === 0 && (
+                    <p className="text-center text-gray-500 py-8">No event requirements</p>
+                  )}
                 </div>
               </CardContent>
             </Card>

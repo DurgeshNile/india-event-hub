@@ -5,10 +5,12 @@ import { useToast } from '@/hooks/use-toast';
 
 export interface Provider {
   id: string;
+  name?: string;
   business_name: string;
   email: string;
   phone: string;
   location: string;
+  service_type?: string;
   description: string;
   verified: boolean;
   created_at: string;

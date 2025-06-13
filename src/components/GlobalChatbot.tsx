@@ -189,7 +189,7 @@ const GlobalChatbot: React.FC = () => {
       toast({
         title: "Submission Error",
         description: "There was an error submitting your requirements. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };
