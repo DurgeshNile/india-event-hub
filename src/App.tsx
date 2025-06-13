@@ -148,7 +148,7 @@ const App: React.FC = () => {
               />
             </Routes>
             
-            {/* Global Floating Chatbot - appears on all authenticated pages */}
+            {/* Single Global Floating Chatbot - appears on all authenticated pages */}
             <GlobalChatbot />
           </AuthProvider>
         </BrowserRouter>

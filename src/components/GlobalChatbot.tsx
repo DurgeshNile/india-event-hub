@@ -189,16 +189,16 @@ const GlobalChatbot: React.FC = () => {
       toast({
         title: "Submission Error",
         description: "There was an error submitting your requirements. Please try again.",
-        variant: "error",
+        variant: "destructive",
       });
     }
   };
 
   return (
     <>
-      {/* Floating Chat Button */}
+      {/* Floating Chat Button - Fixed positioning for floating effect */}
       {!isOpen && (
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed bottom-6 right-6 z-[9999]">
           <Button
             onClick={() => setIsOpen(true)}
             className="rounded-full w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-2xl border-4 border-white animate-pulse hover:animate-none transition-all duration-300 transform hover:scale-110"
@@ -212,9 +212,9 @@ const GlobalChatbot: React.FC = () => {
         </div>
       )}
 
-      {/* Chat Window */}
+      {/* Chat Window - Fixed positioning for floating effect */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-96 h-[500px]">
+        <div className="fixed bottom-6 right-6 z-[9999] w-96 h-[500px]">
           <Card className="h-full flex flex-col shadow-2xl border-2 border-pink-200">
             <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white p-4 flex justify-between items-center rounded-t-lg">
               <div className="flex items-center gap-3">
