@@ -46,7 +46,11 @@ const ImageDownloader: React.FC = () => {
     const images = Array.from(document.querySelectorAll('img'));
     const imageInfos: ImageInfo[] = [];
     
+    console.log(`Found ${images.length} images on the page`);
+    
     images.forEach((img, index) => {
+      console.log(`Processing image ${index + 1}: ${img.src}`);
+      
       if (img.src && !img.src.startsWith('data:')) {
         const category = categorizeImage(img.src, img.alt || '');
         const filename = generateFilename(img.src, img.alt || '', index + 1);
@@ -60,11 +64,14 @@ const ImageDownloader: React.FC = () => {
       }
     });
     
+    console.log(`Collected ${imageInfos.length} valid images for download`);
     return imageInfos;
   };
 
   const downloadImageBlob = async (imageInfo: ImageInfo): Promise<Blob | null> => {
     try {
+      console.log(`Attempting to download: ${imageInfo.src}`);
+      
       const response = await fetch(imageInfo.src, { 
         mode: 'cors',
         headers: {
@@ -72,7 +79,10 @@ const ImageDownloader: React.FC = () => {
         }
       });
       
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        console.warn(`Failed to fetch ${imageInfo.src}: ${response.status} ${response.statusText}`);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       
       return await response.blob();
     } catch (error) {
@@ -92,7 +102,7 @@ const ImageDownloader: React.FC = () => {
         toast({
           title: "No Images Found",
           description: "No downloadable images found on the current page",
-          variant: "destructive",
+          variant: "error",
         });
         return;
       }
@@ -107,6 +117,7 @@ const ImageDownloader: React.FC = () => {
       }, {} as Record<string, ImageInfo[]>);
       
       let successCount = 0;
+      let failedCount = 0;
       
       // Download images category by category
       for (const [category, images] of Object.entries(categorizedImages)) {
@@ -130,6 +141,8 @@ const ImageDownloader: React.FC = () => {
             
             // Small delay to prevent overwhelming the browser
             await new Promise(resolve => setTimeout(resolve, 100));
+          } else {
+            failedCount++;
           }
         }
       }
@@ -138,7 +151,8 @@ const ImageDownloader: React.FC = () => {
       const categoryStructure = Object.entries(categorizedImages).map(([category, images]) => ({
         category,
         count: images.length,
-        files: images.map(img => img.filename)
+        files: images.map(img => img.filename),
+        failedDownloads: images.filter((_, index) => !images[index]).length
       }));
       
       const structureBlob = new Blob([JSON.stringify(categoryStructure, null, 2)], {
@@ -153,9 +167,13 @@ const ImageDownloader: React.FC = () => {
       document.body.removeChild(structureLink);
       URL.revokeObjectURL(structureURL);
       
+      const message = failedCount > 0 
+        ? `Downloaded ${successCount} images successfully, ${failedCount} failed due to CORS or network issues`
+        : `Successfully downloaded ${successCount} images organized by categories`;
+      
       toast({
         title: "Download Complete",
-        description: `Successfully downloaded ${successCount} images organized by categories`,
+        description: message,
         variant: "default",
       });
       
@@ -164,7 +182,7 @@ const ImageDownloader: React.FC = () => {
       toast({
         title: "Download Error",
         description: "An error occurred while downloading images",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsDownloading(false);
@@ -204,6 +222,19 @@ const ImageDownloader: React.FC = () => {
       readmeContent += `- **Description**: Images related to ${category} services and events\n\n`;
     });
     
+    // Add troubleshooting section
+    readmeContent += `## Troubleshooting Image Display Issues\n\n`;
+    readmeContent += `If some images are not displaying on your site, check:\n\n`;
+    readmeContent += `1. **CORS Issues**: External images from unsplash.com or other domains may be blocked\n`;
+    readmeContent += `2. **Network Issues**: Some image URLs may be broken or inaccessible\n`;
+    readmeContent += `3. **Image Paths**: Verify that image paths in your code match the downloaded structure\n`;
+    readmeContent += `4. **Loading Issues**: Large images may take time to load\n\n`;
+    readmeContent += `### Recommended Solutions:\n`;
+    readmeContent += `- Host images locally in your repository\n`;
+    readmeContent += `- Use image optimization services\n`;
+    readmeContent += `- Implement proper error handling for failed image loads\n`;
+    readmeContent += `- Add loading placeholders for better user experience\n`;
+    
     // Create and download README
     const readmeBlob = new Blob([readmeContent], { type: 'text/markdown' });
     const readmeURL = URL.createObjectURL(readmeBlob);
@@ -217,7 +248,7 @@ const ImageDownloader: React.FC = () => {
     
     toast({
       title: "GitHub Structure Created",
-      description: "README file with folder structure has been generated",
+      description: "README file with folder structure and troubleshooting guide has been generated",
       variant: "default",
     });
   };
@@ -267,6 +298,7 @@ const ImageDownloader: React.FC = () => {
       <div className="mt-6 text-xs text-gray-500">
         <p><strong>Categories:</strong> weddings, corporate, birthdays, festivals, photography, catering, music, decoration, events, miscellaneous</p>
         <p className="mt-2"><strong>Output:</strong> Images will be downloaded with category prefixes and a structure file will be generated</p>
+        <p className="mt-2"><strong>Note:</strong> Some images may fail to download due to CORS restrictions or network issues</p>
       </div>
     </div>
   );
