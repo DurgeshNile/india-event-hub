@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send, User, Bot, AlertCircle } from 'lucide-react';
@@ -57,11 +56,19 @@ const FloatingChatbot: React.FC = () => {
   }, [isOpen]);
 
   useEffect(() => {
-    scrollToBottom();
+    // Only scroll to bottom after a slight delay to prevent immediate scrolling on input
+    const timeoutId = setTimeout(() => {
+      scrollToBottom();
+    }, 100);
+    
+    return () => clearTimeout(timeoutId);
   }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'end'
+    });
   };
 
   const addBotMessage = (message: string) => {
@@ -191,6 +198,7 @@ const FloatingChatbot: React.FC = () => {
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      e.preventDefault(); // Prevent form submission or other default behavior
       handleSendMessage();
     }
   };
@@ -225,7 +233,7 @@ const FloatingChatbot: React.FC = () => {
               </CardHeader>
               
               <CardContent className="p-0 flex flex-col h-full">
-                <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-96">
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-96" style={{ scrollBehavior: 'smooth' }}>
                   {messages.map((message) => (
                     <div
                       key={message.id}
