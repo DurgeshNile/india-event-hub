@@ -36,6 +36,51 @@ export type Database = {
         }
         Relationships: []
       }
+      event_requirements: {
+        Row: {
+          budget: number
+          contact_email: string
+          contact_name: string
+          created_at: string
+          description: string | null
+          event_date: string
+          event_type: string
+          guest_count: number
+          id: string
+          location: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          budget?: number
+          contact_email: string
+          contact_name: string
+          created_at?: string
+          description?: string | null
+          event_date: string
+          event_type: string
+          guest_count?: number
+          id?: string
+          location: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          budget?: number
+          contact_email?: string
+          contact_name?: string
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          event_type?: string
+          guest_count?: number
+          id?: string
+          location?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           category_id: string | null

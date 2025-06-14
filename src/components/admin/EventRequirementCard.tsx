@@ -4,27 +4,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
-import { Calendar, MapPin, Users, DollarSign, Mail, Phone, User } from 'lucide-react';
-
-interface EventRequirement {
-  id: string;
-  event_type: string;
-  event_date: string;
-  location: string;
-  guest_count: string;
-  services: string[];
-  budget: number;
-  theme: string;
-  contact_name: string;
-  contact_email: string;
-  contact_phone: string;
-  status: string;
-  created_at: string;
-}
+import { Calendar, MapPin, Users, DollarSign, Mail, User } from 'lucide-react';
+import { EventRequirement } from '@/hooks/useEventRequirements';
 
 interface EventRequirementCardProps {
   requirement: EventRequirement;
-  onStatusUpdate: (id: string, status: string) => void;
+  onStatusUpdate: (id: string, status: 'pending' | 'processed') => void;
 }
 
 const EventRequirementCard: React.FC<EventRequirementCardProps> = ({ 
@@ -34,9 +19,7 @@ const EventRequirementCard: React.FC<EventRequirementCardProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-yellow-500';
-      case 'in_progress': return 'bg-blue-500';
-      case 'completed': return 'bg-green-500';
-      case 'cancelled': return 'bg-red-500';
+      case 'processed': return 'bg-green-500';
       default: return 'bg-gray-500';
     }
   };
@@ -55,7 +38,7 @@ const EventRequirementCard: React.FC<EventRequirementCardProps> = ({
           </div>
           <div className="flex gap-2">
             <Badge className={`${getStatusColor(requirement.status)} text-white`}>
-              {requirement.status.replace('_', ' ').toUpperCase()}
+              {requirement.status.toUpperCase()}
             </Badge>
           </div>
         </div>
@@ -65,12 +48,12 @@ const EventRequirementCard: React.FC<EventRequirementCardProps> = ({
             <div className="flex items-center gap-2 text-sm">
               <Calendar className="h-4 w-4 text-gray-500" />
               <span className="text-gray-900">
-                {requirement.event_date ? format(new Date(requirement.event_date), 'PPP') : 'Not specified'}
+                {requirement.event_date}
               </span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <MapPin className="h-4 w-4 text-gray-500" />
-              <span className="text-gray-900">{requirement.location || 'Not specified'}</span>
+              <span className="text-gray-900">{requirement.location}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
               <Users className="h-4 w-4 text-gray-500" />
@@ -78,7 +61,7 @@ const EventRequirementCard: React.FC<EventRequirementCardProps> = ({
             </div>
             <div className="flex items-center gap-2 text-sm">
               <DollarSign className="h-4 w-4 text-gray-500" />
-              <span className="text-gray-900">${requirement.budget?.toLocaleString()}</span>
+              <span className="text-gray-900">₹{requirement.budget?.toLocaleString()}</span>
             </div>
           </div>
 
@@ -93,34 +76,13 @@ const EventRequirementCard: React.FC<EventRequirementCardProps> = ({
                 {requirement.contact_email}
               </a>
             </div>
-            {requirement.contact_phone && (
-              <div className="flex items-center gap-2 text-sm">
-                <Phone className="h-4 w-4 text-gray-500" />
-                <a href={`tel:${requirement.contact_phone}`} className="text-blue-600 hover:underline">
-                  {requirement.contact_phone}
-                </a>
-              </div>
-            )}
           </div>
         </div>
 
-        {requirement.services && requirement.services.length > 0 && (
+        {requirement.description && (
           <div className="mb-4">
-            <p className="text-sm font-medium text-gray-700 mb-2">Required Services:</p>
-            <div className="flex flex-wrap gap-1">
-              {requirement.services.map((service, index) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  {service}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {requirement.theme && (
-          <div className="mb-4">
-            <p className="text-sm font-medium text-gray-700">Theme/Style:</p>
-            <p className="text-sm text-gray-600">{requirement.theme}</p>
+            <p className="text-sm font-medium text-gray-700 mb-2">Description:</p>
+            <p className="text-sm text-gray-600">{requirement.description}</p>
           </div>
         )}
 
@@ -128,28 +90,12 @@ const EventRequirementCard: React.FC<EventRequirementCardProps> = ({
           {requirement.status === 'pending' && (
             <Button 
               size="sm" 
-              onClick={() => onStatusUpdate(requirement.id, 'in_progress')}
-              className="bg-blue-500 hover:bg-blue-600"
-            >
-              Start Processing
-            </Button>
-          )}
-          {requirement.status === 'in_progress' && (
-            <Button 
-              size="sm" 
-              onClick={() => onStatusUpdate(requirement.id, 'completed')}
+              onClick={() => onStatusUpdate(requirement.id, 'processed')}
               className="bg-green-500 hover:bg-green-600"
             >
-              Mark Complete
+              Mark as Processed
             </Button>
           )}
-          <Button 
-            size="sm" 
-            variant="outline"
-            onClick={() => onStatusUpdate(requirement.id, 'cancelled')}
-          >
-            Cancel
-          </Button>
         </div>
       </CardContent>
     </Card>

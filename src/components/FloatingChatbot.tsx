@@ -148,7 +148,7 @@ const FloatingChatbot: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-6 right-6 z-50">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -158,8 +158,8 @@ const FloatingChatbot: React.FC = () => {
             transition={{ duration: 0.2 }}
             className="mb-4"
           >
-            <Card className="w-80 h-96 shadow-2xl border-2 border-indigo-200">
-              <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-t-lg">
+            <Card className="w-96 h-[500px] shadow-2xl border-2 border-indigo-200 bg-white">
+              <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-t-lg p-4">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Bot className="h-5 w-5" />
@@ -169,7 +169,7 @@ const FloatingChatbot: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => setIsOpen(false)}
-                    className="text-white hover:bg-white/20"
+                    className="text-white hover:bg-white/20 h-8 w-8 p-0"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -177,20 +177,20 @@ const FloatingChatbot: React.FC = () => {
               </CardHeader>
               
               <CardContent className="p-0 flex flex-col h-full">
-                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 max-h-96">
                   {messages.map((message) => (
                     <div
                       key={message.id}
                       className={`flex items-start gap-2 ${message.type === 'user' ? 'flex-row-reverse' : ''}`}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         message.type === 'bot' 
                           ? 'bg-indigo-100 text-indigo-600' 
                           : 'bg-gray-100 text-gray-600'
                       }`}>
                         {message.type === 'bot' ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
                       </div>
-                      <div className={`max-w-[70%] p-3 rounded-2xl text-sm ${
+                      <div className={`max-w-[75%] p-3 rounded-2xl text-sm ${
                         message.type === 'bot'
                           ? 'bg-gray-100 text-gray-800 rounded-tl-none'
                           : 'bg-indigo-500 text-white rounded-tr-none'
@@ -202,19 +202,19 @@ const FloatingChatbot: React.FC = () => {
                   <div ref={messagesEndRef} />
                 </div>
                 
-                <div className="p-4 border-t">
+                <div className="p-4 border-t bg-gray-50">
                   <div className="flex gap-2">
                     <Input
                       value={inputValue}
                       onChange={(e) => setInputValue(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Type your message..."
-                      className="flex-1"
+                      className="flex-1 border-gray-300 focus:border-indigo-500"
                     />
                     <Button 
                       onClick={handleSendMessage}
                       size="sm"
-                      className="bg-indigo-500 hover:bg-indigo-600"
+                      className="bg-indigo-500 hover:bg-indigo-600 px-3"
                     >
                       <Send className="h-4 w-4" />
                     </Button>
@@ -228,11 +228,17 @@ const FloatingChatbot: React.FC = () => {
 
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-14 h-14 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center"
+        className="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center relative"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
+        style={{ zIndex: 9999 }}
       >
         {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+        {!isOpen && (
+          <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+            <span className="text-xs text-white font-bold">!</span>
+          </div>
+        )}
       </motion.button>
     </div>
   );

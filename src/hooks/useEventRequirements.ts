@@ -63,7 +63,7 @@ export const useEventRequirements = () => {
       toast({
         title: "Error", 
         description: "Failed to update requirement status",
-        variant: "destructive",
+        variant: "error",
       });
     }
   };
@@ -90,7 +90,7 @@ export const useEventRequirements = () => {
       toast({
         title: "Error",
         description: "Failed to submit event requirement",
-        variant: "destructive",
+        variant: "error",
       });
       throw err;
     }
