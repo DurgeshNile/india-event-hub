@@ -21,6 +21,7 @@ import ProviderRegistration from "./pages/ProviderRegistration";
 import AdminDashboard from "./pages/AdminDashboard";
 import LocationSearch from "./pages/LocationSearch";
 import NearbyEvents from "./pages/NearbyEvents";
+import ImageManager from "./pages/ImageManager";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -86,6 +87,14 @@ const App: React.FC = () => {
                 element={
                   <ProtectedRoute>
                     <NearbyEvents />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/image-manager" 
+                element={
+                  <ProtectedRoute>
+                    <ImageManager />
                   </ProtectedRoute>
                 } 
               />
