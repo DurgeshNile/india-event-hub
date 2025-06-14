@@ -33,7 +33,7 @@ export const useEventRequirements = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setRequirements(data || []);
+      setRequirements((data || []) as EventRequirement[]);
     } catch (err: any) {
       setError(err.message);
       console.error('Error fetching requirements:', err);
@@ -63,7 +63,7 @@ export const useEventRequirements = () => {
       toast({
         title: "Error", 
         description: "Failed to update requirement status",
-        variant: "error",
+        variant: "destructive",
       });
     }
   };
@@ -72,13 +72,13 @@ export const useEventRequirements = () => {
     try {
       const { data, error } = await supabase
         .from('event_requirements')
-        .insert([{ ...requirement, status: 'pending' }])
+        .insert([{ ...requirement, status: 'pending' as const }])
         .select()
         .single();
 
       if (error) throw error;
 
-      setRequirements(prev => [data, ...prev]);
+      setRequirements(prev => [data as EventRequirement, ...prev]);
       
       toast({
         title: "Success",
@@ -90,7 +90,7 @@ export const useEventRequirements = () => {
       toast({
         title: "Error",
         description: "Failed to submit event requirement",
-        variant: "error",
+        variant: "destructive",
       });
       throw err;
     }

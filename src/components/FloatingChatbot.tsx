@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, X, Send, User, Bot } from 'lucide-react';
+import { MessageCircle, X, Send, User, Bot, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface ChatMessage {
   id: string;
-  type: 'bot' | 'user';
+  type: 'bot' | 'user' | 'error';
   message: string;
   timestamp: Date;
 }
@@ -40,7 +40,7 @@ const FloatingChatbot: React.FC = () => {
     { question: "Hi! I'm here to help you plan your event. What's your name?", field: 'contact_name' },
     { question: "Great! What's your email address?", field: 'contact_email' },
     { question: "What type of event are you planning? (e.g., Wedding, Birthday, Corporate)", field: 'event_type' },
-    { question: "When is your event date? (YYYY-MM-DD)", field: 'event_date' },
+    { question: "When is your event date? (Please use YYYY-MM-DD format)", field: 'event_date' },
     { question: "Where will the event take place?", field: 'location' },
     { question: "How many guests are you expecting?", field: 'guest_count' },
     { question: "What's your budget for this event? (in ₹)", field: 'budget' },
@@ -84,6 +84,32 @@ const FloatingChatbot: React.FC = () => {
     setMessages(prev => [...prev, newMessage]);
   };
 
+  const addErrorMessage = (message: string) => {
+    const newMessage: ChatMessage = {
+      id: Date.now().toString(),
+      type: 'error',
+      message,
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, newMessage]);
+  };
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateDate = (date: string): boolean => {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(date)) return false;
+    
+    const parsedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    return !isNaN(parsedDate.getTime()) && parsedDate >= today;
+  };
+
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
@@ -91,13 +117,37 @@ const FloatingChatbot: React.FC = () => {
     addUserMessage(userInput);
     setInputValue('');
 
-    // Process the user input based on current step
     if (currentStep < chatSteps.length) {
       const currentField = chatSteps[currentStep].field as keyof UserRequirements;
       
+      // Validation logic
+      if (currentField === 'contact_email' && !validateEmail(userInput)) {
+        addErrorMessage("Please enter a valid email address (e.g., user@example.com)");
+        setTimeout(() => {
+          addBotMessage("Let's try again. What's your email address?");
+        }, 1000);
+        return;
+      }
+
+      if (currentField === 'event_date' && !validateDate(userInput)) {
+        addErrorMessage("Please enter a valid future date in YYYY-MM-DD format (e.g., 2024-12-25)");
+        setTimeout(() => {
+          addBotMessage("When is your event date? (Please use YYYY-MM-DD format)");
+        }, 1000);
+        return;
+      }
+
+      if ((currentField === 'guest_count' || currentField === 'budget') && (isNaN(Number(userInput)) || Number(userInput) <= 0)) {
+        addErrorMessage(`Please enter a valid ${currentField === 'guest_count' ? 'number of guests' : 'budget amount'}`);
+        setTimeout(() => {
+          addBotMessage(chatSteps[currentStep].question);
+        }, 1000);
+        return;
+      }
+
       let processedValue: any = userInput;
       if (currentField === 'guest_count' || currentField === 'budget') {
-        processedValue = parseInt(userInput) || 0;
+        processedValue = parseInt(userInput);
       }
 
       setUserRequirements(prev => ({
@@ -105,7 +155,6 @@ const FloatingChatbot: React.FC = () => {
         [currentField]: processedValue
       }));
 
-      // Move to next step
       const nextStep = currentStep + 1;
       setCurrentStep(nextStep);
 
@@ -113,7 +162,6 @@ const FloatingChatbot: React.FC = () => {
         if (nextStep < chatSteps.length) {
           addBotMessage(chatSteps[nextStep].question);
         } else {
-          // All questions answered, submit the requirements
           submitRequirements({
             ...userRequirements,
             [currentField]: processedValue
@@ -137,7 +185,7 @@ const FloatingChatbot: React.FC = () => {
       }, 2000);
 
     } catch (error) {
-      addBotMessage("I apologize, but there was an error submitting your requirements. Please try again or contact our support team directly.");
+      addErrorMessage("I apologize, but there was an error submitting your requirements. Please try again or contact our support team directly.");
     }
   };
 
@@ -148,13 +196,13 @@ const FloatingChatbot: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed top-20 right-6 z-50">
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             className="mb-4"
           >
@@ -186,13 +234,19 @@ const FloatingChatbot: React.FC = () => {
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                         message.type === 'bot' 
                           ? 'bg-indigo-100 text-indigo-600' 
+                          : message.type === 'error'
+                          ? 'bg-red-100 text-red-600'
                           : 'bg-gray-100 text-gray-600'
                       }`}>
-                        {message.type === 'bot' ? <Bot className="h-4 w-4" /> : <User className="h-4 w-4" />}
+                        {message.type === 'bot' ? <Bot className="h-4 w-4" /> : 
+                         message.type === 'error' ? <AlertCircle className="h-4 w-4" /> :
+                         <User className="h-4 w-4" />}
                       </div>
                       <div className={`max-w-[75%] p-3 rounded-2xl text-sm ${
                         message.type === 'bot'
                           ? 'bg-gray-100 text-gray-800 rounded-tl-none'
+                          : message.type === 'error'
+                          ? 'bg-red-100 text-red-800 rounded-tl-none'
                           : 'bg-indigo-500 text-white rounded-tr-none'
                       }`}>
                         {message.message}
