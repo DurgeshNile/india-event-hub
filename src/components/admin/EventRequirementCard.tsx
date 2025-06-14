@@ -26,6 +26,11 @@ const EventRequirementCard: React.FC<EventRequirementCardProps> = ({
     }
   };
 
+  const handleToggleExpanded = () => {
+    console.log('Toggle clicked, current state:', isExpanded);
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <Card className="border border-gray-200">
       <CardContent className="p-4">
@@ -84,10 +89,10 @@ const EventRequirementCard: React.FC<EventRequirementCardProps> = ({
 
         {/* Expand/Collapse Button */}
         <Button
-          variant="ghost"
+          variant="outline"
           size="sm"
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full justify-center mb-4 text-gray-600 hover:text-gray-900"
+          onClick={handleToggleExpanded}
+          className="w-full justify-center mb-4 text-gray-600 hover:text-gray-900 hover:bg-gray-50"
         >
           {isExpanded ? (
             <>
@@ -104,7 +109,7 @@ const EventRequirementCard: React.FC<EventRequirementCardProps> = ({
 
         {/* Expanded Details */}
         {isExpanded && (
-          <div className="border-t pt-4 space-y-4">
+          <div className="border-t pt-4 space-y-4 animate-in slide-in-from-top-2 duration-200">
             <div className="bg-gray-50 p-4 rounded-lg">
               <h4 className="font-semibold text-gray-900 mb-3">Complete Event Requirements</h4>
               
@@ -171,6 +176,10 @@ const EventRequirementCard: React.FC<EventRequirementCardProps> = ({
                 <div>
                   <label className="font-medium">Submission ID:</label>
                   <p className="font-mono">{requirement.id}</p>
+                </div>
+                <div>
+                  <label className="font-medium">Created At:</label>
+                  <p className="font-mono">{format(new Date(requirement.created_at), 'PPpp')}</p>
                 </div>
               </div>
             </div>
