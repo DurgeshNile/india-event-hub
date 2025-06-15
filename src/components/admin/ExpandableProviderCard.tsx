@@ -44,6 +44,16 @@ const ExpandableProviderCard: React.FC<ExpandableProviderCardProps> = ({
     setIsExpanded(!isExpanded);
   };
 
+  const handlePhoneClick = (phone: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(`tel:${phone}`);
+  };
+
+  const handleEmailClick = (email: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open(`mailto:${email}`);
+  };
+
   return (
     <Card className="bg-gray-700 border-gray-600 hover:bg-gray-650 transition-all duration-200 cursor-pointer">
       <CardContent className="p-4">
@@ -80,7 +90,12 @@ const ExpandableProviderCard: React.FC<ExpandableProviderCardProps> = ({
           <div className="flex items-center gap-4 text-sm text-gray-300">
             <div className="flex items-center gap-1">
               <Mail className="h-3 w-3" />
-              <span>{provider.email}</span>
+              <button
+                onClick={(e) => handleEmailClick(provider.email, e)}
+                className="text-blue-400 hover:text-blue-300 hover:underline"
+              >
+                {provider.email}
+              </button>
             </div>
             {provider.rating && (
               <div className="flex items-center gap-1">
@@ -111,12 +126,22 @@ const ExpandableProviderCard: React.FC<ExpandableProviderCardProps> = ({
                       </div>
                       <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-gray-400" />
-                        <span className="text-gray-100">{provider.email}</span>
+                        <button
+                          onClick={(e) => handleEmailClick(provider.email, e)}
+                          className="text-blue-400 hover:text-blue-300 hover:underline"
+                        >
+                          {provider.email}
+                        </button>
                       </div>
                       {provider.phone && (
                         <div className="flex items-center gap-2">
                           <Phone className="h-4 w-4 text-gray-400" />
-                          <span className="text-gray-100">{provider.phone}</span>
+                          <button
+                            onClick={(e) => handlePhoneClick(provider.phone!, e)}
+                            className="text-blue-400 hover:text-blue-300 hover:underline"
+                          >
+                            {provider.phone}
+                          </button>
                         </div>
                       )}
                       {provider.website && (
@@ -233,3 +258,4 @@ const ExpandableProviderCard: React.FC<ExpandableProviderCardProps> = ({
 };
 
 export default ExpandableProviderCard;
+

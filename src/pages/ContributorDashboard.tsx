@@ -50,7 +50,7 @@ const ContributorDashboard = () => {
       toast({
         title: "Unauthorized Access",
         description: "You need to be a contributor to access this page.",
-        variant: "destructive",
+        variant: "default",
       });
     } else {
       fetchEvents();
@@ -89,7 +89,7 @@ const ContributorDashboard = () => {
       toast({
         title: "Error Fetching Events",
         description: error.message,
-        variant: "destructive",
+        variant: "default",
       });
     } finally {
       setIsLoading(false);
@@ -109,7 +109,7 @@ const ContributorDashboard = () => {
       toast({
         title: "Error Fetching Categories",
         description: error.message,
-        variant: "destructive",
+        variant: "default",
       });
     }
   };
@@ -192,7 +192,7 @@ const ContributorDashboard = () => {
       toast({
         title: "Error Creating Event",
         description: error.message,
-        variant: "destructive",
+        variant: "default",
       });
     } finally {
       setIsSubmitting(false);

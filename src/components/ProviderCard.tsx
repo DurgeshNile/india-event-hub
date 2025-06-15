@@ -25,6 +25,14 @@ interface ProviderCardProps {
 }
 
 const ProviderCard = ({ provider }: ProviderCardProps) => {
+  const handlePhoneClick = (phone: string) => {
+    window.open(`tel:${phone}`);
+  };
+
+  const handleEmailClick = (email: string) => {
+    window.open(`mailto:${email}`);
+  };
+
   return (
     <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full">
       <div className="relative overflow-hidden h-56">
@@ -72,14 +80,24 @@ const ProviderCard = ({ provider }: ProviderCardProps) => {
           {provider.phone && (
             <div className="flex items-center text-gray-500 text-sm">
               <Phone className="h-4 w-4 mr-2" />
-              <span>{provider.phone}</span>
+              <button
+                onClick={() => handlePhoneClick(provider.phone!)}
+                className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
+              >
+                {provider.phone}
+              </button>
             </div>
           )}
           
           {provider.email && (
             <div className="flex items-center text-gray-500 text-sm">
               <Mail className="h-4 w-4 mr-2" />
-              <span className="truncate">{provider.email}</span>
+              <button
+                onClick={() => handleEmailClick(provider.email!)}
+                className="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer truncate"
+              >
+                {provider.email}
+              </button>
             </div>
           )}
           
@@ -111,3 +129,4 @@ const ProviderCard = ({ provider }: ProviderCardProps) => {
 };
 
 export default ProviderCard;
+
