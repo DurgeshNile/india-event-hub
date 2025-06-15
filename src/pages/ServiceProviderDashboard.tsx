@@ -79,7 +79,7 @@ const ServiceProviderDashboard = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+    <div className="min-h-screen bg-gray-900 transition-colors duration-300">
       <div className="container mx-auto py-8 px-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -88,10 +88,10 @@ const ServiceProviderDashboard = () => {
               <User className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-3xl font-bold text-white">
                 Welcome back, {profile?.first_name || user?.email?.split('@')[0]}!
               </h1>
-              <p className="text-gray-600 dark:text-gray-300">Manage your services and showcase your expertise</p>
+              <p className="text-gray-300">Manage your services and showcase your expertise</p>
             </div>
           </div>
           
@@ -99,7 +99,7 @@ const ServiceProviderDashboard = () => {
             onClick={toggleDarkMode}
             variant="outline"
             size="icon"
-            className="rounded-full"
+            className="rounded-full border-gray-600 bg-gray-800 hover:bg-gray-700 text-white"
           >
             {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
@@ -107,28 +107,28 @@ const ServiceProviderDashboard = () => {
 
         {/* Main Content */}
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-6">
-            <TabsTrigger value="profile" className="flex items-center space-x-2">
+          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-6 bg-gray-800 border-gray-700">
+            <TabsTrigger value="profile" className="flex items-center space-x-2 text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700">
               <User className="h-4 w-4" />
               <span className="hidden sm:inline">Profile</span>
             </TabsTrigger>
-            <TabsTrigger value="ratings" className="flex items-center space-x-2">
+            <TabsTrigger value="ratings" className="flex items-center space-x-2 text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700">
               <Star className="h-4 w-4" />
               <span className="hidden sm:inline">Ratings</span>
             </TabsTrigger>
-            <TabsTrigger value="social" className="flex items-center space-x-2">
+            <TabsTrigger value="social" className="flex items-center space-x-2 text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700">
               <Instagram className="h-4 w-4" />
               <span className="hidden sm:inline">Social</span>
             </TabsTrigger>
-            <TabsTrigger value="gallery" className="flex items-center space-x-2">
+            <TabsTrigger value="gallery" className="flex items-center space-x-2 text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700">
               <Camera className="h-4 w-4" />
               <span className="hidden sm:inline">Gallery</span>
             </TabsTrigger>
-            <TabsTrigger value="achievements" className="flex items-center space-x-2">
+            <TabsTrigger value="achievements" className="flex items-center space-x-2 text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700">
               <Trophy className="h-4 w-4" />
               <span className="hidden sm:inline">Badges</span>
             </TabsTrigger>
-            <TabsTrigger value="activity" className="flex items-center space-x-2">
+            <TabsTrigger value="activity" className="flex items-center space-x-2 text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700">
               <Activity className="h-4 w-4" />
               <span className="hidden sm:inline">Activity</span>
             </TabsTrigger>
