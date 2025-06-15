@@ -102,23 +102,29 @@ const Navbar = () => {
 
   return (
     <header className={cn(
-      "sticky top-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-md shadow-md",
+      "sticky top-0 z-50 transition-all duration-300",
       scrolled 
-        ? "bg-white/95 backdrop-blur-md shadow-md" 
-        : "bg-white/90"
+        ? "bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/20" 
+        : "bg-white/90 backdrop-blur-md shadow-md"
     )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-18">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <img 
-                src="/lovable-uploads/63f210e0-ede7-488f-89f1-3c588fe63c17.png" 
-                alt="LetsEventify Logo" 
-                className="h-10"
-              />
-              <span className="font-syne font-bold text-lg hidden sm:inline-block text-gray-800">
-                LetsEventify
-              </span>
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="relative">
+                <img 
+                  src="/lovable-uploads/63f210e0-ede7-488f-89f1-3c588fe63c17.png" 
+                  alt="LetsEventify Logo" 
+                  className="h-12 w-12 rounded-lg shadow-lg transition-transform duration-200 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+              </div>
+              <div className="hidden sm:block">
+                <span className="font-syne font-bold text-xl bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  LetsEventify
+                </span>
+                <p className="text-xs text-gray-600 font-medium">Event Solutions</p>
+              </div>
             </Link>
           </div>
 
@@ -127,7 +133,7 @@ const Navbar = () => {
               <NavigationMenuItem>
                 <Link 
                   to="/" 
-                  className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium"
+                  className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium rounded-md hover:bg-pink-50"
                 >
                   Home
                 </Link>
@@ -176,7 +182,7 @@ const Navbar = () => {
               <NavigationMenuItem>
                 <Link 
                   to="/categories" 
-                  className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium"
+                  className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium rounded-md hover:bg-pink-50"
                 >
                   Categories
                 </Link>
@@ -184,7 +190,7 @@ const Navbar = () => {
               <NavigationMenuItem>
                 <Link 
                   to="/about" 
-                  className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium"
+                  className="text-gray-700 hover:text-pink-600 transition-colors px-4 py-2 font-medium rounded-md hover:bg-pink-50"
                 >
                   About
                 </Link>
@@ -192,11 +198,11 @@ const Navbar = () => {
             </NavigationMenuList>
           </NavigationMenu>
 
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden md:flex items-center space-x-2">
             <Button 
               variant="ghost" 
               size="icon" 
-              className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+              className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors rounded-full"
               onClick={() => navigate('/search')}
             >
               <Search size={20} />
@@ -207,7 +213,7 @@ const Navbar = () => {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+                  className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors rounded-full"
                 >
                   <Calendar size={20} />
                 </Button>
@@ -239,7 +245,7 @@ const Navbar = () => {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+                  className="text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors rounded-full"
                   onClick={() => navigate(getDashboardRoute())}
                 >
                   <LayoutDashboard size={20} />
@@ -250,11 +256,11 @@ const Navbar = () => {
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="relative text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors"
+                      className="relative text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors rounded-full"
                     >
                       <Bell size={20} />
                       {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-pink-600 text-[10px] text-white font-bold">
+                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-pink-600 text-[10px] text-white font-bold animate-pulse">
                           {unreadCount}
                         </span>
                       )}
@@ -317,9 +323,11 @@ const Navbar = () => {
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant="ghost" 
-                      className="flex items-center space-x-2 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors px-3 py-2"
+                      className="flex items-center space-x-2 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors px-3 py-2 rounded-full"
                     >
-                      <User size={20} />
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 flex items-center justify-center">
+                        <User size={16} className="text-white" />
+                      </div>
                       <span className="font-medium capitalize">{userType}</span>
                       <ChevronDown size={16} />
                     </Button>
@@ -356,12 +364,12 @@ const Navbar = () => {
               <>
                 <Button 
                   variant="outline" 
-                  className="border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white"
+                  className="border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white rounded-full px-6"
                 >
                   <Link to="/auth" className="w-full">Log in</Link>
                 </Button>
                 <Button 
-                  className="bg-pink-600 hover:bg-pink-700 text-white"
+                  className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white rounded-full px-6 shadow-lg"
                 >
                   <Link to="/auth?tab=signup" className="w-full">Sign up</Link>
                 </Button>

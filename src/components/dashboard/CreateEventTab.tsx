@@ -1,216 +1,214 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
-
-interface Category {
-  id: string;
-  name: string;
-}
+import { Calendar, MapPin, Users, Image, Clock, IndianRupee } from "lucide-react";
 
 interface CreateEventTabProps {
-  categories: Category[];
-  onSubmit: (formData: any, date: Date | undefined, endDate: Date | undefined) => Promise<void>;
-  isSubmitting: boolean;
+  onCreateEvent: (eventData: any) => Promise<void>;
+  isLoading: boolean;
 }
 
-const CreateEventTab: React.FC<CreateEventTabProps> = ({ 
-  categories, 
-  onSubmit, 
-  isSubmitting 
-}) => {
+const CreateEventTab = ({ onCreateEvent, isLoading }: CreateEventTabProps) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category_id: '',
-    venue: '',
+    date: '',
+    time: '',
     location: '',
-    price: '',
-    image_url: '',
+    category: '',
+    maxAttendees: '',
+    ticketPrice: '',
+    image: ''
   });
-  const [date, setDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(formData, date, endDate);
-    
-    // Reset form after successful submission
+    await onCreateEvent(formData);
     setFormData({
       title: '',
       description: '',
-      category_id: '',
-      venue: '',
+      date: '',
+      time: '',
       location: '',
-      price: '',
-      image_url: '',
+      category: '',
+      maxAttendees: '',
+      ticketPrice: '',
+      image: ''
     });
-    setDate(undefined);
-    setEndDate(undefined);
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
     <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
-        <CardTitle className="text-white">Create New Event</CardTitle>
-        <CardDescription className="text-gray-300">
-          Fill out the form below to create a new event
+        <CardTitle className="text-white flex items-center gap-2">
+          <Calendar className="h-5 w-5" />
+          Create New Event
+        </CardTitle>
+        <CardDescription className="text-gray-400">
+          Fill in the details to create your new event
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title" className="text-white">Event Title</Label>
-            <Input 
-              id="title"
-              name="title"
-              required
-              value={formData.title}
-              onChange={handleInputChange}
-              placeholder="Enter event title"
-              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="description" className="text-white">Description</Label>
-            <Textarea 
-              id="description"
-              name="description"
-              rows={4}
-              required
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="Describe your event"
-              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-            />
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="category_id" className="text-white">Category</Label>
-              <Select 
-                value={formData.category_id} 
-                onValueChange={(value) => handleSelectChange('category_id', value)}
-              >
-                <SelectTrigger id="category_id" className="bg-gray-700 border-gray-600 text-white">
+              <Label htmlFor="title" className="text-gray-300">Event Title</Label>
+              <Input
+                id="title"
+                type="text"
+                placeholder="Enter event title"
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="category" className="text-gray-300">Category</Label>
+              <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent className="bg-gray-700 border-gray-600">
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id} className="text-white">
-                      {category.name}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="wedding">Wedding</SelectItem>
+                  <SelectItem value="corporate">Corporate</SelectItem>
+                  <SelectItem value="birthday">Birthday Party</SelectItem>
+                  <SelectItem value="concert">Concert</SelectItem>
+                  <SelectItem value="conference">Conference</SelectItem>
+                  <SelectItem value="workshop">Workshop</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-gray-300">Description</Label>
+            <Textarea
+              id="description"
+              placeholder="Describe your event"
+              value={formData.description}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 min-h-[100px]"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label className="text-white">Event Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className="w-full justify-start text-left font-normal bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-600">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label htmlFor="date" className="text-gray-300">Event Date</Label>
+              <div className="relative">
+                <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => handleInputChange('date', e.target.value)}
+                  className="bg-gray-700 border-gray-600 text-white pl-10"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="time" className="text-gray-300">Event Time</Label>
+              <div className="relative">
+                <Clock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="time"
+                  type="time"
+                  value={formData.time}
+                  onChange={(e) => handleInputChange('time', e.target.value)}
+                  className="bg-gray-700 border-gray-600 text-white pl-10"
+                  required
+                />
+              </div>
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="venue" className="text-white">Venue</Label>
-              <Input 
-                id="venue"
-                name="venue"
-                value={formData.venue}
-                onChange={handleInputChange}
-                placeholder="Event venue"
-                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="location" className="text-white">Location</Label>
-              <Input 
+
+          <div className="space-y-2">
+            <Label htmlFor="location" className="text-gray-300">Location</Label>
+            <div className="relative">
+              <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Input
                 id="location"
-                name="location"
+                type="text"
+                placeholder="Enter event location"
                 value={formData.location}
-                onChange={handleInputChange}
-                placeholder="City, State"
-                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                onChange={(e) => handleInputChange('location', e.target.value)}
+                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-10"
+                required
               />
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="price" className="text-white">Price</Label>
-              <Input 
-                id="price"
-                name="price"
-                type="number"
-                value={formData.price}
-                onChange={handleInputChange}
-                placeholder="Event price (optional)"
-                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-              />
+              <Label htmlFor="maxAttendees" className="text-gray-300">Max Attendees</Label>
+              <div className="relative">
+                <Users className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="maxAttendees"
+                  type="number"
+                  placeholder="Enter max attendees"
+                  value={formData.maxAttendees}
+                  onChange={(e) => handleInputChange('maxAttendees', e.target.value)}
+                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-10"
+                  min="1"
+                />
+              </div>
             </div>
-            
+
             <div className="space-y-2">
-              <Label htmlFor="image_url" className="text-white">Image URL</Label>
-              <Input 
-                id="image_url"
-                name="image_url"
-                value={formData.image_url}
-                onChange={handleInputChange}
-                placeholder="URL of event image"
-                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+              <Label htmlFor="ticketPrice" className="text-gray-300">Ticket Price (₹)</Label>
+              <div className="relative">
+                <IndianRupee className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  id="ticketPrice"
+                  type="number"
+                  placeholder="Enter ticket price"
+                  value={formData.ticketPrice}
+                  onChange={(e) => handleInputChange('ticketPrice', e.target.value)}
+                  className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-10"
+                  min="0"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="image" className="text-gray-300">Event Image URL (Optional)</Label>
+            <div className="relative">
+              <Image className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <Input
+                id="image"
+                type="url"
+                placeholder="Enter image URL"
+                value={formData.image}
+                onChange={(e) => handleInputChange('image', e.target.value)}
+                className="bg-gray-700 border-gray-600 text-white placeholder-gray-400 pl-10"
               />
             </div>
           </div>
-        </CardContent>
-        <CardFooter>
-          <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "Creating..." : "Create Event"}
+
+          <Button 
+            type="submit" 
+            className="w-full bg-pink-600 hover:bg-pink-700 text-white"
+            disabled={isLoading}
+          >
+            {isLoading ? "Creating Event..." : "Create Event"}
           </Button>
-        </CardFooter>
-      </form>
+        </form>
+      </CardContent>
     </Card>
   );
 };

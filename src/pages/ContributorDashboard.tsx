@@ -1,251 +1,359 @@
 import React, { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Calendar, Users, FileText, Plus } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuthState } from '@/hooks/useAuthState';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { 
+  Calendar, 
+  MapPin, 
+  Users, 
+  Star, 
+  TrendingUp, 
+  Award,
+  Camera,
+  MessageSquare,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertCircle
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import EventsTab from '@/components/dashboard/EventsTab';
 import CreateEventTab from '@/components/dashboard/CreateEventTab';
 import RegistrationsTab from '@/components/dashboard/RegistrationsTab';
 
-const ContributorDashboard: React.FC = () => {
-  const { user } = useAuthState();
+const ContributorDashboard = () => {
+  const { user } = useAuth();
   const { toast } = useToast();
-  const [events, setEvents] = useState<any[]>([]);
-  const [registrations, setRegistrations] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleDeleteEvent = async (eventId: string) => {
-    try {
-      const { error } = await supabase
-        .from('events')
-        .delete()
-        .eq('id', eventId);
-
-      if (error) throw error;
-
-      setEvents(events.filter(event => event.id !== eventId));
-      toast({
-        title: "Success",
-        description: "Event deleted successfully",
-        variant: "error",
-      });
-    } catch (error: any) {
-      console.error('Error deleting event:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete event",
-        variant: "error",
-      });
+  // Sample data - in a real app, this would come from your backend
+  const [events, setEvents] = useState([
+    {
+      id: 1,
+      title: "Summer Music Festival",
+      date: "2024-07-15",
+      location: "Central Park, Mumbai",
+      attendees: 150,
+      status: "upcoming",
+      image: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?ixlib=rb-4.0.3"
+    },
+    {
+      id: 2,
+      title: "Tech Conference 2024",
+      date: "2024-06-20",
+      location: "Convention Center, Bangalore",
+      attendees: 300,
+      status: "ongoing",
+      image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3"
     }
+  ]);
+
+  const [registrations, setRegistrations] = useState([
+    {
+      id: 1,
+      eventTitle: "Wedding Photography Package",
+      clientName: "Priya & Rahul",
+      date: "2024-06-25",
+      status: "confirmed",
+      amount: "₹25,000"
+    },
+    {
+      id: 2,
+      eventTitle: "Corporate Event Coverage",
+      clientName: "Tech Solutions Ltd",
+      date: "2024-07-10",
+      status: "pending",
+      amount: "₹15,000"
+    }
+  ]);
+
+  const stats = {
+    totalEvents: events.length,
+    totalAttendees: events.reduce((sum, event) => sum + event.attendees, 0),
+    upcomingEvents: events.filter(e => e.status === 'upcoming').length,
+    rating: 4.8,
+    totalEarnings: "₹1,25,000"
+  };
+
+  useEffect(() => {
+    // Simulate loading data
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+  }, []);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    toast({
+      title: "Tab Changed",
+      description: `Navigated to ${tab} tab.`,
+    });
+  };
+
+  const handleEventUpdate = (eventId: number, updatedEvent: any) => {
+    setEvents(events.map(event => event.id === eventId ? updatedEvent : event));
+    toast({
+      title: "Event Updated",
+      description: `${updatedEvent.title} has been updated successfully.`,
+    });
+  };
+
+  const handleEventDelete = (eventId: number) => {
+    setEvents(events.filter(event => event.id !== eventId));
+    toast({
+      title: "Event Deleted",
+      description: "Event has been deleted successfully.",
+      variant: "destructive",
+    });
+  };
+
+  const handleRegistrationUpdate = (registrationId: number, updatedRegistration: any) => {
+    setRegistrations(registrations.map(reg => reg.id === registrationId ? updatedRegistration : reg));
+    toast({
+      title: "Registration Updated",
+      description: `Registration for ${updatedRegistration.eventTitle} has been updated.`,
+    });
+  };
+
+  const handleRegistrationDelete = (registrationId: number) => {
+    setRegistrations(registrations.filter(reg => reg.id !== registrationId));
+    toast({
+      title: "Registration Deleted",
+      description: "Registration has been deleted successfully.",
+      variant: "destructive",
+    });
   };
 
   const handleCreateEvent = async (eventData: any) => {
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to create events",
-        variant: "error",
-      });
-      return;
-    }
-
-    setLoading(true);
+    setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('events')
-        .insert([
-          {
-            ...eventData,
-            user_id: user.id,
-          }
-        ])
-        .select();
-
-      if (error) throw error;
-
-      if (data) {
-        setEvents([...events, ...data]);
-        toast({
-          title: "Success",
-          description: "Event created successfully!",
-        });
-      }
-    } catch (error: any) {
-      console.error('Error creating event:', error);
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const newEvent = {
+        id: events.length + 1,
+        title: eventData.title,
+        date: eventData.date,
+        location: eventData.location,
+        attendees: 0,
+        status: 'upcoming',
+        image: eventData.image || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3"
+      };
+      
+      setEvents([...events, newEvent]);
+      
+      toast({
+        title: "Event Created Successfully!",
+        description: `${eventData.title} has been added to your events.`,
+        variant: "default",
+      });
+    } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create event",
-        variant: "error",
+        description: "Failed to create event. Please try again.",
+        variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
-
-  const fetchEvents = async () => {
-    setLoading(true);
-    try {
-      if (!user) {
-        console.warn('User not logged in.');
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setEvents(data || []);
-    } catch (error: any) {
-      console.error('Error fetching events:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load events",
-        variant: "error",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchRegistrations = async () => {
-    setLoading(true);
-    try {
-      if (!user) {
-        console.warn('User not logged in.');
-        return;
-      }
-
-      // Fetch registrations for events created by the current user
-      const { data, error } = await supabase
-        .from('registrations')
-        .select(`
-          *,
-          profiles (
-            first_name,
-            last_name
-          )
-        `)
-        .in('event_id', events.map(event => event.id))
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setRegistrations(data || []);
-    } catch (error: any) {
-      console.error('Error fetching registrations:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load registrations",
-        variant: "error",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchEvents();
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (events.length > 0) {
-      fetchRegistrations();
-    }
-  }, [events]);
 
   return (
-    <div className="min-h-screen bg-gray-900 p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+      <Navbar />
+      
+      <div className="container mx-auto px-4 py-8">
+        {/* Header Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Contributor Dashboard</h1>
-          <p className="text-gray-300">Manage your events and track registrations</p>
+          <div className="flex items-center gap-4 mb-6">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src="/placeholder-avatar.jpg" />
+              <AvatarFallback className="bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xl font-bold">
+                {user?.email?.charAt(0).toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">
+                Welcome back, {user?.email?.split('@')[0] || 'Contributor'}!
+              </h1>
+              <p className="text-gray-300">
+                Manage your events and grow your business with LetsEventify
+              </p>
+            </div>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+            <Card className="bg-gradient-to-r from-blue-600 to-blue-700 border-none text-white">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-blue-100 text-sm">Total Events</p>
+                    <p className="text-2xl font-bold">{stats.totalEvents}</p>
+                  </div>
+                  <Calendar className="h-8 w-8 text-blue-200" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-green-600 to-green-700 border-none text-white">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-green-100 text-sm">Total Attendees</p>
+                    <p className="text-2xl font-bold">{stats.totalAttendees}</p>
+                  </div>
+                  <Users className="h-8 w-8 text-green-200" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-purple-600 to-purple-700 border-none text-white">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-purple-100 text-sm">Upcoming Events</p>
+                    <p className="text-2xl font-bold">{stats.upcomingEvents}</p>
+                  </div>
+                  <Clock className="h-8 w-8 text-purple-200" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-yellow-600 to-yellow-700 border-none text-white">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-yellow-100 text-sm">Rating</p>
+                    <p className="text-2xl font-bold">{stats.rating}</p>
+                  </div>
+                  <Star className="h-8 w-8 text-yellow-200" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-r from-pink-600 to-pink-700 border-none text-white">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-pink-100 text-sm">Total Earnings</p>
+                    <p className="text-2xl font-bold">{stats.totalEarnings}</p>
+                  </div>
+                  <TrendingUp className="h-8 w-8 text-pink-200" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 mb-8">
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-200">Total Events</CardTitle>
-              <Calendar className="h-4 w-4 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">{events.length}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-200">Total Registrations</CardTitle>
-              <Users className="h-4 w-4 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">{registrations.length}</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gray-800 border-gray-700">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-gray-200">Active Events</CardTitle>
-              <FileText className="h-4 w-4 text-gray-400" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-white">
-                {events.filter(event => new Date(event.start_date) > new Date()).length}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="events" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-gray-800 border-gray-700">
-            <TabsTrigger value="events" className="text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700">
-              <Calendar className="h-4 w-4 mr-2" />
+        {/* Main Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 bg-gray-800 border border-gray-700">
+            <TabsTrigger value="overview" className="text-gray-300 data-[state=active]:text-white data-[state=active]:bg-pink-600">
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="events" className="text-gray-300 data-[state=active]:text-white data-[state=active]:bg-pink-600">
               My Events
             </TabsTrigger>
-            <TabsTrigger value="create" className="text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700">
-              <Plus className="h-4 w-4 mr-2" />
+            <TabsTrigger value="create" className="text-gray-300 data-[state=active]:text-white data-[state=active]:bg-pink-600">
               Create Event
             </TabsTrigger>
-            <TabsTrigger value="registrations" className="text-gray-300 data-[state=active]:text-white data-[state=active]:bg-gray-700">
-              <Users className="h-4 w-4 mr-2" />
+            <TabsTrigger value="registrations" className="text-gray-300 data-[state=active]:text-white data-[state=active]:bg-pink-600">
               Registrations
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Recent Activity */}
+              <Card className="lg:col-span-2 bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white">Recent Activity</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Your latest event activities and updates
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {[
+                      { icon: CheckCircle, text: "Event 'Summer Music Festival' was approved", time: "2 hours ago", color: "text-green-400" },
+                      { icon: Users, text: "25 new attendees registered for Tech Conference", time: "5 hours ago", color: "text-blue-400" },
+                      { icon: MessageSquare, text: "New review received for Wedding Photography", time: "1 day ago", color: "text-purple-400" },
+                      { icon: Camera, text: "Photos uploaded for Corporate Event", time: "2 days ago", color: "text-pink-400" }
+                    ].map((activity, index) => (
+                      <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-gray-700">
+                        <activity.icon className={`h-5 w-5 mt-0.5 ${activity.color}`} />
+                        <div className="flex-1">
+                          <p className="text-gray-200 text-sm">{activity.text}</p>
+                          <p className="text-gray-400 text-xs mt-1">{activity.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Actions */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white">Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button 
+                    className="w-full bg-pink-600 hover:bg-pink-700 text-white"
+                    onClick={() => setActiveTab("create")}
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    Create New Event
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    <Camera className="mr-2 h-4 w-4" />
+                    Upload Photos
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Manage Reviews
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    <Award className="mr-2 h-4 w-4" />
+                    View Analytics
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           <TabsContent value="events">
-            <EventsTab 
-              events={events}
-              isLoading={loading}
-              onDeleteEvent={handleDeleteEvent}
-            />
+            <EventsTab events={events} setEvents={setEvents} />
           </TabsContent>
 
           <TabsContent value="create">
-            <CreateEventTab 
-              onCreateEvent={handleCreateEvent}
-              isLoading={loading}
-            />
+            <CreateEventTab onCreateEvent={handleCreateEvent} isLoading={isLoading} />
           </TabsContent>
 
           <TabsContent value="registrations">
-            <RegistrationsTab 
-              registrations={registrations}
-              isLoading={loading}
-            />
+            <RegistrationsTab registrations={registrations} setRegistrations={setRegistrations} />
           </TabsContent>
         </Tabs>
       </div>
+      
+      <Footer />
     </div>
   );
 };
