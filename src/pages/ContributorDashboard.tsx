@@ -1,13 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Calendar, 
-  MapPin, 
   Users, 
   Star, 
   TrendingUp, 
@@ -15,9 +14,7 @@ import {
   Camera,
   MessageSquare,
   Clock,
-  CheckCircle,
-  XCircle,
-  AlertCircle
+  CheckCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from '@/components/Navbar';
@@ -37,7 +34,9 @@ const ContributorDashboard = () => {
     {
       id: 1,
       title: "Summer Music Festival",
+      description: "A vibrant summer music festival with amazing artists",
       date: "2024-07-15",
+      start_date: "2024-07-15T18:00:00Z",
       location: "Central Park, Mumbai",
       attendees: 150,
       status: "upcoming",
@@ -46,7 +45,9 @@ const ContributorDashboard = () => {
     {
       id: 2,
       title: "Tech Conference 2024",
+      description: "Annual technology conference showcasing latest innovations",
       date: "2024-06-20",
+      start_date: "2024-06-20T09:00:00Z",
       location: "Convention Center, Bangalore",
       attendees: 300,
       status: "ongoing",
@@ -61,7 +62,8 @@ const ContributorDashboard = () => {
       clientName: "Priya & Rahul",
       date: "2024-06-25",
       status: "confirmed",
-      amount: "₹25,000"
+      amount: "₹25,000",
+      created_at: "2024-06-01T10:00:00Z"
     },
     {
       id: 2,
@@ -69,7 +71,8 @@ const ContributorDashboard = () => {
       clientName: "Tech Solutions Ltd",
       date: "2024-07-10",
       status: "pending",
-      amount: "₹15,000"
+      amount: "₹15,000",
+      created_at: "2024-06-05T14:00:00Z"
     }
   ]);
 
@@ -110,7 +113,7 @@ const ContributorDashboard = () => {
     toast({
       title: "Event Deleted",
       description: "Event has been deleted successfully.",
-      variant: "destructive",
+      variant: "error",
     });
   };
 
@@ -127,7 +130,7 @@ const ContributorDashboard = () => {
     toast({
       title: "Registration Deleted",
       description: "Registration has been deleted successfully.",
-      variant: "destructive",
+      variant: "error",
     });
   };
 
@@ -140,7 +143,9 @@ const ContributorDashboard = () => {
       const newEvent = {
         id: events.length + 1,
         title: eventData.title,
+        description: eventData.description || "Event description",
         date: eventData.date,
+        start_date: `${eventData.date}T${eventData.time || '10:00'}:00Z`,
         location: eventData.location,
         attendees: 0,
         status: 'upcoming',
@@ -158,7 +163,7 @@ const ContributorDashboard = () => {
       toast({
         title: "Error",
         description: "Failed to create event. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsLoading(false);

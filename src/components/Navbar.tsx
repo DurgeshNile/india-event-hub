@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
@@ -108,22 +107,22 @@ const Navbar = () => {
         : "bg-white/90 backdrop-blur-md shadow-md"
     )}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-18">
+        <div className="flex items-center justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-3 group">
               <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl blur-md opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
                 <img 
                   src="/lovable-uploads/63f210e0-ede7-488f-89f1-3c588fe63c17.png" 
                   alt="LetsEventify Logo" 
-                  className="h-12 w-12 rounded-lg shadow-lg transition-transform duration-200 group-hover:scale-105"
+                  className="relative h-14 w-14 rounded-xl shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-xl border-2 border-white/20 group-hover:border-white/40"
                 />
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
               </div>
               <div className="hidden sm:block">
-                <span className="font-syne font-bold text-xl bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
+                <span className="font-syne font-bold text-2xl bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent drop-shadow-sm">
                   LetsEventify
                 </span>
-                <p className="text-xs text-gray-600 font-medium">Event Solutions</p>
+                <p className="text-sm text-gray-700 font-semibold tracking-wide">Event Solutions</p>
               </div>
             </Link>
           </div>
