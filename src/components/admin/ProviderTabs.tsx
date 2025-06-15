@@ -40,9 +40,9 @@ const ProviderTabs: React.FC<ProviderTabsProps> = ({
   return (
     <TabsContent value="providers" className="space-y-6">
       <div className="grid gap-6">
-        <Card>
+        <Card className="bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-gray-100">
               <Clock className="h-5 w-5 text-orange-500" />
               Pending Providers ({pendingProviders.length})
             </CardTitle>
@@ -61,17 +61,17 @@ const ProviderTabs: React.FC<ProviderTabsProps> = ({
               {pendingProviders.length === 0 && (
                 <div className="text-center py-8">
                   <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Pending Providers</h3>
-                  <p className="text-gray-500">All provider applications have been processed.</p>
+                  <h3 className="text-lg font-medium text-gray-100 mb-2">No Pending Providers</h3>
+                  <p className="text-gray-300">All provider applications have been processed.</p>
                 </div>
               )}
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gray-800 border-gray-700">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-gray-100">
               <CheckCircle className="h-5 w-5 text-green-500" />
               Approved Providers ({approvedProviders.length})
             </CardTitle>
@@ -88,8 +88,8 @@ const ProviderTabs: React.FC<ProviderTabsProps> = ({
               {approvedProviders.length === 0 && (
                 <div className="text-center py-8">
                   <CheckCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No Approved Providers</h3>
-                  <p className="text-gray-500">Approved providers will appear here.</p>
+                  <h3 className="text-lg font-medium text-gray-100 mb-2">No Approved Providers</h3>
+                  <p className="text-gray-300">Approved providers will appear here.</p>
                 </div>
               )}
             </div>

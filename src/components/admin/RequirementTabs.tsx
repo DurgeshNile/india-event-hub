@@ -17,9 +17,9 @@ const RequirementTabs: React.FC<RequirementTabsProps> = ({
 }) => {
   return (
     <TabsContent value="requirements">
-      <Card>
+      <Card className="bg-gray-800 border-gray-700">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-gray-100">
             <Mail className="h-5 w-5 text-blue-500" />
             Event Requirements ({requirements.length})
           </CardTitle>
@@ -36,8 +36,8 @@ const RequirementTabs: React.FC<RequirementTabsProps> = ({
             {requirements.length === 0 && (
               <div className="text-center py-8">
                 <Mail className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No Event Requirements</h3>
-                <p className="text-gray-500">Event requirements submitted through the chatbot will appear here.</p>
+                <h3 className="text-lg font-medium text-gray-100 mb-2">No Event Requirements</h3>
+                <p className="text-gray-300">Event requirements submitted through the chatbot will appear here.</p>
               </div>
             )}
           </div>

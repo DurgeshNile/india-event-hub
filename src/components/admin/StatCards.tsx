@@ -18,53 +18,53 @@ const StatCards: React.FC<StatCardsProps> = ({
 }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <Card>
+      <Card className="bg-gray-800 border-gray-700">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Pending Providers</CardTitle>
-          <Clock className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium text-gray-100">Pending Providers</CardTitle>
+          <Clock className="h-4 w-4 text-orange-400" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{pendingProvidersCount}</div>
-          <p className="text-xs text-muted-foreground">
+          <div className="text-2xl font-bold text-white">{pendingProvidersCount}</div>
+          <p className="text-xs text-gray-300">
             Awaiting approval
           </p>
         </CardContent>
       </Card>
       
-      <Card>
+      <Card className="bg-gray-800 border-gray-700">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Approved Providers</CardTitle>
-          <CheckCircle className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium text-gray-100">Approved Providers</CardTitle>
+          <CheckCircle className="h-4 w-4 text-green-400" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{approvedProvidersCount}</div>
-          <p className="text-xs text-muted-foreground">
+          <div className="text-2xl font-bold text-white">{approvedProvidersCount}</div>
+          <p className="text-xs text-gray-300">
             Active providers
           </p>
         </CardContent>
       </Card>
       
-      <Card>
+      <Card className="bg-gray-800 border-gray-700">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Event Requirements</CardTitle>
-          <Mail className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium text-gray-100">Event Requirements</CardTitle>
+          <Mail className="h-4 w-4 text-blue-400" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{requirementsCount}</div>
-          <p className="text-xs text-muted-foreground">
+          <div className="text-2xl font-bold text-white">{requirementsCount}</div>
+          <p className="text-xs text-gray-300">
             Total submissions
           </p>
         </CardContent>
       </Card>
       
-      <Card>
+      <Card className="bg-gray-800 border-gray-700">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium text-gray-100">Total Users</CardTitle>
+          <Users className="h-4 w-4 text-purple-400" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{totalUsersCount}</div>
-          <p className="text-xs text-muted-foreground">
+          <div className="text-2xl font-bold text-white">{totalUsersCount}</div>
+          <p className="text-xs text-gray-300">
             Platform users
           </p>
         </CardContent>
