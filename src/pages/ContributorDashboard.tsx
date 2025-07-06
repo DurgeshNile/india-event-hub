@@ -122,11 +122,11 @@ const ContributorDashboard = () => {
     });
   };
 
-  const handleEventUpdate = (eventId: string, updatedEvent: Event) => {
-    setEvents(events.map(event => event.id === eventId ? updatedEvent : event));
+  const handleEventEdit = (eventId: string) => {
+    // For now, just show a toast. In a real app, this would open an edit modal/form
     toast({
-      title: "Event Updated",
-      description: `${updatedEvent.title} has been updated successfully.`,
+      title: "Edit Event",
+      description: `Opening edit form for event ${eventId}.`,
     });
   };
 
@@ -370,7 +370,7 @@ const ContributorDashboard = () => {
             <EventsTab 
               events={events} 
               isLoading={isLoading}
-              onEditEvent={handleEventUpdate}
+              onEditEvent={handleEventEdit}
               onDeleteEvent={handleEventDelete}
             />
           </TabsContent>
