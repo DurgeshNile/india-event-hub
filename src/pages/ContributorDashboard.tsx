@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
@@ -134,7 +135,7 @@ const ContributorDashboard = () => {
     toast({
       title: "Event Deleted",
       description: "Event has been deleted successfully.",
-      variant: "destructive",
+      variant: "error",
     });
   };
 
@@ -151,7 +152,7 @@ const ContributorDashboard = () => {
     toast({
       title: "Registration Deleted",
       description: "Registration has been deleted successfully.",
-      variant: "destructive",
+      variant: "error",
     });
   };
 
@@ -184,7 +185,7 @@ const ContributorDashboard = () => {
       toast({
         title: "Error",
         description: "Failed to create event. Please try again.",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsLoading(false);
@@ -366,7 +367,12 @@ const ContributorDashboard = () => {
           </TabsContent>
 
           <TabsContent value="events">
-            <EventsTab events={events} setEvents={setEvents} />
+            <EventsTab 
+              events={events} 
+              isLoading={isLoading}
+              onEditEvent={handleEventUpdate}
+              onDeleteEvent={handleEventDelete}
+            />
           </TabsContent>
 
           <TabsContent value="create">
@@ -374,7 +380,10 @@ const ContributorDashboard = () => {
           </TabsContent>
 
           <TabsContent value="registrations">
-            <RegistrationsTab registrations={registrations} setRegistrations={setRegistrations} />
+            <RegistrationsTab 
+              registrations={registrations} 
+              isLoading={isLoading}
+            />
           </TabsContent>
         </Tabs>
       </div>

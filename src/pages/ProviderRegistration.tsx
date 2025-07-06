@@ -110,7 +110,7 @@ const ProviderRegistration = () => {
       toast({
         title: "Error",
         description: "You must be logged in to register as a provider",
-        variant: "destructive",
+        variant: "error",
       });
       return;
     }
@@ -120,7 +120,7 @@ const ProviderRegistration = () => {
       toast({
         title: "Error",
         description: "Please fill in all required fields (Business Name and Email)",
-        variant: "destructive",
+        variant: "error",
       });
       return;
     }
@@ -169,7 +169,7 @@ const ProviderRegistration = () => {
       toast({
         title: "Registration Failed",
         description: `Failed to submit registration: ${error.message || 'Please try again.'}`,
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setLoading(false);
