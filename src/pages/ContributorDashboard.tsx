@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,28 @@ import EventsTab from '@/components/dashboard/EventsTab';
 import CreateEventTab from '@/components/dashboard/CreateEventTab';
 import RegistrationsTab from '@/components/dashboard/RegistrationsTab';
 
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  start_date: string;
+  location: string;
+  attendees: number;
+  status: string;
+  image: string;
+}
+
+interface Registration {
+  id: string;
+  eventTitle: string;
+  clientName: string;
+  date: string;
+  status: string;
+  amount: string;
+  created_at: string;
+}
+
 const ContributorDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -30,9 +51,9 @@ const ContributorDashboard = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Sample data - in a real app, this would come from your backend
-  const [events, setEvents] = useState([
+  const [events, setEvents] = useState<Event[]>([
     {
-      id: 1,
+      id: "1",
       title: "Summer Music Festival",
       description: "A vibrant summer music festival with amazing artists",
       date: "2024-07-15",
@@ -43,7 +64,7 @@ const ContributorDashboard = () => {
       image: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?ixlib=rb-4.0.3"
     },
     {
-      id: 2,
+      id: "2",
       title: "Tech Conference 2024",
       description: "Annual technology conference showcasing latest innovations",
       date: "2024-06-20",
@@ -55,9 +76,9 @@ const ContributorDashboard = () => {
     }
   ]);
 
-  const [registrations, setRegistrations] = useState([
+  const [registrations, setRegistrations] = useState<Registration[]>([
     {
-      id: 1,
+      id: "1",
       eventTitle: "Wedding Photography Package",
       clientName: "Priya & Rahul",
       date: "2024-06-25",
@@ -66,7 +87,7 @@ const ContributorDashboard = () => {
       created_at: "2024-06-01T10:00:00Z"
     },
     {
-      id: 2,
+      id: "2",
       eventTitle: "Corporate Event Coverage",
       clientName: "Tech Solutions Ltd",
       date: "2024-07-10",
@@ -100,7 +121,7 @@ const ContributorDashboard = () => {
     });
   };
 
-  const handleEventUpdate = (eventId: number, updatedEvent: any) => {
+  const handleEventUpdate = (eventId: string, updatedEvent: Event) => {
     setEvents(events.map(event => event.id === eventId ? updatedEvent : event));
     toast({
       title: "Event Updated",
@@ -108,16 +129,16 @@ const ContributorDashboard = () => {
     });
   };
 
-  const handleEventDelete = (eventId: number) => {
+  const handleEventDelete = (eventId: string) => {
     setEvents(events.filter(event => event.id !== eventId));
     toast({
       title: "Event Deleted",
       description: "Event has been deleted successfully.",
-      variant: "error",
+      variant: "destructive",
     });
   };
 
-  const handleRegistrationUpdate = (registrationId: number, updatedRegistration: any) => {
+  const handleRegistrationUpdate = (registrationId: string, updatedRegistration: Registration) => {
     setRegistrations(registrations.map(reg => reg.id === registrationId ? updatedRegistration : reg));
     toast({
       title: "Registration Updated",
@@ -125,12 +146,12 @@ const ContributorDashboard = () => {
     });
   };
 
-  const handleRegistrationDelete = (registrationId: number) => {
+  const handleRegistrationDelete = (registrationId: string) => {
     setRegistrations(registrations.filter(reg => reg.id !== registrationId));
     toast({
       title: "Registration Deleted",
       description: "Registration has been deleted successfully.",
-      variant: "error",
+      variant: "destructive",
     });
   };
 
@@ -140,8 +161,8 @@ const ContributorDashboard = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      const newEvent = {
-        id: events.length + 1,
+      const newEvent: Event = {
+        id: (events.length + 1).toString(),
         title: eventData.title,
         description: eventData.description || "Event description",
         date: eventData.date,
@@ -163,7 +184,7 @@ const ContributorDashboard = () => {
       toast({
         title: "Error",
         description: "Failed to create event. Please try again.",
-        variant: "error",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
