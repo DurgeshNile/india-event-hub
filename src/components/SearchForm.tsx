@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, MapPin, Calendar, Filter, ArrowRight } from 'lucide-react';
+import { Search, MapPin, Calendar, Filter, ArrowRight, Star } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { 
   Select,
@@ -17,6 +17,8 @@ const SearchForm = () => {
     category: "all",
     location: "",
     city: "all",
+    priceRange: "all",
+    rating: "all"
   });
   const navigate = useNavigate();
 

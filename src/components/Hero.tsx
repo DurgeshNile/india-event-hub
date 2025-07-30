@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import SearchForm from './SearchForm';
+import EnhancedSearchForm from './EnhancedSearchForm';
 import { Heart, Star, Sparkles, Camera, Music, Utensils, ArrowRight } from 'lucide-react';
 
 const Hero = () => {
@@ -148,7 +148,7 @@ const Hero = () => {
                 translateY: -5
               }}
             >
-              <SearchForm />
+              <EnhancedSearchForm />
             </motion.div>
             
             <motion.div 

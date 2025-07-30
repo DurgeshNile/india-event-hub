@@ -8,6 +8,8 @@ import ImageGallery from '@/components/ImageGallery';
 import Testimonials from '@/components/Testimonials';
 import FeatureShowcase from '@/components/FeatureShowcase';
 import EventCarousel from '@/components/EventCarousel';
+import PopularSearches from '@/components/PopularSearches';
+import RealWeddingGallery from '@/components/RealWeddingGallery';
 import Footer from '@/components/Footer';
 import FloatingChatbot from '@/components/FloatingChatbot';
 import { Button } from '@/components/ui/button';
@@ -24,6 +26,10 @@ const Index = () => {
         <EventCarousel />
         
         <ServiceCategories />
+        
+        <PopularSearches />
+        
+        <RealWeddingGallery />
         
         <FeatureShowcase />
         
