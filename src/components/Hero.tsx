@@ -7,12 +7,12 @@ import { Heart, Star, Sparkles, Camera, Music, Utensils, ArrowRight } from 'luci
 
 const Hero = () => {
   return (
-    <div className="relative overflow-hidden bg-background min-h-[90vh] flex items-center">
-      {/* 3D Background Elements */}
+    <div className="relative overflow-hidden bg-gradient-to-br from-pink-50 via-white to-purple-50 min-h-[90vh] flex items-center">
+      {/* Simplified Background Elements */}
       <div className="absolute inset-0 overflow-hidden z-0">
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/2 -left-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
-        <div className="absolute bottom-20 right-1/3 w-64 h-64 bg-accent/10 rounded-full blur-3xl animate-pulse delay-700"></div>
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-pink-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 -left-24 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-1/3 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl"></div>
         
         {/* 3D Floating Icons */}
         <motion.div 
@@ -63,31 +63,8 @@ const Hero = () => {
         </motion.div>
       </div>
       
-      {/* Background gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background/80 z-1"></div>
-      
-      {/* Background images with parallax effect */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div 
-          className="absolute inset-0 z-0 opacity-20"
-          initial={{ scale: 1.1 }}
-          animate={{ 
-            y: [0, -10, 0],
-            scale: [1.1, 1.05, 1.1]
-          }}
-          transition={{ 
-            duration: 20, 
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          <img 
-            src="https://images.unsplash.com/photo-1470813740244-df37b8c1edcb?ixlib=rb-4.0.3" 
-            alt="Event atmosphere" 
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        </motion.div>
-      </div>
+      {/* Light background overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/20 to-white/10 z-1"></div>
       
       <div className="container mx-auto px-4 py-16 sm:py-24 relative z-10">
         <div className="max-w-4xl mx-auto">
@@ -104,30 +81,28 @@ const Hero = () => {
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <Sparkles className="w-8 h-8 text-accent animate-pulse" />
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-orbitron tracking-wider">
-                  <span className="text-accent">Lets</span>
-                  <span className="text-blue-400">Eventify</span>
+                <Sparkles className="w-6 h-6 text-pink-500" />
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800">
+                  <span className="text-pink-500">Lets</span>
+                  <span className="text-purple-600">Eventify</span>
                 </h1>
-                <Star className="w-8 h-8 text-accent animate-pulse" />
+                <Star className="w-6 h-6 text-purple-500" />
               </motion.div>
               
               <motion.p 
-                className="text-xl md:text-2xl text-blue-300/80 mb-6 font-light italic flex items-center justify-center gap-3"
+                className="text-lg md:text-xl text-gray-600 mb-6 font-medium flex items-center justify-center gap-2"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
               >
-                <Heart className="w-5 h-5 text-accent animate-pulse" />
-                <span className="bg-gradient-to-r from-blue-400 to-accent bg-clip-text text-transparent font-syne">
-                  The professional touch for your premium events
-                </span>
-                <Heart className="w-5 h-5 text-accent animate-pulse" />
+                <Heart className="w-4 h-4 text-pink-500" />
+                <span>Find perfect service providers for your special events</span>
+                <Heart className="w-4 h-4 text-pink-500" />
               </motion.p>
             </motion.div>
             
             <motion.p 
-              className="text-lg md:text-xl text-gray-300/80 mb-8 max-w-2xl mx-auto text-center"
+              className="text-base md:text-lg text-gray-600 mb-8 max-w-2xl mx-auto text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.9 }}
@@ -136,13 +111,13 @@ const Hero = () => {
             </motion.p>
             
             <motion.div 
-              className="max-w-3xl mx-auto mt-8 mb-12 glass-effect rounded-xl p-4 md:p-6 transition-all duration-300 transform hover:scale-[1.01]"
+              className="max-w-4xl mx-auto mt-8 mb-12 bg-white/90 backdrop-blur-sm rounded-xl p-4 md:p-6 shadow-lg border border-pink-100"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1.2 }}
               whileHover={{ 
-                boxShadow: "0 20px 40px -20px rgba(0, 100, 255, 0.2)",
-                translateY: -5
+                boxShadow: "0 20px 40px -20px rgba(236, 72, 153, 0.3)",
+                translateY: -2
               }}
             >
               <EnhancedSearchForm />
@@ -156,7 +131,7 @@ const Hero = () => {
             >
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-accent/90 to-blue-500/90 text-white transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg hover:shadow-accent/20"
+                className="bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:from-pink-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 Browse Categories
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -164,7 +139,7 @@ const Hero = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-accent text-accent hover:bg-accent/10 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg"
+                className="border-purple-300 text-purple-600 hover:bg-purple-50 transition-all duration-300 transform hover:scale-105 shadow-md"
               >
                 For Service Providers
               </Button>
@@ -183,15 +158,15 @@ const Hero = () => {
               ].map(({ count, label, icon }) => (
                 <motion.div 
                   key={label} 
-                  className="text-center group p-4 bg-black/30 backdrop-blur-sm rounded-lg"
-                  whileHover={{ scale: 1.03 }}
+                  className="text-center group p-6 bg-white/80 backdrop-blur-sm rounded-lg shadow-md border border-gray-100"
+                  whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="text-accent mb-1 flex justify-center">{icon}</div>
-                  <p className="text-3xl font-bold bg-gradient-to-br from-blue-400 to-accent bg-clip-text text-transparent font-orbitron">
+                  <div className="text-pink-500 mb-2 flex justify-center">{icon}</div>
+                  <p className="text-3xl font-bold text-gray-800 mb-1">
                     {count}
                   </p>
-                  <p className="text-gray-400 font-medium">{label}</p>
+                  <p className="text-gray-600 font-medium">{label}</p>
                 </motion.div>
               ))}
             </motion.div>
