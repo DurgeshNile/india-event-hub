@@ -16,11 +16,10 @@ const Hero = () => {
         
         {/* 3D Floating Icons */}
         <motion.div 
-          className="absolute top-20 left-[15%] text-accent opacity-30 transform-3d"
+          className="absolute top-20 left-[15%] text-accent opacity-30"
           animate={{ 
             y: [0, -15, 0],
-            rotateY: [0, 180, 360],
-            z: [0, 20, 0]
+            rotate: [0, 180, 360]
           }}
           transition={{ 
             duration: 8, 
@@ -32,11 +31,10 @@ const Hero = () => {
         </motion.div>
         
         <motion.div 
-          className="absolute top-40 right-[20%] text-blue-400 opacity-30 transform-3d"
+          className="absolute top-40 right-[20%] text-blue-400 opacity-30"
           animate={{ 
             y: [0, -15, 0],
-            rotateY: [0, 180, 360],
-            z: [0, 20, 0]
+            rotate: [0, 180, 360]
           }}
           transition={{ 
             duration: 8, 
@@ -49,11 +47,10 @@ const Hero = () => {
         </motion.div>
         
         <motion.div 
-          className="absolute bottom-32 left-[25%] text-blue-500 opacity-30 transform-3d"
+          className="absolute bottom-32 left-[25%] text-blue-500 opacity-30"
           animate={{ 
             y: [0, -15, 0],
-            rotateY: [0, 180, 360],
-            z: [0, 20, 0]
+            rotate: [0, 180, 360]
           }}
           transition={{ 
             duration: 8, 
@@ -107,12 +104,12 @@ const Hero = () => {
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <Sparkles className="w-8 h-8 text-accent animate-float depth-2" />
+                <Sparkles className="w-8 h-8 text-accent animate-pulse" />
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-orbitron tracking-wider">
                   <span className="text-accent">Lets</span>
                   <span className="text-blue-400">Eventify</span>
                 </h1>
-                <Star className="w-8 h-8 text-accent animate-float depth-2" />
+                <Star className="w-8 h-8 text-accent animate-pulse" />
               </motion.div>
               
               <motion.p 
@@ -186,8 +183,8 @@ const Hero = () => {
               ].map(({ count, label, icon }) => (
                 <motion.div 
                   key={label} 
-                  className="text-center group card-3d p-4 bg-black/30 backdrop-blur-sm rounded-lg"
-                  whileHover={{ translateZ: 15, scale: 1.03 }}
+                  className="text-center group p-4 bg-black/30 backdrop-blur-sm rounded-lg"
+                  whileHover={{ scale: 1.03 }}
                   transition={{ duration: 0.3 }}
                 >
                   <div className="text-accent mb-1 flex justify-center">{icon}</div>
